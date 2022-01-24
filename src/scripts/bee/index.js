@@ -34,7 +34,7 @@ async function bee(bot, party, merchant, args) {
     }
 
     if(bot.character.hp / bot.character.max_hp < 0.7) {
-        await bot.character.useHPPot(1).catch((error) => {})
+        await bot.character.useHPPot(0).catch((error) => {})
     }
 
     if(bot.character.chests.size){
