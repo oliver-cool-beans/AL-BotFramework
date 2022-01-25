@@ -13,6 +13,7 @@ import priest from "./priest/index.js";
 import paladin from "./paladin/index.js";
 import rogue from "./rouge/index.js";
 import Bottleneck from "bottleneck";
+import utils from "../scripts/utils/index.js";
 
 const characterFunctions = {
     merchant: merchant, 
@@ -44,6 +45,7 @@ class Character {
         this.target = null;
         this.merchant = null;
         this.notificationBuffer = [];
+        this.tasks = [];
     }
 
     async start(AL) {
@@ -70,14 +72,19 @@ class Character {
         await common.prepareCharacter(this, leader, party.members);
 
         while(this.isRunning){
-            if(this.character.rip) {
-                await this.character.respawn().catch(() => {});
+            if(!this.character.socket || this.character.disconnected) return;
+
+            if(this.tasks.length){
+                console.log(`${this.name} is running task ${task.script}`);
+                await scripts[tasks[0].script](this, party.members, this.merchant);
                 continue;
             }
 
             if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
 
-            if(!this.character.socket || this.character.disconnected) return;
+            this.potionLoop();
+            this.adminLoop();
+
             await scripts[this.scriptName](this, party.members, this.merchant, this.scriptArgs).catch((error) => {
                 console.log("Error running script", this.scriptName, error)
             });   
@@ -93,6 +100,11 @@ class Character {
         this.scriptArgs = args;
         console.log("Script is now", this.scriptName)
 
+    }
+
+    addTask(task) {
+        if(!task?.script) return false;
+        return this.tasks.push(task)
     }
 
     disconnect(){
@@ -148,6 +160,32 @@ class Character {
 
     sendPublicMessage(message){
         return this.character.say(message)
+    }
+
+    calculatePotionItems() {
+        const level = this.character.level < 30 ? 0 : 1;
+        return{
+            hpot: `hpot${level}`,
+            mpot: `mpot${level}`
+        }
+    }
+
+    async potionLoop(){
+        while(this.character.ready){
+            if(Object.keys(this.character.c).length) continue;
+            await utils.usePotionIfLow(this);
+            await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
+        }
+    }
+    async adminLoop(){
+        while(this.character.ready){
+            if(Object.keys(this.character.c).length) continue;
+            if(this.character.rip) {
+                await this.character.respawn().catch(() => {});
+            }
+            await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
+        }
+
     }
 
 }

@@ -24,18 +24,29 @@ const common = {
         });
 
         // Socket events that all characters should listen to. Character specific events should be declared in their character folders. 
+
+        // On Private Message
         bot.character.socket.on("pm", async (data) => {
             if(partyNames.includes(data.owner)) return;
             bot.notifyPrivateMessage(process.env["DISCORD_CHANNEL_ID"], data.message, data.owner);
         });
 
+        // On public chat log
         bot.character.socket.on("chat_log", async (data) => {
           if(partyNames.includes(data.owner)) return;
           bot.notifyChatMessage(process.env["DISCORD_CHANNEL_ID"], data.message, bot.character.map, data.owner);
 
         })
+        //On magiport request from another player
+        bot.character.socket.on("magiport", async (data) => {
+            if(!partyNames.includes(data.name)) return // If it's not from a partymember reject
+            console.log(`Accepting magiport from ${data.name}`)
+            bot.character.acceptMagiport(data.name)
+        });
 
+        // On hit
         bot.character.socket.on("hit", async (data) => utils.avoidStack(bot, data));
+
         return Promise.resolve("OK");
     }, 
     startCharacter: async (bot, serverName, serverFlag) => {

@@ -1,4 +1,5 @@
 // A script to create all the discord commands
+const {character, say, party} = require("./commands/index.cjs");
 
 module.exports = function createCommands (scripts, characters, partyConfig) {
     const scriptChoices = Object.keys(scripts)?.map((key) => {
@@ -8,11 +9,18 @@ module.exports = function createCommands (scripts, characters, partyConfig) {
     const characterNames = characters.map((char) => {
       return {name: char.name, value: char.name }
     }).filter(Boolean);
+
     const partyNames = Object.keys(partyConfig).map((key) => {
       return {name: key, value: key}
     })
 
-    const allPartiesAndNames = characterNames.concat(partyNames);
+    const commands = [
+      character.create(scriptChoices, characterNames), 
+      say.create(scriptChoices, characterNames), 
+      party.create(scriptChoices, partyNames)
+    ]
+
+    return commands
 
     return [
       {
@@ -71,31 +79,26 @@ module.exports = function createCommands (scripts, characters, partyConfig) {
         ]
       },
       {
-        name: 'party',
-        description: 'Run commands for main party',
-        options: [
-          {
-            name: "run", 
-            description: "Run a script by name", 
-            type: 3, 
-            required: false,
-            choices: scriptChoices
-          },
-          {
-            name: "disconnect", 
-            description: "Disconnect a character", 
-            type: 3, 
-            required: false,
-            choices: allPartiesAndNames
-          },
-          {
-            name: "login", 
-            description: "Login and start a character", 
-            type: 3, 
-            required: false,
-            choices: allPartiesAndNames
+        name: 'character', 
+        description: "Character commands",
+        options : characterNames.map((character) => {
+          return {
+            name: character.name, 
+            description: `Select character ${character.name}`, 
+            type: 2, 
+            options: [
+              {
+                name: "run", 
+                description: "Run a script by name", 
+                type: 1, 
+                options: scriptChoices.map((script) => {
+                  console.log(script)
+                  return {name: script.name, description: `Run script: ${script.name}`, type: 3, required: true}
+                })
+              }
+            ]
           }
-        ]
-      }
+        })
+      },
     ]
   }

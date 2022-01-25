@@ -1,7 +1,8 @@
 async function buyPotionsIfLow(bot, AL, nextPosition) {
 
-    const hpotCount = bot.character.countItem("hpot0");
-    const mpotCount = bot.character.countItem("mpot0");
+    const {hpot, mpot} = bot.calculatePotionItems();
+    const hpotCount = bot.character.countItem(hpot);
+    const mpotCount = bot.character.countItem(mpot);
 
     if(hpotCount >= 20 && mpotCount >= 20) return Promise.resolve(true);
 
@@ -13,14 +14,14 @@ async function buyPotionsIfLow(bot, AL, nextPosition) {
     }
 
     if(hpotCount < 200) {
-        if(bot.character.canBuy("hpot0")){
-            await bot.character.buy("hpot0", 200 - hpotCount)
+        if(bot.character.canBuy(hpot)){
+            await bot.character.buy(hpot, 200 - hpotCount)
         }
     }
 
     if(mpotCount < 200) {
-        if(bot.character.canBuy("mpot0")){
-            await bot.character.buy("mpot0", 200 - mpotCount)
+        if(bot.character.canBuy(mpot)){
+            await bot.character.buy(mpot, 200 - mpotCount)
         }
     
     }

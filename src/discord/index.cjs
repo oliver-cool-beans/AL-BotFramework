@@ -11,11 +11,10 @@ async function discord(AL, credentials, scripts, characters, party){
   try {
     console.log('Started refreshing application (/) commands.');
     const commands = createCommands(scripts, characters, party.config);
-
     await rest.put(
       Routes.applicationGuildCommands(credentials.clientID, credentials.guildID),
-      { body: commands },
-    );
+      { body: commands }
+    )
 
     console.log('Successfully reloaded application (/) commands.');
   } catch (error) {
@@ -28,7 +27,11 @@ async function discord(AL, credentials, scripts, characters, party){
 
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
+    await interaction.deferReply({ephemeral: true});
+
     try{
+      await commands[interaction.commandName]?.run(AL, interaction, characters, party, client);
+      /*
       // Merchant specific commands
       if(interaction?.commandName == "merchant" && interaction?.options?.['_subcommand'] == "run"){
         return await commands[interaction.commandName]['run'](AL, interaction, characters, client);
@@ -43,7 +46,7 @@ async function discord(AL, credentials, scripts, characters, party){
         if(!name) return await interaction.reply("Invalid command");
         await commands[interaction.commandName][name](AL, interaction, party, characters, client);
       }
-
+ */
     }catch(error) {
       console.log("Discord Error", error)
     }

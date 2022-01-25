@@ -17,7 +17,7 @@ async function init() {
 
     console.log("Initializing Commander");
     await Promise.all([AL.Game.login(AL_EMAIL, AL_PASSWORD), AL.Game.getGData()]).catch((error) => {
-        return Promise.reject("Unable to Login to AL CLient", error)
+        return Promise.reject(`Unable to Login to AL CLient: ${error}`)
     })
 
     await AL.Pathfinder.prepare(AL.Game.G)
