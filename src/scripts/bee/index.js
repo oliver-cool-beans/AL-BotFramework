@@ -1,9 +1,16 @@
-// Basic find and attack script
+/*
+    This is a script, it is responsible for setting and removing targets
+    as well as any additional logic around aquiring these targets.
+    and should not be used for anything else, as the attack and move loops do the rest.
+*/
+
 import utils from "../../scripts/utils/index.js";
 
 const targets = ["Bee", "Cute bee"];
 
 async function bee(bot, party, merchant, args) {
+    if(!bot.character.ready) return Promise.reject("Character not ready");
+
     const {hpot, mpot} = bot.calculatePotionItems();
 
     if(bot.characterClass == "merchant") return Promise.resolve("Not a combat class");
@@ -15,10 +22,6 @@ async function bee(bot, party, merchant, args) {
         await bot.character.smartMove(rallyPosition);
     }
     
-    if(!bot.character.party && !bot.isLeader && bot.leader && !bot.sentPartyRequest) {
-        await bot.character.sendPartyRequest(bot.leader.name);
-        bot.sentPartyRequest = true;
-    }
 
     await utils.buyPotionsIfLow(bot, bot.AL,  rallyPosition).catch((error) => {
         console.log("Buy POTIONS ERROR", error)
@@ -35,23 +38,11 @@ async function bee(bot, party, merchant, args) {
             await bot.character.openChest(key).catch((error) => {});
         }
     }
-    if(bot.character.map !== "main") await bot.character.smartMove(rallyPosition);
 
+    // If we've got no target, get a valid target;
     if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
         bot.target = utils.findClosestTarget(bot.AL, bot.character, party, targets);
-    }
-    if(!bot.target) await bot.character.smartMove(rallyPosition);
-
-    if(!bot.character.ready) return Promise.reject("Character not ready");
-    if(bot.character.canUse("attack") && bot.target){
-        await bot.character.basicAttack(bot.target).catch(async (error) => {
-            if(error.includes('not found')) {
-                bot.resetTarget();
-            }
-            if(error.includes("too far")) {
-                checkTarget(bot?.target, bot.character.entities) && await bot.character.smartMove(bot.character.entities.get(bot.target), { getWithin: bot.character.range }).catch(() => {})
-            }
-        });
+        if(!bot.target) await bot.character.smartMove("bee").catch(() => {});
     }
 
     return Promise.resolve("Finished");
@@ -59,7 +50,7 @@ async function bee(bot, party, merchant, args) {
 
 function checkTarget(target, entities = {}){
     if(!target) return false;
-    return !!entities.get(target);
+    return !!entities.get(target?.id);
 }
 
 export default bee;

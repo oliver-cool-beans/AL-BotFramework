@@ -52,7 +52,7 @@ class Character {
         if(!AL) return Promise.reject("Missing AL Client")
 
         this.AL = AL;
-        this.character = this.character || await common.startCharacter(this, "ASIA", "I");
+        this.character = this.character || await common.startCharacter(this, "US", "I");
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             console.log("Error Loading class functions", error)
         })
@@ -68,22 +68,26 @@ class Character {
         if(this.isRunning) return "Already running";
         this.isRunning = true
         const leader = party.members?.[0];
-
         await common.prepareCharacter(this, leader, party.members);
+
+        // Running independant loops means we can perform multiple actions at a time if needed, while keeping the logic independant
+        // i.e moving and attacking and using a potion in the same action
+
+        this.buyPotionLoop(); // Buy potions if we can and we need some;
+        this.potionLoop(); // Use a potion if we need to
+        this.adminLoop(); // Ressurect if we need to
+        this.attackLoop(); // Attack our target if we can
+        this.moveLoop(); // Move to our target if we should
 
         while(this.isRunning){
             if(!this.character.socket || this.character.disconnected) return;
-
-            if(this.tasks.length){
-                console.log(`${this.name} is running task ${task.script}`);
-                await scripts[tasks[0].script](this, party.members, this.merchant);
-                continue;
-            }
-
+ 
             if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
 
-            this.potionLoop();
-            this.adminLoop();
+            if(this.tasks.length){
+                await scripts[this.tasks[0].script](this, party.members, this.merchant);
+                continue;
+            }
 
             await scripts[this.scriptName](this, party.members, this.merchant, this.scriptArgs).catch((error) => {
                 console.log("Error running script", this.scriptName, error)
@@ -172,21 +176,71 @@ class Character {
 
     async potionLoop(){
         while(this.character.ready){
-            if(Object.keys(this.character.c).length) continue;
-            await utils.usePotionIfLow(this);
+            if(!Object.keys(this.character.c).length) await utils.usePotionIfLow(this);
             await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
         }
     }
     async adminLoop(){
         while(this.character.ready){
-            if(Object.keys(this.character.c).length) continue;
-            if(this.character.rip) {
-                await this.character.respawn().catch(() => {});
+
+            if(!this.character.party && !this.isLeader && this.leader && !this.sentPartyRequest) {
+                await this.character.sendPartyRequest(this.leader.name);
+                this.sentPartyRequest = true;
             }
+
+            if(this.character.rip) await this.character.respawn().catch(() => {});
+
             await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
         }
 
     }
 
+    async attackLoop(){
+        while(this.character.ready){
+            if(!this.target){
+                await new Promise(resolve => setTimeout(resolve, 500));
+                continue;
+            }
+            if(this.character.canUse("attack")){
+                await this.character.basicAttack(this.target?.id).catch(async (error) => {});
+            }
+            await new Promise(resolve => setTimeout(resolve, parseInt(500)));
+        }
+    }
+
+    async moveLoop(){
+        while(this.character.ready){
+            if(!this.target){
+                await new Promise(resolve => setTimeout(resolve, 500));
+                continue;
+            }
+            // If we're out of range, move to the target
+            if(this.AL.Tools.distance(this.character, this.target) > this.character.range){
+                await this.character.smartMove(this.target, { getWithin: this.character.range }).catch(() => {})
+            }
+            await new Promise(resolve => setTimeout(resolve, parseInt(500)));
+        }
+    }
+
+    async buyPotionLoop(){
+        while(this.character.ready){
+            const {hpot, mpot} = this.calculatePotionItems();
+            const hpotCount = this.character.countItem(hpot);
+            const mpotCount = this.character.countItem(mpot);
+            if(hpotCount < 200) {
+                if(this.character.canBuy(hpot)){
+                    await this.character.buy(hpot, 200 - hpotCount).catch(() => {})
+                }
+            }
+        
+            if(mpotCount < 200) {
+                if(this.character.canBuy(mpot)){
+                    await this.character.buy(mpot, 200 - mpotCount).catch(() => {})
+                }
+            
+            }
+            await new Promise(resolve => setTimeout(resolve, parseInt(1000)));
+        }
+    }
 }
 export default Character;

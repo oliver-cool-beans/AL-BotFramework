@@ -54,8 +54,6 @@ async function runQueue() {
         return Promise.resolve(task);
     }));
 
-    console.log("COMPLETED TASKS", tasks);
-
   console.log("Delivering Buy Orders")
     tasks = await Promise.all(tasks.map(async (task) => {
         if(task.buy) {

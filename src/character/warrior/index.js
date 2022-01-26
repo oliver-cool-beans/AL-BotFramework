@@ -5,9 +5,34 @@
 */
 export default {
     load: loadFunctions,
-    //loop: loopFunctions() 
+    loop: loopFunctions,
 }
 
 async function loadFunctions () {
-    return Promise.resolve('OK');
+    return
+}
+
+async function loopFunctions() {
+    if(!this?.character) return;
+    charge(this);
+    taunt(this);
+    return
+}
+
+function taunt(bot){
+    if(bot.character.canUse("taunt") && bot.target){
+        // If our target has a target, and that target isn't us and it's someone else in our party
+        if(bot.target.target && bot.target.target !== bot.name){ 
+            if(!bot.party.members.find((member) => member.name == bot.target.target)) return //check if the target is a member of our party
+            bot.character.taunt(bot.target.id).catch((error) => {
+                console.log("Cannot taunt", error)
+            })
+        }
+    }
+}
+
+function charge(bot){
+    if(bot.character.canUse("charge")){
+        bot.character.charge().catch(() => {});
+    }
 }

@@ -1,43 +1,55 @@
+/*
+    This is a script, it is responsible for setting and removing targets
+    as well as any additional logic around aquiring these targets.
+    and should not be used for anything else, as the attack and move loops do the rest.
+*/
+
 import scout from "./scout.js"
 import utils from "../utils/index.js";
 
 async function phoenix (bot, party, merchant, arg){
+    if(bot.character.ctype == "merchant") return Promise.resolve("Not a combat class");
+    if(bot.target?.name !== "Phoenix") bot.target = null;
+
+    await utils.buyPotionsIfLow(bot, bot.AL, {map: bot.character.map, x: bot.character.x, y: bot.character.y}).catch((error) => {
+        console.log("Buy POTIONS ERROR", error)
+    })
+
     const {hpot, mpot} = bot.calculatePotionItems();
-
-    if(bot.characterClass == "merchant") return Promise.resolve("Not a combat class");
-
-    if(!bot.runningScriptName == "phoenix") {
-        bot.runningScriptName = "phoenix"
+    if(bot.character.isFull()){
+        await utils.goToBank(bot, [hpot, mpot], 20000,  {map: bot.character.map, x: bot.character.x, y: bot.character.y}).catch((error) => {
+            console.log("ERROR Banking", error)
+        })
     }
 
-    if(!bot.character.party && !bot.isLeader && bot.leader && !bot.sentPartyRequest) {
-        await bot.character.sendPartyRequest(bot.leader.name);
-        bot.sentPartyRequest = true;
-    }
-
-    console.log(bot.characterClass)
     // Get mage to scout for a phoenix
-    if(bot.characterClass == "mage" && !bot.target){
-        console.log("FINDING PHOENIX", bot.target)
+    if(bot.character.ctype == "mage" && !bot.target){
+        console.log("FINDING PHOENIX", bot.target?.name)
         const phoenixSpawns = bot.character.locateMonster("phoenix");
         while(!bot.target){
             await scout(phoenixSpawns, bot, party);
         }
     } 
 
-    // Check if someone in the party has a phoenix as a target
-    if(bot?.target?.name !== "Phoenix"){
-        bot.target = party.find((member) => member?.target?.name == "Phoenix"); // Get someone who's got the phoenix target;
+    
+    while(bot.target?.name != "Phoenix" && party.find((member) => member?.target?.name == "Phoenix")){
+        console.log(bot.name, "Finding Phoenix....")
+        const memberWithTarget = party.find((member) => member?.target?.name == "Phoenix" && checkTarget(member.target, member.character.entities));
+            // Get someone who's got the phoenix target;
+        bot.target = memberWithTarget ? memberWithTarget.target : utils.findClosestTarget (bot.AL, bot.character, party, ["Phoenix"], false);
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    await utils.buyPotionsIfLow(bot, bot.AL, {map: bot.character.map, x: bot.character.x, y: bot.character.y}).catch((error) => {
-        console.log("Buy POTIONS ERROR", error)
-    })
+    if(bot.target?.name == "Phoenix" && !checkTarget(bot.target, bot.character.entities)) {
+        bot.target = null;
+    }
 
-    if(bot.character.isFull()){
-        await utils.goToBank(bot, [hpot, mpot], 20000,  {map: bot.character.map, x: bot.character.x, y: bot.character.y}).catch((error) => {
-            console.log("ERROR Banking", error)
-        })
+
+    // If the target we have is not a Phoenix (or nothing), see if anyone has a phoenix target and set it.
+    if(bot?.target?.name != "Phoenix"){
+        const memberWithTarget = party.find((member) => member?.target?.name == "Phoenix" && checkTarget(member.target, member.character.entities)); // Get someone who's got the phoenix target;
+
+        bot.target = memberWithTarget && memberWithTarget.target;
     }
 
     if(bot.character.chests.size){
@@ -48,21 +60,19 @@ async function phoenix (bot, party, merchant, arg){
 
     if(!bot.character.ready) return Promise.reject("Character not ready");
 
-    if(bot.character.canUse("attack") && bot.target){
-        await bot.character.basicAttack(bot.target).catch(async (error) => {
-            if(error.includes('not found')) {
-                console.log("NOT FOUND", bot.target)
-                bot.resetTarget();
-               if(bot.tasks?.[0]?.script == "phoenix") bot.tasks.unshift(); 
-            }
-            if(error.includes("too far")) {
-                checkTarget(bot?.target, bot.character.entities) && await bot.character.smartMove(bot.character.entities.get(bot.target), { getWithin: bot.character.range }).catch(() => {})
-            }
-        });
+    if(!bot.target && !party.find((member) => member?.target?.name == "Phoenix" && checkTarget(member.target, member.character.entities))) {
+        bot.tasks.shift();
+        console.log("bot Tasks for", bot.name, bot.tasks)
     }
-
-    if(!bot.target) bot.tasks.unshift();
+    await new Promise(resolve => setTimeout(resolve, 2000));
     return Promise.resolve("Finished");
 }
+
+
+function checkTarget(target, entities = {}){
+    if(!target) return false;
+    return !!entities.get(target?.id);
+}
+
 
 export default phoenix;

@@ -2,7 +2,7 @@ function findClosestTarget (AL, character, party = [], eligibleTargets = [], avo
 
     var closestEntity = null;
     const partyTargets = party.map((member) => {
-        return member?.target
+        return member?.target?.id
     }).filter(Boolean);
 
     const playerTargets = avoidPlayerTargets ? Array.from(character.players.values()).map((player) => player.id !== character.id && player.target).filter(Boolean) : [];
@@ -20,7 +20,7 @@ function findClosestTarget (AL, character, party = [], eligibleTargets = [], avo
         }
     });
 
-    return closestEntity?.id;
+    return closestEntity
 }
 
 export default findClosestTarget;
