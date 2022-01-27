@@ -72,13 +72,16 @@ class Character {
 
         // Running independant loops means we can perform multiple actions at a time if needed, while keeping the logic independant
         // i.e moving and attacking and using a potion in the same action
+        if(this.character.type !== "merchant"){
+            this.buyPotionLoop(); // Buy potions if we can and we need some;
+            this.potionLoop(); // Use a potion if we need to
+            this.attackLoop(); // Attack our target if we can
+            this.moveLoop(); // Move to our target if we should     
+        }
 
-        this.buyPotionLoop(); // Buy potions if we can and we need some;
-        this.potionLoop(); // Use a potion if we need to
-        this.adminLoop(); // Ressurect if we need to
-        this.attackLoop(); // Attack our target if we can
-        this.moveLoop(); // Move to our target if we should
-
+        this.adminLoop(); // Resurrect if we need to
+        
+    
         while(this.isRunning){
             if(!this.character.socket || this.character.disconnected) return;
  
