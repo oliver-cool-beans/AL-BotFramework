@@ -59,7 +59,7 @@ async function upgradeItems(bot){
                 console.log(`There are ${levelAboveCount.length} of ${itemName} in all tabs ABOVE level ${level}`)
                 if(!items.length) return obj // If we've got no items just return
 
-                if(allTabsCount.length && levelAboveCount.length) obj[level] = items;
+                if(allTabsCount.length && (levelAboveCount.length || poppedItems?.[itemName]?.[level])) obj[level] = items;
                 if(allTabsCount.length > 1 && !levelAboveCount.length) obj[level] = items;
                 if(allTabsCount.length > 1 && !levelAboveCount.length && !poppedItems?.[itemName]?.[level]) {
                     obj[level].pop();
