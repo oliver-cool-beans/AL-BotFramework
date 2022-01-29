@@ -15,13 +15,13 @@ async function buyPotions(bot, party, merchant, args) {
 
     if(hpotCount < amount) {
         if(bot.character.canBuy(hpot)){
-            await bot.character.buy(hpot, amount - hpotCount)
+            await bot.character.buy(hpot, amount - hpotCount).catch(() => {})
         }
     }
 
     if(mpotCount < amount) {
         if(bot.character.canBuy(mpot)){
-            await bot.character.buy(mpot, amount - mpotCount)
+            await bot.character.buy(mpot, amount - mpotCount).catch(() => {})
         }
     
     }
