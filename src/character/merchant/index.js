@@ -79,7 +79,6 @@ async function purchaseBuyOrder(task){
 }
 
 async function deliverBuyOrder(task){
-    console.log("MOVING")
     await this.character.smartMove(task.character).catch(() => {});a
     while(this.character.moving){
         await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds for anyone elses jobs to come in

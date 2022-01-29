@@ -201,7 +201,7 @@ class Character {
                 await this.character.sendPartyRequest(this.leader.name);
                 this.sentPartyRequest = true;
             }
-
+            if(this.character.map == "jail") await this.character.leaveMap().catch(() => {});
             if(this.character.rip) await this.character.respawn().catch(() => {});
 
             await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
