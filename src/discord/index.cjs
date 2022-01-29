@@ -31,22 +31,6 @@ async function discord(AL, credentials, scripts, characters, party){
 
     try{
       await commands[interaction.commandName]?.run(AL, interaction, characters, party, client);
-      /*
-      // Merchant specific commands
-      if(interaction?.commandName == "merchant" && interaction?.options?.['_subcommand'] == "run"){
-        return await commands[interaction.commandName]['run'](AL, interaction, characters, client);
-      }
-      // Whispering or saying
-      if(["whisper", "say"].includes(interaction.commandName)){
-        await commands[interaction.commandName](AL, interaction, characters, client);
-      }
-      // Party commands
-      if(interaction?.commandName == "party"){
-        const {name} = interaction?.options?.['_hoistedOptions']?.[0] || {};
-        if(!name) return await interaction.reply("Invalid command");
-        await commands[interaction.commandName][name](AL, interaction, party, characters, client);
-      }
- */
     }catch(error) {
       console.log("Discord Error", error)
     }

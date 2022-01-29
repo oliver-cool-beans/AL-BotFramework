@@ -1,5 +1,6 @@
 import upgradeItems from "./tasks/upgradeItems.js";
 import compoundItems from "./tasks/compoundItems.js";
+import buyAndSell from "./tasks/buyAndSell.js";
 
 async function scheduler(bot, force = false){
     console.log("RUNNING", bot.characterClass)

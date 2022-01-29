@@ -63,7 +63,7 @@ const common = {
             await new Promise(resolve => setTimeout(resolve, parseInt(waitTime * 1000))); // Wait the timeout and try again
             return await bot.AL.Game[classFunctionName](bot.name, serverName, serverFlag).catch((error) => Promise.reject(error))
         })
-    }
+    },
 
 }
 

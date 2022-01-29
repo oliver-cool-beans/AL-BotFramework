@@ -25,7 +25,7 @@ async function init() {
         return new Character(char.name, char.type, DEFAULT_SCRIPT, !index)
     })
     console.log(`Found ${characters.length} characters`);
-    const party = new Party(characters)
+    const party = new Party(characters, PARTY_CONFIG)
     resolveDefaultParty(PARTY_CONFIG, characters, party);
 
     console.log(`Set default party as ${party.members.map((member) => member.name)}`);
@@ -36,6 +36,7 @@ async function init() {
     await discord(AL, discordCredentials, scripts, characters, party).catch((error) => {
         console.log("Error initializing Discord", error)
     })
+
 }
 
 function resolveDefaultParty(partyConfig, characters, partyClass) {

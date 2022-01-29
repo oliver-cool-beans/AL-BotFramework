@@ -29,7 +29,7 @@ async function bee(bot, party, merchant, args) {
         force: true,
         args: {
             nextPosition: rallyPosition, 
-            amount: 300
+            amount: 200
         }
     });
 

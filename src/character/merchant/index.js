@@ -24,7 +24,6 @@ async function loadFunctions () {
 async function runTasks(force) {
     if(!this.isRunning) await this.start()
     await scheduler.apply(this)
-    await this.disconnect();
     return Promise.resolve("Finished")
 }
 

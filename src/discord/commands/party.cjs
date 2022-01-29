@@ -39,7 +39,7 @@ function create(scriptChoices, partyNames){
 }
 
 async function run (AL, interaction, characters, party, discord) {
-    const partyName = interaction.options.get("name");
+    const partyName = interaction.options.get("name")?.value;
     if(!partyName) return await interaction.editReply({ephemeral: true, content: "Invalid Command"});
 
     const options = interaction.options['_hoistedOptions'].reduce((obj, opt) => {
@@ -47,7 +47,7 @@ async function run (AL, interaction, characters, party, discord) {
     }, {});
 
     if(options.disconnect) await disconnect(party);
-    if(options.login) await login(party, discord, AL);
+    if(options.login) await login(partyName, party, discord, AL);
     if(options.run) await script(options.run, party);
 
     return interaction.editReply({ephemeral: true, content: `Finished running tasks ${interaction.options['_hoistedOptions'].map((opt) => opt.name)}`})
@@ -59,10 +59,15 @@ async function script(scriptName, party) {
   }))
 }
 
-async function login(party, discord, AL){
-  party.members.forEach((member) => {
-    return member.run(party, discord, AL)
+async function login(partyName, party, discord, AL){
+  party.disconnect();
+  await new Promise(resolve => setTimeout(resolve, 1000));
+  party.members = [];
+  party.config[partyName].forEach((member) => {
+      party.addMember(member);
+      
   });
+  party.start(party, discord, AL);
   return Promise.resolve("OK");
 }
 

@@ -22,11 +22,17 @@ class Party {
     }
 
     disconnect(){
-        console.log("DISCONNECTION", this.members)
         this.members.forEach((char) => {
             console.log("Disconnecting", char.name)
             char.disconnect()
         })
+    }
+    
+    start(party, discord, AL){
+        this.members.forEach((member) => {
+            member.run(party, discord, AL);
+        })
+        return
     }
 
 }

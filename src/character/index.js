@@ -47,6 +47,8 @@ class Character {
         this.merchant = null;
         this.notificationBuffer = [];
         this.tasks = [];
+        this.serverRegion = "US", 
+        this.serverIdentifier = "I"
     }
 
     async start(AL) {
@@ -81,7 +83,6 @@ class Character {
         }
 
         this.adminLoop(); // Resurrect if we need to
-        
     
         while(this.isRunning){
             if(!this.character.socket || this.character.disconnected) return;
@@ -240,20 +241,27 @@ class Character {
             const {hpot, mpot} = this.calculatePotionItems();
             const hpotCount = this.character.countItem(hpot);
             const mpotCount = this.character.countItem(mpot);
-            if(hpotCount < 500) {
+            if(hpotCount < 200) {
                 if(this.character.canBuy(hpot)){
-                    await this.character.buy(hpot, 500 - hpotCount).catch(() => {})
+                    await this.character.buy(hpot, 200 - hpotCount).catch(() => {})
                 }
             }
         
-            if(mpotCount < 500) {
+            if(mpotCount < 200) {
                 if(this.character.canBuy(mpot)){
-                    await this.character.buy(mpot, 500 - mpotCount).catch(() => {})
+                    await this.character.buy(mpot, 200 - mpotCount).catch(() => {})
                 }
             
             }
-            await new Promise(resolve => setTimeout(resolve, parseInt(1000)));
+            await new Promise(resolve => setTimeout(resolve, 1000));
         }
+    }
+
+    async switchServer(region, identifier){
+        if(region == this.serverRegion && identifier == this.identifier) return false;
+        console.log(`${this.name} - Switching servers to ${region} ${identifier}`);
+        this.disconnect();
+        return await common.startCharacter(this, region, identifier)
     }
 }
 export default Character;
