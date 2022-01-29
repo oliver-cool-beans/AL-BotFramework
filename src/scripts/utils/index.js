@@ -1,4 +1,4 @@
-import buyPotionsIfLow from "./buyPotionsIfLow.js";
+import checkIfPotionsLow from "./checkIfPotionsLow.js";
 import goToBank from "./goToBank.js";
 import findClosestTarget from "./findClosestTarget.js";
 import avoidStack from "./avoidStack.js";
@@ -6,12 +6,12 @@ import findClosestVendor from "./findClosestVendor.js";
 import usePotionIfLow from "./usePotionIfLow.js";;
 
 const utils = {
-    findClosestTarget: findClosestTarget,
-    buyPotionsIfLow: buyPotionsIfLow,
-    goToBank: goToBank,
-    avoidStack: avoidStack,
-    findClosestVendor: findClosestVendor, 
-    usePotionIfLow: usePotionIfLow
+    findClosestTarget,
+    checkIfPotionsLow,
+    goToBank,
+    avoidStack,
+    findClosestVendor, 
+    usePotionIfLow
 }
 
 export default utils;

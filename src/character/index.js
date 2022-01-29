@@ -4,6 +4,7 @@
 */
 
 import scripts from "../scripts/index.js";
+import tasks from "../scripts/tasks/index.js";
 import common from "./common.js";
 import merchant from "./merchant/index.js";
 import warrior from "./warrior/index.js";
@@ -88,7 +89,7 @@ class Character {
             if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
 
             if(this.tasks.length){
-                await scripts[this.tasks[0].script](this, party.members, this.merchant);
+                await {...scripts, ...tasks}[this.tasks[0].script](this, party.members, this.merchant, this.tasks[0].args);
                 continue;
             }
 
@@ -111,7 +112,16 @@ class Character {
 
     addTask(task) {
         if(!task?.script) return false;
+        if(this.tasks.find((queue) => queue.script = task.script)) return false;
+        console.log("ADDED TASK", task.script, this.tasks)
         return this.tasks.push(task)
+    }
+
+    removeTask(name){
+        this.tasks = this.tasks.filter((queue) => queue.script !== name); // THis'll remove them all. May want to just remove first later
+        console.log("REMOVED TASK", name, this.tasks)
+
+        return;
     }
 
     disconnect(){
@@ -218,7 +228,7 @@ class Character {
                 continue;
             }
             // If we're out of range, move to the target
-            if(this.AL.Tools.distance(this.character, this.target) > this.character.range){
+            if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.tasks[0]?.force){
                 await this.character.smartMove(this.target, { getWithin: this.character.range }).catch(() => {})
             }
             await new Promise(resolve => setTimeout(resolve, parseInt(500)));
@@ -230,15 +240,15 @@ class Character {
             const {hpot, mpot} = this.calculatePotionItems();
             const hpotCount = this.character.countItem(hpot);
             const mpotCount = this.character.countItem(mpot);
-            if(hpotCount < 200) {
+            if(hpotCount < 500) {
                 if(this.character.canBuy(hpot)){
-                    await this.character.buy(hpot, 200 - hpotCount).catch(() => {})
+                    await this.character.buy(hpot, 500 - hpotCount).catch(() => {})
                 }
             }
         
-            if(mpotCount < 200) {
+            if(mpotCount < 500) {
                 if(this.character.canBuy(mpot)){
-                    await this.character.buy(mpot, 200 - mpotCount).catch(() => {})
+                    await this.character.buy(mpot, 500 - mpotCount).catch(() => {})
                 }
             
             }

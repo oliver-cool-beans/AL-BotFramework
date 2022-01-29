@@ -11,16 +11,26 @@ async function phoenix (bot, party, merchant, arg){
     if(bot.character.ctype == "merchant") return Promise.resolve("Not a combat class");
     if(bot.target?.name !== "Phoenix") bot.target = null;
 
-    await utils.buyPotionsIfLow(bot, bot.AL, {map: bot.character.map, x: bot.character.x, y: bot.character.y}).catch((error) => {
-        console.log("Buy POTIONS ERROR", error)
-    })
+    await utils.checkIfPotionsLow(bot, 20) && bot.addTask({
+        script: "buyPotions", 
+        user: bot.name, 
+        force: true,
+        args: {
+            nextPosition: {map: bot.character.map, x: bot.character.x, y: bot.character.y}, 
+            amount: 300
+        }
+    });
 
-    const {hpot, mpot} = bot.calculatePotionItems();
-    if(bot.character.isFull()){
-        await utils.goToBank(bot, [hpot, mpot], 20000,  {map: bot.character.map, x: bot.character.x, y: bot.character.y}).catch((error) => {
-            console.log("ERROR Banking", error)
-        })
-    }
+    if(bot.character.isFull()) bot.addTask({
+        script: "bankItems", 
+        user: bot.name, 
+        force: true,
+        args: {
+            itemsToHold: [hpot, mpot], 
+            goldToHold: 20000,
+            nextPosition: {map: bot.character.map, x: bot.character.x, y: bot.character.y}
+        }
+    })
 
     // Get mage to scout for a phoenix
     if(bot.character.ctype == "mage" && !bot.target){

@@ -1,8 +1,10 @@
 const bankingPosition = { map: "bank", x: 0, y: -200 };
 
-async function goToBank(bot, itemsToHold, goldToHold, nextPosition) {
-    bot.busy = true;
-    await bot.character.smartMove(bankingPosition, { avoidTownWarps: true });
+async function bankItems(bot, party, merchant, args) {
+    console.log("BANKING ITEMS", bot.name)
+    const {itemsToHold, goldToHold, nextPosition} = args;
+
+    await bot.character.smartMove(bankingPosition, { avoidTownWarps: true }).catch(() => {})
 
     for (let i = 0; i < bot.character.isize; i++) {
         const item = bot.character.items[i]
@@ -18,14 +20,15 @@ async function goToBank(bot, itemsToHold, goldToHold, nextPosition) {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    if (bot.character.gold > goldToHold) await bot.character.depositGold(bot.character.gold - goldToHold);
+    if (bot.character.gold > goldToHold) await bot.character.depositGold(bot.character.gold - goldToHold).catch(() => {})
 
-    await bot.character.smartMove(nextPosition);
+    if(nextPosition) await bot.character.smartMove(nextPosition);
     while(bot.character.moving){
         await new Promise(resolve => setTimeout(resolve, 2000));
     }
-    bot.busy = false
+    
+    bot.removeTask('bankItems');
     return Promise.resolve("Finished")
 }
 
-export default goToBank
+export default bankItems

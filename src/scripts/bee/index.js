@@ -23,15 +23,26 @@ async function bee(bot, party, merchant, args) {
     }
     
 
-    await utils.buyPotionsIfLow(bot, bot.AL,  rallyPosition).catch((error) => {
-        console.log("Buy POTIONS ERROR", error)
-    })
+    await utils.checkIfPotionsLow(bot, 20) && bot.addTask({
+        script: "buyPotions", 
+        user: bot.name, 
+        force: true,
+        args: {
+            nextPosition: rallyPosition, 
+            amount: 300
+        }
+    });
 
-    if(bot.character.isFull()){
-        await utils.goToBank(bot, [hpot, mpot], 20000,  rallyPosition).catch((error) => {
-            console.log("ERROR Banking", error)
-        })
-    }
+    if(bot.character.isFull()) bot.addTask({
+        script: "bankItems", 
+        user: bot.name, 
+        force: true,
+        args: {
+            itemsToHold: [hpot, mpot], 
+            goldToHold: 20000,
+            nextPosition: rallyPosition
+        }
+    })
 
     if(bot.character.chests.size){
         for(let [key, value] of bot.character.chests){
