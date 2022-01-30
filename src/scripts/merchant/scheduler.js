@@ -1,17 +1,19 @@
 import upgradeItems from "./tasks/upgradeItems.js";
 import compoundItems from "./tasks/compoundItems.js";
 import buyAndSell from "./tasks/buyAndSell.js";
+import sellInStand from "./tasks/sellInStand.js";
 
 async function scheduler(bot, force = false){
-    console.log("RUNNING", bot.characterClass)
     if(bot.characterClass !== "merchant") return Promise.resolve(`Not a merchant ${bot.name}, ${bot.characterClass}`);
     
     const date = new Date();
-    if(shouldRunSchedule(bot.scheduleLastRun) || force){
+    if(shouldRunSchedule(bot.scheduleLastRun)){
         console.log("Running schedule")
-        date.setMinutes(date.getMinutes() + 30);
+        if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
+        date.setMinutes(date.getMinutes() + 15);
         bot.scheduleLastRun = date;
         var shouldCompound = true;
+       
         while(shouldCompound){
             console.log("Running Compound...")
             shouldCompound = await compoundItems(bot).catch(() => {});
@@ -24,13 +26,20 @@ async function scheduler(bot, force = false){
 
         await bot.character.smartMove('main', {avoidTownWarps: true}).catch(() => {});
     }
+
+    if(!bot.character.stand){
+        await sellInStand(bot);
+    }
+
     return Promise.resolve("OK")
 }
 
 function shouldRunSchedule(lastRunTime) {
-    if(!lastRunTime) return true;
-    if(Math.abs(new Date() - lastRunTime) / 36e5 > 0.5) return true;
+    if(!lastRunTime) return true;   
+    if(new Date() >= lastRunTime) return true;
     return false; 
 }
+
+
 
 export default scheduler;

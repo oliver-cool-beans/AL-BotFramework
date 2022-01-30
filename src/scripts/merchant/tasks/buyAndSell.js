@@ -20,6 +20,20 @@ async function buyAndSell(bot){
 
     const merchantTrades = merchantToMerchant(bot, allBuyOrders, allSellOrders)
     console.log("MERCHANT TRADES TRADES", merchantTrades)
+    var vendorToBuy;
+    var vendorToSell
+    var trade
+    for(var index in merchantTrades){
+        trade = merchantTrades[index]
+        vendorToBuy = trade.merchant;
+        vendorToSell = trade.buyers[0].merchant;
+        await buyFromMerchant(bot, vendorToBuy, trade.name).catch((error) => {
+            console.log(`Failed to buy ${trade.name} from ${vendorToBuy.name}`, error)
+        })
+        if(`${bot.serverRegion} ${bot.serverIdentifier}` !== vendorToBuy.merchant.server){
+
+        }
+    } 
 
     const NPCTrades = merchantToNPC(bot, allSellOrders);
     console.log("NPC TRADES", NPCTrades)
@@ -47,24 +61,9 @@ function merchantToMerchant(bot, allBuyOrders, allSellOrders){
         if(!goodBuyers.length) return;
         return {...sellOrder, buyers: goodBuyers}
     }).filter(Boolean)
-    
-    /*var vendorToBuy;
-    var vendorToSell
-    var trade
-    for(var index in goodTrades){
-        trade = goodTrades[index]
-        vendorToBuy = trade.merchant;
-        vendorToSell = trade.buyers[0].merchant;
-        await buyFromMerchant(bot, vendorToBuy, trade.name).catch((error) => {
-            console.log(`Failed to buy ${trade.name} from ${vendorToBuy.name}`, error)
-        })
-        if(`${bot.serverRegion} ${bot.serverIdentifier}` !== vendorToBuy.merchant.server){
-
-        }
-    } */
 }
 async function buyFromMerchant(bot, merchant) {
-    console.log("Buying from merchant", merchant.name);
+    console.log("Buying from merchant", merchant);
     const serverProperties = merchant.server.split(" ");
     if(serverProperties[0] !== bot.serverRegion || serverProperties[1] !== bot.serverIdentifier){
         await bot.switchServer(serverProperties[0], serverProperties[1]).catch((error) => {

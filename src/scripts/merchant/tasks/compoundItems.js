@@ -1,7 +1,7 @@
 import utils from "../../../scripts/utils/index.js";
 
 async function compoundItems(bot){
-    if (!["bank", "bank_b", "bank_u"].includes(bot.character.map))  await bot.character.smartMove({ map: "bank", x: 0, y: -200 }, { avoidTownWarps: true });
+    if (!["bank", "bank_b", "bank_u"].includes(bot.character.map))  await bot.character.smartMove({ map: "bank", x: 0, y: -200 }, { avoidTownWarps: true }).catch(() => {});;
 
     while(bot.character.moving){
         await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds for anyone elses jobs to come in
@@ -170,7 +170,7 @@ async function withdrawAllOfItem(bot, itemName, bankSlots) {
             bot.character.withdrawItem(slotName, itemSlots[slot], inventorySpace[slot]).catch((error) => {
                 console.log("cannot withdraw", error)
             })
-            await new Promise(resolve => setTimeout(resolve, parseInt(1000))); // Wait the cooldown
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the cooldown
         }
     }
     return Promise.resolve('OK')

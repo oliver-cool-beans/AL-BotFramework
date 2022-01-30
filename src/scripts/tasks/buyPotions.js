@@ -6,7 +6,7 @@ async function buyPotions(bot, party, merchant, args) {
     const hpotCount = bot.character.countItem(hpot);
     const mpotCount = bot.character.countItem(mpot);
     
-    await bot.character.smartMove("fancypots", { avoidTownWarps: true, getWithin: bot.AL.Constants.NPC_INTERACTION_DISTANCE / 2  });
+    await bot.character.smartMove("fancypots", { avoidTownWarps: true, getWithin: bot.AL.Constants.NPC_INTERACTION_DISTANCE / 2  }).catch(() => {});
     console.log("Finished moving to potions")
 
     while(bot.character.moving){

@@ -61,6 +61,7 @@ function setPartyTasks(bot, party, target){
 
 async function magiportParty(bot, party) {
     for(var index in party){
+        if(party[index].characterClass == "merchant") continue
         if(!party[index]?.character?.ready || party[index].name == bot.name) continue;
         while(bot.character.mp < 900){ // The cost required for magiport
             await new Promise(resolve => setTimeout(resolve, parseInt(1000))); // Wait the timeout and try again

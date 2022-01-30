@@ -9,6 +9,10 @@ import utils from "../utils/index.js";
 
 async function phoenix (bot, party, merchant, arg){
     if(bot.character.ctype == "merchant") return Promise.resolve("Not a combat class");
+    if(!bot.character.ready) return Promise.reject("Character not ready");
+
+    const {hpot, mpot} = bot.calculatePotionItems();
+
     if(bot.target?.name !== "Phoenix") bot.target = null;
 
     await utils.checkIfPotionsLow(bot, 20) && bot.addTask({
@@ -46,7 +50,7 @@ async function phoenix (bot, party, merchant, arg){
         console.log(bot.name, "Finding Phoenix....")
         const memberWithTarget = party.find((member) => member?.target?.name == "Phoenix" && checkTarget(member.target, member.character.entities));
             // Get someone who's got the phoenix target;
-        bot.target = memberWithTarget ? memberWithTarget.target : utils.findClosestTarget (bot.AL, bot.character, party, ["Phoenix"], false);
+        bot.target = memberWithTarget ? memberWithTarget.target : utils.findClosestTarget (bot.AL, bot.character, party, ["Phoenix"], false, false);
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 

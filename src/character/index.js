@@ -62,11 +62,12 @@ class Character {
         return Promise.resolve("OK");
     };
 
-    async run(party, discord, AL){
+    async run(party, discord, AL, isLeader){
 
         if(discord) this.discord = discord;
         if(party) this.party = party;
-
+        this.isLeader = isLeader;
+        
         if(!this.character) await this.start(AL);
         if(this.isRunning) return "Already running";
         this.isRunning = true
@@ -86,7 +87,8 @@ class Character {
     
         while(this.isRunning){
             if(!this.character.socket || this.character.disconnected) return;
- 
+            if(this.character.map == "jail") await this.character.leaveMap().catch(() => {});
+
             if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
 
             if(this.tasks.length){
@@ -94,9 +96,11 @@ class Character {
                 continue;
             }
 
-            await scripts[this.scriptName](this, party.members, this.merchant, this.scriptArgs).catch((error) => {
-                console.log("Error running script", this.scriptName, error)
-            });   
+            try{
+                await scripts[this.scriptName](this, party.members, this.merchant, this.scriptArgs)
+            }catch(error){
+                console.log(`${this.name} errored running script ${this.scriptName} error:`, error)
+            }
          
             await new Promise(resolve => setTimeout(resolve, parseInt(500))); // Wait the timeout and try again
         }
@@ -198,6 +202,7 @@ class Character {
         while(this.character.ready){
 
             if(!this.character.party && !this.isLeader && this.leader && !this.sentPartyRequest) {
+                console.log(this.name, "Sending party request to", this.leader.name)
                 await this.character.sendPartyRequest(this.leader.name);
                 this.sentPartyRequest = true;
             }

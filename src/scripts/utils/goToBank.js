@@ -1,8 +1,7 @@
 const bankingPosition = { map: "bank", x: 0, y: -200 };
 
 async function goToBank(bot, itemsToHold, goldToHold, nextPosition) {
-    bot.busy = true;
-    await bot.character.smartMove(bankingPosition, { avoidTownWarps: true });
+    await bot.character.smartMove(bankingPosition, { avoidTownWarps: true }).catch(() => {});;
 
     for (let i = 0; i < bot.character.isize; i++) {
         const item = bot.character.items[i]
@@ -20,11 +19,13 @@ async function goToBank(bot, itemsToHold, goldToHold, nextPosition) {
 
     if (bot.character.gold > goldToHold) await bot.character.depositGold(bot.character.gold - goldToHold);
 
-    await bot.character.smartMove(nextPosition);
-    while(bot.character.moving){
-        await new Promise(resolve => setTimeout(resolve, 2000));
+    if(nextPosition){
+        await bot.character.smartMove(nextPosition).catch(() => {})
+        while(bot.character.moving){
+            await new Promise(resolve => setTimeout(resolve, 2000));
+        }
     }
-    bot.busy = false
+  
     return Promise.resolve("Finished")
 }
 

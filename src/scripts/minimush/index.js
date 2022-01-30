@@ -6,20 +6,20 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["Bee", "Cute bee"];
+const targets = ["Phoenix", "Pom Pom"];
 
-async function bee(bot, party, merchant, args) {
+async function minimush(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
 
     const {hpot, mpot} = bot.calculatePotionItems();
 
     if(bot.characterClass == "merchant") return Promise.resolve("Not a combat class");
     
-    const rallyPosition = { map: "main", x: 364.259, y: 1054.605 };
+    const rallyPosition = "minimush";
 
-    if(!bot.runningScriptName == "bee") {
-        bot.runningScriptName = "bee"
-        await bot.character.smartMove(rallyPosition).catch(() => {});
+    if(!bot.runningScriptName == "minimush") {
+        bot.runningScriptName = "minimush"
+        await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
     
 
@@ -53,7 +53,7 @@ async function bee(bot, party, merchant, args) {
     // If we've got no target, get a valid target;
     if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
         bot.target = utils.findClosestTarget(bot.AL, bot.character, party, targets);
-        if(!bot.target) await bot.character.smartMove("bee").catch(() => {});
+        if(!bot.target) await bot.character.smartMove("minimush").catch(() => {});
     }
 
     return Promise.resolve("Finished");
@@ -64,4 +64,4 @@ function checkTarget(target, entities = {}){
     return !!entities.get(target?.id);
 }
 
-export default bee;
+export default minimush;

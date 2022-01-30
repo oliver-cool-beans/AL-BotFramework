@@ -3,7 +3,11 @@ const bankingPosition = { map: "bank", x: 0, y: -200 };
 async function bankItems(bot, party, merchant, args) {
     console.log("BANKING ITEMS", bot.name)
     const {itemsToHold, goldToHold, nextPosition} = args;
-
+    while(!["bank", "bank_b", "bank_u"].includes(bot.character.map) && !bot.character.moving){
+        await bot.character.smartMove(bankingPosition, { avoidTownWarps: true }).catch(() => {})
+        await new Promise(resolve => setTimeout(resolve, 2000));
+    }
+    
     await bot.character.smartMove(bankingPosition, { avoidTownWarps: true }).catch(() => {})
 
     for (let i = 0; i < bot.character.isize; i++) {
@@ -20,9 +24,14 @@ async function bankItems(bot, party, merchant, args) {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    if (bot.character.gold > goldToHold) await bot.character.depositGold(bot.character.gold - goldToHold).catch(() => {})
 
-    if(nextPosition) await bot.character.smartMove(nextPosition);
+    try{
+        if (bot.character.gold > goldToHold) await bot.character.depositGold(bot.character.gold - goldToHold)
+    }catch(error){
+        console.log("Error depositing gold", error)
+    }
+
+    if(nextPosition) await bot.character.smartMove(nextPosition).catch(() => {});;
     while(bot.character.moving){
         await new Promise(resolve => setTimeout(resolve, 2000));
     }

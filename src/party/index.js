@@ -29,8 +29,8 @@ class Party {
     }
     
     start(party, discord, AL){
-        this.members.forEach((member) => {
-            member.run(party, discord, AL);
+        this.members.forEach((member, index) => {
+            member.run(party, discord, AL, !index);
         })
         return
     }
