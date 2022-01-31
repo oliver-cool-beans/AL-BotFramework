@@ -19,7 +19,7 @@ async function bee(bot, party, merchant, args) {
 
     if(!bot.runningScriptName == "goo") {
         bot.runningScriptName = "goo"
-        await bot.character.smartMove(rallyPosition);
+        await bot.character.smartMove(rallyPosition).catch(() => {});
     }
     
 

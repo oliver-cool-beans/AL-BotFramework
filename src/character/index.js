@@ -49,6 +49,7 @@ class Character {
         this.tasks = [];
         this.serverRegion = "US", 
         this.serverIdentifier = "I"
+        this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}] // TODO put this in dynamic config accessable by discord
     }
 
     async start(AL) {
@@ -81,11 +82,18 @@ class Character {
             this.potionLoop(); // Use a potion if we need to
             this.attackLoop(); // Attack our target if we can
             this.moveLoop(); // Move to our target if we should     
+            this.sellLoop(); // Sell junk when we can
         }
 
         this.adminLoop(); // Resurrect if we need to
     
         while(this.isRunning){
+            if(!this.character.ready){
+                console.log(this.name, "is not ready, reconnecting...");
+                await this.reconnect();
+                continue;
+            }
+
             if(!this.character.socket || this.character.disconnected) return;
             if(this.character.map == "jail") await this.character.leaveMap().catch(() => {});
 
@@ -127,6 +135,11 @@ class Character {
         console.log("REMOVED TASK", name, this.tasks)
 
         return;
+    }
+
+    async reconnect(){
+        this.disconnect();
+        return await common.startCharacter(this, "US", "I");
     }
 
     disconnect(){
@@ -198,6 +211,27 @@ class Character {
             await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
         }
     }
+
+    // Sell junk when we can.
+    async sellLoop(){
+        while(this.character.ready){
+            if(this.character.canSell()){
+                const itemsToSell = this.character.items.map((item, index) => {
+                    if(!item) return
+                    if(this.itemsToSell.find((listItem) => listItem.name == item.name && listItem.level == item.level) ){
+                        return {...item, index: index}
+                    } 
+                }).filter(Boolean);
+                for(var item in itemsToSell){
+                    await this.character.sell(itemsToSell[item].index).catch((error) => {
+                        console.log(`${this.name} errored selling item ${itemsToSell[item].name}`, error)
+                    });
+                }
+            }
+            await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
+        }
+    }
+
     async adminLoop(){
         while(this.character.ready){
 
@@ -268,5 +302,6 @@ class Character {
         this.disconnect();
         return await common.startCharacter(this, region, identifier)
     }
+    
 }
 export default Character;

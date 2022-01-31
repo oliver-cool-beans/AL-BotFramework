@@ -38,7 +38,7 @@ async function bee(bot, party, merchant, args) {
         user: bot.name, 
         force: true,
         args: {
-            itemsToHold: [hpot, mpot], 
+            itemsToHold: [hpot, mpot, "tracker"], 
             goldToHold: 20000,
             nextPosition: rallyPosition
         }

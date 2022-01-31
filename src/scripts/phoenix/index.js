@@ -30,7 +30,7 @@ async function phoenix (bot, party, merchant, arg){
         user: bot.name, 
         force: true,
         args: {
-            itemsToHold: [hpot, mpot], 
+            itemsToHold: [hpot, mpot, "tracker"], 
             goldToHold: 20000,
             nextPosition: {map: bot.character.map, x: bot.character.x, y: bot.character.y}
         }
