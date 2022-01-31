@@ -1,7 +1,7 @@
 import utils from "../../utils/index.js";
 
 const merchantStandItems = {
-    "intearring": {
+   /* "intearring": {
         level: 3, 
         qty: "all", 
         price: 20000000
@@ -15,7 +15,7 @@ const merchantStandItems = {
         level: 3, 
         qty: "all",
         price: 40000000
-    }
+    } */
 }
 
 async function sellInStand(bot){
@@ -36,7 +36,6 @@ async function sellInStand(bot){
         itemData = bot.character.items[i];
         if(!itemData) continue;
         if(merchantStandItems[itemData?.name] && merchantStandItems[itemData?.name].level == itemData.level ){
-            console.log("FOUND THIS ITEM", merchantStandItems[itemData?.name] )
             await bot.character.listForSale(i, merchantStandItems[itemData?.name].price).catch((error) => {
                 console.log("There was an issue listing item", itemData.name, error);
             })
