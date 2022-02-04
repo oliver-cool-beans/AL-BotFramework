@@ -8,6 +8,11 @@ import scout from "./scout.js"
 import utils from "../utils/index.js";
 
 async function phoenix (bot, party, merchant, arg){
+    if(bot.character.rip) {
+        console.log(bot.character.name, "IS DEAD, returning from Phoenix script");
+        return;
+    }
+    
     if(bot.character.ctype == "merchant") return Promise.resolve("Not a combat class");
     if(!bot.character.ready) return Promise.reject("Character not ready");
 

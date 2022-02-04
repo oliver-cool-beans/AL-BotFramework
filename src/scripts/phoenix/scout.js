@@ -1,4 +1,3 @@
-import { MessageButton } from "discord.js";
 import utils from "../utils/index.js";
 
 // Scout phoenix positions
@@ -11,9 +10,12 @@ async function scout(spawns, bot, party) {
             var success = false;
             console.log("*** Moving to ", spawns[index], "***")
             while(!success){
+                if(bot.character.map == "jail") return;
                 const result = await bot.character.smartMove(spawns[index], {getWithin: 50, useBlink: true}).catch((error) => {
+                    console.log("MOVE FAILED!?", "have we hung?")
                     return false
                 });
+                console.log("AFTER")
                 if(!result) {
                     await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
                     continue
@@ -25,6 +27,7 @@ async function scout(spawns, bot, party) {
             // Is there an issue with smart move? rejects when blinkTimout 1000, but it should really keep going after that. 
 
         }
+        console.log("resolving phoenix")
         await new Promise(resolve => setTimeout(resolve, parseInt(500)));
     }
 

@@ -86,8 +86,11 @@ class Character {
         }
 
         this.adminLoop(); // Resurrect if we need to
-    
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait the timeout and try again
+
         while(this.isRunning){
+            this.name == "MiniCupcake" && console.log("MINICUPCAKE", "isRunning:", this.isRunning, "Ready:", this.character.ready, "map:", this.character.map, "socket:", !!this.character.socket, "disconnected:", this.character.disconnected)
+            this.name == "MiniCupcake" && console.log("MINICUPCAKE", "Target:", this.target?.name, "Script:", this.scriptName)
             if(!this.character.ready){
                 console.log(this.name, "is not ready, reconnecting...");
                 await this.reconnect();
@@ -95,7 +98,6 @@ class Character {
             }
 
             if(!this.character.socket || this.character.disconnected) return;
-            if(this.character.map == "jail") await this.character.leaveMap().catch(() => {});
 
             if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
 
@@ -240,8 +242,14 @@ class Character {
                 await this.character.sendPartyRequest(this.leader.name);
                 this.sentPartyRequest = true;
             }
-            if(this.character.map == "jail") await this.character.leaveMap().catch(() => {});
-            if(this.character.rip) await this.character.respawn().catch(() => {});
+            if(this.character.map == "jail") {
+                console.log("PORTING OUT OF JAIL")
+                await this.character.leaveMap().catch((error) => console.log("JAIL PORT ERRORED", error));
+            }
+            if(this.character.rip) {
+                this.target = null;
+                await this.character.respawn().catch(() => {});
+            }
 
             await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
         }
