@@ -23,9 +23,16 @@ async function loadFunctions () {
 }
 
 async function loopFunctions() {
-    mluckLoop(this)
+    mluckLoop(this);
+    regenLoop(this);
 }
 
+async function regenLoop(bot){
+    while(bot.isRunning){
+        if(bot.character.mp < bot.character.max_hp) await bot.character.regenMP().catch(() => {});
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
+    }
+}
 async function mluckLoop(bot) {
     let mluckCount;
     while(bot.isRunning){
