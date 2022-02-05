@@ -5,6 +5,7 @@ async function scout(spawns, bot, party) {
     var nearbyPhoenix = bot.character.getEntity({ returnNearest: true, type: "phoenix" })
     while(!nearbyPhoenix){
         console.log("SEARCHING SPAWNS FOR PHOENIX ************")
+        if(!bot.character.socket || !bot.character.ready || bot.character.map == "jail") return;
         for(var index in spawns){
             if(nearbyPhoenix) break;
             var success = false;

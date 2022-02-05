@@ -56,7 +56,7 @@ class Character {
         if(!AL) return Promise.reject("Missing AL Client")
 
         this.AL = AL;
-        this.character = this.character || await common.startCharacter(this, "US", "I");
+        this.character = this.character || await common.startCharacter(this, "US", "I").catch(() => {});
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             console.log("Error Loading class functions", error)
         })
@@ -236,7 +236,6 @@ class Character {
 
     async adminLoop(){
         while(this.character.ready){
-
             if(!this.character.party && !this.isLeader && this.leader && !this.sentPartyRequest) {
                 console.log(this.name, "Sending party request to", this.leader.name)
                 await this.character.sendPartyRequest(this.leader.name);
@@ -247,7 +246,7 @@ class Character {
                 await this.character.leaveMap().catch((error) => console.log("JAIL PORT ERRORED", error));
             }
             if(this.character.rip) {
-                this.target = null;
+                this.target = null
                 await this.character.respawn().catch(() => {});
             }
 
