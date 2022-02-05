@@ -86,7 +86,7 @@ class Character {
         }
 
         this.adminLoop(); // Resurrect if we need to
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Wait the timeout and try again
+        if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
 
         while(this.isRunning){
             this.name == "MiniCupcake" && console.log("MINICUPCAKE", "isRunning:", this.isRunning, "Ready:", this.character.ready, "map:", this.character.map, "socket:", !!this.character.socket, "disconnected:", this.character.disconnected)
@@ -98,8 +98,6 @@ class Character {
             }
 
             if(!this.character.socket || this.character.disconnected) return;
-
-            if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
 
             if(this.tasks.length){
                 await {...scripts, ...tasks}[this.tasks[0].script](this, party.members, this.merchant, this.tasks[0].args);
