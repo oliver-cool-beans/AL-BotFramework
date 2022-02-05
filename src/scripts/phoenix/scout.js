@@ -4,8 +4,9 @@ import utils from "../utils/index.js";
 async function scout(spawns, bot, party) {
     var nearbyPhoenix = bot.character.getEntity({ returnNearest: true, type: "phoenix" })
     while(!nearbyPhoenix){
-        console.log("SEARCHING SPAWNS FOR PHOENIX ************")
+        console.log("SEARCHING SPAWNS FOR PHOENIX ************", !!bot.character.socket, bot.character.ready, bot.character.map)
         if(!bot.character.socket || !bot.character.ready || bot.character.map == "jail") {
+            console.log("Returning in scout")
             return await new Promise(resolve => setTimeout(resolve, 2000));
         };
         for(var index in spawns){

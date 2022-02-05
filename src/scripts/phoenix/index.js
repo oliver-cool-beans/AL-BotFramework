@@ -45,8 +45,10 @@ async function phoenix (bot, party, merchant, arg){
     if(bot.character.ctype == "mage" && !bot.target){
         console.log("FINDING PHOENIX", bot.target?.name)
         const phoenixSpawns = bot.character.locateMonster("phoenix");
-        while(!bot.target){
-            await scout(phoenixSpawns, bot, party);
+        while(!bot.target && bot.character.ready && bot.character.socket){
+            await scout(phoenixSpawns, bot, party).catch(() => {
+                console.log("SCOUT HAS ERRORED")
+            })
         }
     } 
 
