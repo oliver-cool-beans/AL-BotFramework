@@ -47,7 +47,7 @@ class Character {
         this.merchant = null;
         this.notificationBuffer = [];
         this.tasks = [];
-        this.serverRegion = "US", 
+        this.serverRegion = "ASIA", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
     }
@@ -56,7 +56,7 @@ class Character {
         if(!AL) return Promise.reject("Missing AL Client")
 
         this.AL = AL;
-        this.character = this.character || await common.startCharacter(this, "US", "I").catch(() => {});
+        this.character = this.character || await common.startCharacter(this, "ASIA", "I").catch(() => {});
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             console.log("Error Loading class functions", error)
         })
