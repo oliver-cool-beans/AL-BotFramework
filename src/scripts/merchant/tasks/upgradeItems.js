@@ -151,7 +151,7 @@ async function withdrawAllOfItem(bot, itemName, bankSlots) {
             bot.character.withdrawItem(slotName, itemSlots[slot], inventorySpace[slot]).catch((error) => {
                 console.log("cannot withdraw", error)
             })
-            await new Promise(resolve => setTimeout(resolve, parseInt(1000))); // Wait the cooldown
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the cooldown
         }
     }
     return Promise.resolve(true)

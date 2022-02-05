@@ -112,7 +112,7 @@ class Character {
                 console.log(`${this.name} errored running script ${this.scriptName} error:`, error)
             }
          
-            await new Promise(resolve => setTimeout(resolve, parseInt(500))); // Wait the timeout and try again
+            await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
         }
         return Promise.resolve("OK")
 
@@ -210,7 +210,7 @@ class Character {
     async potionLoop(){
         while(this.character.ready){
             if(!Object.keys(this.character.c).length) await utils.usePotionIfLow(this);
-            await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
+            await new Promise(resolve => setTimeout(resolve, 2000));
         }
     }
 
@@ -230,7 +230,7 @@ class Character {
                     });
                 }
             }
-            await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
+            await new Promise(resolve => setTimeout(resolve, 2000));
         }
     }
 
@@ -250,7 +250,7 @@ class Character {
                 await this.character.respawn().catch(() => {});
             }
 
-            await new Promise(resolve => setTimeout(resolve, parseInt(2000)));
+            await new Promise(resolve => setTimeout(resolve, 2000));
         }
 
     }
@@ -258,13 +258,13 @@ class Character {
     async attackLoop(){
         while(this.character.ready){
             if(!this.target){
-                await new Promise(resolve => setTimeout(resolve, 500));
+                await new Promise(resolve => setTimeout(resolve, 2000));
                 continue;
             }
             if(this.character.canUse("attack")){
                 await this.character.basicAttack(this.target?.id).catch(async (error) => {});
             }
-            await new Promise(resolve => setTimeout(resolve, parseInt(500)));
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
     }
 
@@ -278,7 +278,7 @@ class Character {
             if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.tasks[0]?.force){
                 await this.character.smartMove(this.target, { getWithin: this.character.range }).catch(() => {})
             }
-            await new Promise(resolve => setTimeout(resolve, parseInt(500)));
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
     }
 

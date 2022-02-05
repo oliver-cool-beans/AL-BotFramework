@@ -56,7 +56,7 @@ async function ent(bot, party, merchant, args) {
         const bestTarget = utils.findClosestTarget(bot.AL, bot.character, party, targets, false, false);
         while(bestTarget && !bestTarget?.target){
             console.log(`${bot.name} ${bestTarget?.name} has no target, waiting until it does`)
-            await new Promise(resolve => setTimeout(resolve, parseInt(500)));
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
         bot.target = bestTarget;
         console.log(bot.name, "set target to", bot.target?.name)
