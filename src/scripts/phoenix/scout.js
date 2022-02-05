@@ -82,6 +82,7 @@ async function magiportParty(bot, party) {
         await bot.character.magiport(party[index].character.id).catch((error) => {
             console.log("Error magiporting", party[index].name, error)
         })
+        await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
     }
     return Promise.resolve("OK")
 }
