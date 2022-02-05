@@ -4,6 +4,7 @@ import phoenix from "./phoenix/index.js"
 import scheduler from "./merchant/scheduler.js";
 import ent from "./ent/index.js";
 import minimush from "./minimush/index.js";
+import squig from "./squig/index.js";
 
 const scripts = {
     goo : goo,
@@ -11,7 +12,8 @@ const scripts = {
     phoenix: phoenix,
     merchant: scheduler, 
     ent: ent, 
-    minimush: minimush
+    minimush: minimush, 
+    squig: squig
 }
 
 export default scripts;
