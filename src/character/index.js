@@ -113,7 +113,6 @@ class Character {
             await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
         }
         return Promise.resolve("OK")
-
     }
 
     setScript(name, args = null){
