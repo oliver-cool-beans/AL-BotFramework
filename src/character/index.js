@@ -49,7 +49,7 @@ class Character {
         this.tasks = [];
         this.serverRegion = "US", 
         this.serverIdentifier = "I"
-        this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}] // TODO put this in dynamic config accessable by discord
+        this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
     }
 
     async start(AL) {
