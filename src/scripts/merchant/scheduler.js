@@ -27,9 +27,9 @@ async function scheduler(bot, force = false){
 
         await bot.character.smartMove('main', {avoidTownWarps: true}).catch(() => {});
         
-        await serverWideMluck(bot).catch((error) => {
+       /* await serverWideMluck(bot).catch((error) => {
             console.log("ServerWideMluck Failed", error)
-        });
+        }); */
     
     }
 

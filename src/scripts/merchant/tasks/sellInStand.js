@@ -1,6 +1,10 @@
 import utils from "../../utils/index.js";
 
 const merchantStandItems = {
+    "gem0": {
+        qty: "all", 
+        price: "1000000"
+    }
    /* "intearring": {
         level: 3, 
         qty: "all", 

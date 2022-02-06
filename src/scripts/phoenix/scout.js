@@ -13,8 +13,11 @@ async function scout(spawns, bot, party) {
             if(nearbyPhoenix) break;
             var success = false;
             console.log("*** Moving to ", spawns[index], "***")
-            while(!success){
-                if(bot.character.map == "jail") return;
+            while(!success && bot.isRunning){
+                while(bot.character.map == "jail" && bot.isRunning){
+                    console.log("Waiting to port out of jail, then returning to scout");
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
                 const result = await bot.character.smartMove(spawns[index], {getWithin: 50, useBlink: true}).catch((error) => {
                     console.log("MOVE FAILED!?", "have we hung?")
                     return false
