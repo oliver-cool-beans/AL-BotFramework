@@ -91,7 +91,7 @@ async function phoenix (bot, party, merchant, arg){
 
 
 function checkTarget(target, entities = {}){
-    if(!target) return false;
+    if(!target || !Object.keys(entities)) return false;
     return !!entities.get(target?.id);
 }
 

@@ -60,7 +60,7 @@ async function minimush(bot, party, merchant, args) {
 }
 
 function checkTarget(target, entities = {}){
-    if(!target) return false;
+    if(!target || !Object.keys(entities)) return false;
     return !!entities.get(target?.id);
 }
 
