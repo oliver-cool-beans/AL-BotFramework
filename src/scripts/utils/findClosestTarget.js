@@ -9,7 +9,7 @@ function findClosestTarget (AL, character, party = [], eligibleTargets = [], avo
     const entities = [...character.entities.values() ];
     const validEntities = entities.filter((entity) => {
         if(!eligibleTargets.includes(entity.name)) return
-        if(entity.cooperative) return entity; // Ignore all the player/party avoidance if it's a coop monster
+        if(entity.cooperative || ["Tiger"].includes(entity.name)) return entity; // Ignore all the player/party avoidance if it's a coop monster
         if(avoidPartyTargets && partyTargets.includes(entity.id)) return; // Avoid the same target as a party member
         if(avoidPlayerTargets && playerTargets.includes(entity.id)) return; // Avoid other players targets;
         return entity;
