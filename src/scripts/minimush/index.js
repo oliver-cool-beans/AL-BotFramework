@@ -6,7 +6,7 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["Phoenix", "Pom Pom"];
+const targets = ["Phoenix", "Tiger", "Pom Pom"];
 
 async function minimush(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
