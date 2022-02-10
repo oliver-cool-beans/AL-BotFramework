@@ -273,7 +273,7 @@ class Character {
             }
             // If we're out of range, move to the target
             if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.tasks[0]?.force){
-                await this.character.smartMove(this.target, { getWithin: this.character.range }).catch(() => {})
+                await this.character.smartMove(this.target, { getWithin: this.character.range / 2 }).catch(() => {})
             }
             await new Promise(resolve => setTimeout(resolve, 500));
         }

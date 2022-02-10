@@ -1,7 +1,10 @@
-function findClosestTarget (AL, character, party = [], eligibleTargets = [], avoidPlayerTargets = true, avoidPartyTargets = true) {
+function findClosestTarget (AL, character, party = [], eligibleTargets = [], avoidPlayerTargets = true, avoidPartyTargets = true, allowAssistance = false) {
 
-    var closestEntity = null;
     const partyTargets = party.map((member) => {
+        // if the member has a target, check if the member can one shot that target (if not we can help)
+        if(member?.target?.id && allowAssistance){
+            if(!member.character.canKillInOneShot(member.target)) return null; // If they can't one shot and we're allowing assistance, don't exclude this target.
+        }
         return member?.target?.id
     }).filter(Boolean);
 
