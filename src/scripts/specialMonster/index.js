@@ -6,19 +6,19 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ['squig'];
-
-async function squig(bot, party, merchant, args) {
+async function specialMonster(bot, party, merchant, args = {}) {
+    const target = args.entity
     if(!bot.character.ready) return Promise.reject("Character not ready");
+    if(target?.id) return Promise.reject("No Entity");
 
     const {hpot, mpot} = bot.calculatePotionItems();
 
     if(bot.characterClass == "merchant") return Promise.resolve("Not a combat class");
     
-    const rallyPosition = "squig";
+    const rallyPosition = args.entity
 
-    if(!bot.runningScriptName == "squig") {
-        bot.runningScriptName = "squig"
+    if(!bot.runningScriptName == "specialMonster") {
+        bot.runningScriptName = "specialMonster"
         await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
     
@@ -50,10 +50,20 @@ async function squig(bot, party, merchant, args) {
         }
     }
 
+    // Check if this entity is still alive;
+    if(!bot.character.entities.get(target.id)){
+        console.log("This special monster is no longer alive");
+        bot.removeTask("specialMonster");
+        return Promise.resolve("OK");
+    }
+
+    if(!bot.target && bot.target?.id !== target.id){
+        bot.target = target;
+    }
     // If we've got no target, get a valid target;
     if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
-        bot.target = utils.findClosestTarget(bot.AL, bot.character, party, targets);
-        if(!bot.target) await bot.character.smartMove("squig").catch(() => {});
+        bot.target = utils.findClosestTarget(bot.AL, bot.character, party, [target.type]);
+        if(!bot.target) await bot.character.smartMove(target).catch(() => {});
     }
 
     return Promise.resolve("Finished");
@@ -64,4 +74,4 @@ function checkTarget(target, entities = {}){
     return entities?.get && !!entities.get(target?.id);
 }
 
-export default squig;
+export default specialMonster;

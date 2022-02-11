@@ -50,6 +50,7 @@ class Character {
         this.serverRegion = "ASIA", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
+        this.specialMonsters = ["goldenbat", "tiger", "cutebee"]
     }
 
     async start(AL) {
@@ -83,14 +84,13 @@ class Character {
             this.attackLoop(); // Attack our target if we can
             this.moveLoop(); // Move to our target if we should     
             this.sellLoop(); // Sell junk when we can
+           // this.findSpecialMonsterLoop();
         }
 
         this.adminLoop(); // Resurrect if we need to
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
 
         while(this.isRunning){
-            this.name == "MiniCupcake" && console.log("MINICUPCAKE", "isRunning:", this.isRunning, "Ready:", this.character.ready, "map:", this.character.map, "socket:", !!this.character.socket, "disconnected:", this.character.disconnected)
-            this.name == "MiniCupcake" && console.log("MINICUPCAKE", "Target:", this.target?.name, "Script:", this.scriptName)
             if(!this.character.ready){
                 console.log(this.name, "is not ready, reconnecting...");
                 await this.reconnect();
@@ -297,6 +297,27 @@ class Character {
             
             }
             await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+    }
+
+    async findSpecialMonsterLoop(){
+        while(this.character.ready){
+            [...this.character.entities.values()].forEach((entity) => {
+                if(!this.specialMonsters.includes(entity.type)) return
+                if(entity.target && !this.party.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
+                this.party.members.forEach((member) => {
+                    if(member.tasks.find((task) => task.script == "specialMonster" && task.args?.entity?.id == entity.id)) return;
+                    member.addTask({
+                        script: "specialMonster", 
+                        user: this.name, 
+                        args: {
+                            target: entity
+                        }
+                    })
+                })
+
+            })
+            await new Promise(resolve => setTimeout(resolve, 4000));
         }
     }
 

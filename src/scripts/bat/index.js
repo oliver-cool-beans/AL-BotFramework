@@ -6,7 +6,7 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["Golden Bat", "Tiger", "Bat"];
+const targets = ["goldenbat", "bat"];
 
 async function bat(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");

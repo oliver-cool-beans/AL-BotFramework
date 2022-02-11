@@ -6,7 +6,7 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["Ent"];
+const targets = ["ent"];
 
 async function ent(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
