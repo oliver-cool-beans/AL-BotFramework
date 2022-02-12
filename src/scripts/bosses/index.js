@@ -5,7 +5,7 @@ import pinkgoo from "./pinkgoo.js"
 const bosses = {
     franky: franky, 
     snowman: snowman, 
-  //  pinkgoo: pinkgoo
+    //pinkgoo: pinkgoo
 }
 
 export default bosses

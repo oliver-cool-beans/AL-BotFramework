@@ -2,6 +2,7 @@ import utils from "../../scripts/utils/index.js";
 
 
 async function pinkgoo(bot, party, merchant, args = {}){
+    console.log("RUNNING PINKGOO", bot.target?.id)
     if(!bot.character?.S?.pinkgoo?.live) {
         console.log("Pinkgoo is no longer live, removing task");
         bot.removeTask("pinkgoo");
@@ -44,6 +45,7 @@ async function pinkgoo(bot, party, merchant, args = {}){
 
 
     if(!bot.target || bot.target?.type !== "pinkgoo"){
+        console.log("MOVING TO")
         await bot.character.smartMove(args.event, { getWithin: bot.AL.Game.G.skills.mluck.range / 2}).catch(() => {});
     }
 

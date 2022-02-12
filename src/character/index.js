@@ -212,7 +212,7 @@ class Character {
     }
 
     async potionLoop(){
-        while(this.character.ready){
+        while(this.character.socket){
             if(!Object.keys(this.character.c).length) await utils.usePotionIfLow(this);
             await new Promise(resolve => setTimeout(resolve, 2000));
         }
@@ -220,7 +220,7 @@ class Character {
 
     // Sell junk when we can.
     async sellLoop(){
-        while(this.character.ready){
+        while(this.character.socket){
             if(this.character.canSell()){
                 const itemsToSell = this.character.items.map((item, index) => {
                     if(!item) return
@@ -239,7 +239,7 @@ class Character {
     }
 
     async adminLoop(){
-        while(this.character.ready){
+        while(this.character.socket){
             if(!this.character.party && !this.isLeader && this.leader && !this.sentPartyRequest) {
                 console.log(this.name, "Sending party request to", this.leader.name)
                 await this.character.sendPartyRequest(this.leader.name);
@@ -260,7 +260,7 @@ class Character {
     }
 
     async attackLoop(){
-        while(this.character.ready){
+        while(this.character.socket){
             if(!this.target){
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 continue;
@@ -273,7 +273,7 @@ class Character {
     }
 
     async moveLoop(){
-        while(this.character.ready){
+        while(this.character.socket){
             if(!this.target){
                 await new Promise(resolve => setTimeout(resolve, 500));
                 continue;
@@ -287,7 +287,7 @@ class Character {
     }
 
     async buyPotionLoop(){
-        while(this.character.ready){
+        while(this.character.socket){
             const {hpot, mpot} = this.calculatePotionItems();
             const hpotCount = this.character.countItem(hpot);
             const mpotCount = this.character.countItem(mpot);
@@ -308,7 +308,7 @@ class Character {
     }
 
     async findSpecialMonsterLoop(){
-        while(this.character.ready){
+        while(this.character.socket){
             [...this.character.entities.values()].forEach((entity) => {
                 if(!this.specialMonsters.includes(entity.type)) return
                 if(entity.target && !this.party.members.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
@@ -329,10 +329,10 @@ class Character {
     }
 
     async checkEventBossesLoop(){
-        while(this.character.ready && this.character.S){
+        while(this.character.socket && this.character.S){
             console.log("CHECKING BOSS MOBS", this.character.S)
             Object.entries(this.character.S).forEach(([event, data]) => {
-                if(!data.live || !bosses[event] || this.tasks.find((task) => task.script == event)) return;
+                if(!data.live || !bosses[event] || this.tasks.find((task) => task.script == event) && data?.target) return;
                 console.log("Adding event", event);
                 this.addTask({
                     script: event, 

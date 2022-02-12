@@ -44,7 +44,7 @@ async function franky(bot, party, merchant, args = {}){
 
 
     if(!bot.target || bot.target?.name !== "Franky"){
-        await bot.character.smartMove(args.event, { getWithin: bot.AL.Game.G.skills.mluck.range / 2}).catch(() => {});
+        await bot.character.smartMove(args.event).catch(() => {});
     }
 
      // If we've got no target, get a valid target;
