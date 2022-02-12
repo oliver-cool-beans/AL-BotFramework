@@ -15,6 +15,7 @@ import paladin from "./paladin/index.js";
 import rogue from "./rouge/index.js";
 import Bottleneck from "bottleneck";
 import utils from "../scripts/utils/index.js";
+import bosses from "../scripts/bosses/index.js";
 
 const characterFunctions = {
     merchant: merchant, 
@@ -84,15 +85,16 @@ class Character {
             this.attackLoop(); // Attack our target if we can
             this.moveLoop(); // Move to our target if we should     
             this.sellLoop(); // Sell junk when we can
-           // this.findSpecialMonsterLoop();
+            this.findSpecialMonsterLoop();
+            this.checkEventBossesLoop();
         }
 
         this.adminLoop(); // Resurrect if we need to
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
 
         while(this.isRunning){
-            if(!this.character.ready){
-                console.log(this.name, "is not ready, reconnecting...");
+            if(!this.character.socket){
+                console.log(this.name, "has no socket, reconnecting...");
                 await this.reconnect();
                 continue;
             }
@@ -100,7 +102,11 @@ class Character {
             if(!this.character.socket || this.character.disconnected) return;
 
             if(this.tasks.length){
-                await {...scripts, ...tasks}[this.tasks[0].script](this, party.members, this.merchant, this.tasks[0].args);
+                await {...scripts, ...tasks}[this.tasks[0].script](this, party.members, this.merchant, this.tasks[0].args).catch((error) => {
+                    console.log(this.name, "task error with", error)
+                    this.removeTask(this.tasks[0].script)
+                });
+                await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
                 continue;
             }
 
@@ -124,9 +130,10 @@ class Character {
 
     addTask(task) {
         if(!task?.script) return false;
-        if(this.tasks.find((queue) => queue.script = task.script)) return false;
+        if(this.tasks.find((queue) => queue.script == task.script)) return false;
+        this.tasks.push(task)
         console.log("ADDED TASK", task.script, this.tasks)
-        return this.tasks.push(task)
+        return
     }
 
     removeTask(name){
@@ -304,7 +311,7 @@ class Character {
         while(this.character.ready){
             [...this.character.entities.values()].forEach((entity) => {
                 if(!this.specialMonsters.includes(entity.type)) return
-                if(entity.target && !this.party.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
+                if(entity.target && !this.party.members.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
                 this.party.members.forEach((member) => {
                     if(member.tasks.find((task) => task.script == "specialMonster" && task.args?.entity?.id == entity.id)) return;
                     member.addTask({
@@ -318,6 +325,24 @@ class Character {
 
             })
             await new Promise(resolve => setTimeout(resolve, 4000));
+        }
+    }
+
+    async checkEventBossesLoop(){
+        while(this.character.ready && this.character.S){
+            console.log("CHECKING BOSS MOBS", this.character.S)
+            Object.entries(this.character.S).forEach(([event, data]) => {
+                if(!data.live || !bosses[event] || this.tasks.find((task) => task.script == event)) return;
+                console.log("Adding event", event);
+                this.addTask({
+                    script: event, 
+                    user: this.name, 
+                    args: {
+                        event: data
+                    }
+                })
+            })
+            await new Promise(resolve => setTimeout(resolve, 20000));
         }
     }
 

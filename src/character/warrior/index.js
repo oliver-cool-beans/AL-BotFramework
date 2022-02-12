@@ -30,7 +30,7 @@ async function taunt(bot){
                 })
             }
         }
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait the timeout and try again
     }
 
 }

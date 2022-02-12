@@ -6,6 +6,8 @@ import ent from "./ent/index.js";
 import minimush from "./minimush/index.js";
 import squig from "./squig/index.js";
 import bat from "./bat/index.js";
+import specialMonster from "./specialMonster/index.js";
+import bosses from "./bosses/index.js";
 
 const scripts = {
     goo : goo,
@@ -15,7 +17,9 @@ const scripts = {
     ent: ent, 
     minimush: minimush, 
     squig: squig, 
-    bat: bat
+    bat: bat, 
+    specialMonster, 
+    ...bosses
 }
 
 export default scripts;

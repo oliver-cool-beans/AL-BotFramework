@@ -7,9 +7,10 @@
 import utils from "../../scripts/utils/index.js";
 
 async function specialMonster(bot, party, merchant, args = {}) {
-    const target = args.entity
+    const target = args.target
+
     if(!bot.character.ready) return Promise.reject("Character not ready");
-    if(target?.id) return Promise.reject("No Entity");
+    if(!target?.id) return Promise.reject("No Entity");
 
     const {hpot, mpot} = bot.calculatePotionItems();
 
@@ -19,7 +20,9 @@ async function specialMonster(bot, party, merchant, args = {}) {
 
     if(!bot.runningScriptName == "specialMonster") {
         bot.runningScriptName = "specialMonster"
-        await bot.character.smartMove(rallyPosition).catch(() => {});;
+        await bot.character.smartMove(rallyPosition).catch((error) => {
+            console.log("FAILED TO SMART MOVE IN SPECIAL", error)
+        });;
     }
     
 
@@ -63,7 +66,6 @@ async function specialMonster(bot, party, merchant, args = {}) {
     // If we've got no target, get a valid target;
     if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
         bot.target = utils.findClosestTarget(bot.AL, bot.character, party, [target.type]);
-        if(!bot.target) await bot.character.smartMove(target).catch(() => {});
     }
 
     return Promise.resolve("Finished");
