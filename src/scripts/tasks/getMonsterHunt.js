@@ -1,7 +1,7 @@
 
 
 async function getMonsterHunt(bot){
-    if(bot.character.s.monsterhunt) {
+    if(bot.character.s?.monsterhunt) {
         bot.removeTask("getMonsterHunt");
         return
     }

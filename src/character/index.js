@@ -361,9 +361,9 @@ class Character {
 
     async monsterHuntLoop(){
         while(this.character.socket){
-            console.log("MONSTER HUNT IS", this.character.s.monsterhunt)
+            console.log("MONSTER HUNT IS", this.character.s?.monsterhunt)
             await new Promise(resolve => setTimeout(resolve, 1000));
-            if(!this.character.s.monsterhunt && !this.tasks.find((task) => task.script == "getMonsterHunt")){
+            if(!this.character.s?.monsterhunt && !this.tasks.find((task) => task.script == "getMonsterHunt")){
                 this.addTask({
                     script: "getMonsterHunt", 
                     user: this.name
