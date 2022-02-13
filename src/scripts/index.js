@@ -11,6 +11,7 @@ import bosses from "./bosses/index.js";
 import frog from "./frog/index.js";
 import crab from "./crab/index.js";
 import snake from "./snake/index.js";
+import monsterHunt from "./monsterHunt/index.js";
 
 const scripts = {
     merchant: scheduler,
@@ -25,6 +26,7 @@ const scripts = {
     crab, 
     snake,
     specialMonster, 
+    monsterHunt,
     ...bosses
 }
 
