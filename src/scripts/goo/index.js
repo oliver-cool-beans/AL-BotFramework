@@ -8,7 +8,7 @@ import utils from "../../scripts/utils/index.js";
 
 const targets = ["goo"];
 
-async function bee(bot, party, merchant, args) {
+async function goo(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
 
     const {hpot, mpot} = bot.calculatePotionItems();
@@ -19,7 +19,7 @@ async function bee(bot, party, merchant, args) {
 
     if(!bot.runningScriptName == "goo") {
         bot.runningScriptName = "goo"
-        await bot.character.smartMove(rallyPosition).catch(() => {});
+        await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
     
 
@@ -38,7 +38,7 @@ async function bee(bot, party, merchant, args) {
         user: bot.name, 
         force: true,
         args: {
-            itemsToHold: [hpot, mpot], 
+            itemsToHold: [hpot, mpot, "tracker"], 
             goldToHold: 20000,
             nextPosition: rallyPosition
         }
@@ -53,15 +53,15 @@ async function bee(bot, party, merchant, args) {
     // If we've got no target, get a valid target;
     if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
         bot.target = utils.findClosestTarget(bot.AL, bot.character, party, targets);
-        if(!bot.target) await bot.character.smartMove("bee").catch(() => {});
+        if(!bot.target) await bot.character.smartMove("goo").catch(() => {});
     }
 
     return Promise.resolve("Finished");
 }
 
 function checkTarget(target, entities = {}){
-    if(!target) return false;
+    if(!target || !Object.keys(entities)) return false;
     return entities?.get && !!entities.get(target?.id);
 }
 
-export default bee;
+export default goo;

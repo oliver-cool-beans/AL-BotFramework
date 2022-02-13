@@ -85,8 +85,9 @@ class Character {
             this.attackLoop(); // Attack our target if we can
             this.moveLoop(); // Move to our target if we should     
             this.sellLoop(); // Sell junk when we can
-            this.findSpecialMonsterLoop();
-            this.checkEventBossesLoop();
+            this.findSpecialMonsterLoop(); // Check for special monsters and attack them
+            this.checkEventBossesLoop(); // Check for boss events
+            this.monsterHuntLoop(); // Check for monster hunts
         }
 
         this.adminLoop(); // Resurrect if we need to
@@ -102,7 +103,7 @@ class Character {
             if(!this.character.socket || this.character.disconnected) return;
 
             if(this.tasks.length){
-                await {...scripts, ...tasks}[this.tasks[0].script](this, party.members, this.merchant, this.tasks[0].args).catch((error) => {
+                await {...scripts, ...tasks}[this.tasks[0].script]?.(this, party.members, this.merchant, this.tasks[0].args).catch((error) => {
                     console.log(this.name, "task error with", error)
                     this.removeTask(this.tasks[0].script)
                 });
@@ -279,8 +280,9 @@ class Character {
                 continue;
             }
             // If we're out of range, move to the target
-            if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.tasks[0]?.force){
-                await this.character.smartMove(this.target, { getWithin: this.character.range / 2 }).catch(() => {})
+            if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.tasks[0]?.force && !this.character.moving){
+                console.log("Trying to move to", this.target?.id, "IS MOVING", this.character.moving)
+                await this.character.smartMove(this.target, { getWithin: this.character.range / 2 }).catch(() => {});
             }
             await new Promise(resolve => setTimeout(resolve, 500));
         }
@@ -351,6 +353,32 @@ class Character {
         console.log(`${this.name} - Switching servers to ${region} ${identifier}`);
         this.disconnect();
         return await common.startCharacter(this, region, identifier)
+    }
+
+    async monsterHuntLoop(){
+        while(this.character.socket){
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if(!this.character.s.monsterhunt && !this.tasks.find((task) => task.script == "getMonsterHunt")){
+                this.addTask({
+                    script: "getMonsterHunt", 
+                    user: this.name
+                })
+                continue
+            }
+            if(this.character.s?.monsterhunt?.c == 0 && !this.tasks.find((task) => task.script == "finishMonsterHunt")){
+                this.addTask({
+                    script : "finishMonsterHunt", 
+                    user: this.name
+                })
+                continue
+            }
+            if(scripts[this.character.s?.monsterhunt?.id]){ // If we've got a script for this monster
+                this.addTask({
+                    script: "monsterHunt", 
+                    user: this.name, 
+                })
+            }
+        }
     }
     
 }

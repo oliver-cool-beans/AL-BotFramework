@@ -6,19 +6,19 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["bee"];
+const targets = ["snake"];
 
-async function bee(bot, party, merchant, args) {
+async function snake(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
 
     const {hpot, mpot} = bot.calculatePotionItems();
 
     if(bot.characterClass == "merchant") return Promise.resolve("Not a combat class");
     
-    const rallyPosition = "bee";
+    const rallyPosition = "snake";
 
-    if(!bot.runningScriptName == "bee") {
-        bot.runningScriptName = "bee"
+    if(!bot.runningScriptName == "snake") {
+        bot.runningScriptName = "snake"
         await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
     
@@ -53,7 +53,7 @@ async function bee(bot, party, merchant, args) {
     // If we've got no target, get a valid target;
     if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
         bot.target = utils.findClosestTarget(bot.AL, bot.character, party, targets);
-        if(!bot.target) await bot.character.smartMove("bee").catch(() => {});
+        if(!bot.target) await bot.character.smartMove("snake").catch(() => {});
     }
 
     return Promise.resolve("Finished");
@@ -64,4 +64,4 @@ function checkTarget(target, entities = {}){
     return entities?.get && !!entities.get(target?.id);
 }
 
-export default bee;
+export default snake;

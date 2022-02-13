@@ -8,16 +8,22 @@ import squig from "./squig/index.js";
 import bat from "./bat/index.js";
 import specialMonster from "./specialMonster/index.js";
 import bosses from "./bosses/index.js";
+import frog from "./frog/index.js";
+import crab from "./crab/index.js";
+import snake from "./snake/index.js";
 
 const scripts = {
-    goo : goo,
-    bee: bee,
-    phoenix: phoenix,
-    merchant: scheduler, 
-    ent: ent, 
-    minimush: minimush, 
-    squig: squig, 
-    bat: bat, 
+    merchant: scheduler,
+    goo,
+    bee,
+    phoenix,
+    ent, 
+    minimush, 
+    squig,
+    bat,
+    frog,
+    crab, 
+    snake,
     specialMonster, 
     ...bosses
 }
