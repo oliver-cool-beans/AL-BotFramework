@@ -51,7 +51,7 @@ class Character {
         this.serverRegion = "ASIA", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["goldenbat", "tiger", "cutebee"]
+        this.specialMonsters = ["goldenbat", "cutebee"]
     }
 
     async start(AL) {
@@ -87,7 +87,7 @@ class Character {
             this.sellLoop(); // Sell junk when we can
             this.findSpecialMonsterLoop(); // Check for special monsters and attack them
             this.checkEventBossesLoop(); // Check for boss events
-            this.monsterHuntLoop(); // Check for monster hunts
+         //   this.monsterHuntLoop(); // Check for monster hunts
         }
 
         this.adminLoop(); // Resurrect if we need to
