@@ -103,7 +103,11 @@ class Character {
             if(!this.character.socket || this.character.disconnected) return;
 
             if(this.tasks.length){
-                await {...scripts, ...tasks}[this.tasks[0].script]?.(this, party.members, this.merchant, this.tasks[0].args).catch((error) => {
+                if(!await {...scripts, ...tasks}[this.tasks[0].script]){
+                    this.removeTask(this.tasks[0].script);
+                    continue
+                }
+                await {...scripts, ...tasks}[this.tasks[0].script](this, party.members, this.merchant, this.tasks[0].args).catch((error) => {
                     console.log(this.name, "task error with", error)
                     this.removeTask(this.tasks[0].script)
                 });
