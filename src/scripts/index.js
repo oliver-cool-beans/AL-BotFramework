@@ -11,6 +11,8 @@ import bosses from "./bosses/index.js";
 import frog from "./frog/index.js";
 import crab from "./crab/index.js";
 import snake from "./snake/index.js";
+import bigbird from "./bigbird/index.js";
+
 import monsterHunt from "./monsterHunt/index.js";
 
 const scripts = {
@@ -27,6 +29,7 @@ const scripts = {
     snake,
     specialMonster, 
     monsterHunt,
+   // bigbird,
     ...bosses
 }
 

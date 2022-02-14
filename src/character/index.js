@@ -87,12 +87,11 @@ class Character {
             this.sellLoop(); // Sell junk when we can
             this.findSpecialMonsterLoop(); // Check for special monsters and attack them
             this.checkEventBossesLoop(); // Check for boss events
-         //   this.monsterHuntLoop(); // Check for monster hunts
+            this.monsterHuntLoop(); // Check for monster hunts
         }
 
         this.adminLoop(); // Resurrect if we need to
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
-
         while(this.isRunning){
             if(!this.character.socket){
                 console.log(this.name, "has no socket, reconnecting...");
@@ -266,7 +265,7 @@ class Character {
 
     async attackLoop(){
         while(this.character.socket){
-            if(!this.target){
+            if(!this.target || (this.character.type == "priest" && (this.character.max_hp * 0.7) >= this.character.hp )){
                 await new Promise(resolve => setTimeout(resolve, 2000));
                 continue;
             }
