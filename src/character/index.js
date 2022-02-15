@@ -28,6 +28,7 @@ const characterFunctions = {
 }
 
 class Character {
+    #tasks = []
     constructor(characterName, characterClass, scriptName, isLeader){
         
         const limiter = new Bottleneck({
@@ -47,11 +48,11 @@ class Character {
         this.target = null;
         this.merchant = null;
         this.notificationBuffer = [];
-        this.tasks = [];
         this.serverRegion = "ASIA", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["goldenbat", "cutebee"]
+        this.specialMonsters = ["goldenbat", "cutebee", "mvampire"]
+        this.partyMonsters = ["mvampire"]
     }
 
     async start(AL) {
@@ -93,6 +94,8 @@ class Character {
         this.adminLoop(); // Resurrect if we need to
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
         while(this.isRunning){
+            await new Promise(resolve => setTimeout(resolve, 500)); 
+            console.log("OFFICIAL TASKS", this.#tasks)
             if(!this.character.socket){
                 console.log(this.name, "has no socket, reconnecting...");
                 await this.reconnect();
@@ -100,17 +103,18 @@ class Character {
             }
 
             if(!this.character.socket || this.character.disconnected) return;
-
-            if(this.tasks.length){
-                if(!await {...scripts, ...tasks}[this.tasks[0].script]){
-                    this.removeTask(this.tasks[0].script);
+            console.log("BOT TASKS", this.#tasks)
+            if(this.#tasks.length){
+                if(!await {...scripts, ...tasks}[this.#tasks[0].script]){
+                    console.log("REMOVE 1")
+                    this.removeTask(this.#tasks[0].script);
                     continue
                 }
-                await {...scripts, ...tasks}[this.tasks[0].script](this, party.members, this.merchant, this.tasks[0].args).catch((error) => {
+                await {...scripts, ...tasks}[this.#tasks[0].script](this, party.members, this.merchant, this.#tasks[0].args).catch((error) => {
                     console.log(this.name, "task error with", error)
-                    this.removeTask(this.tasks[0].script)
+                    console.log("REMOVE 2")
+                    this.removeTask(this.#tasks[0].script)
                 });
-                await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
                 continue;
             }
 
@@ -120,7 +124,6 @@ class Character {
                 console.log(`${this.name} errored running script ${this.scriptName} error:`, error)
             }
          
-            await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
         }
         return Promise.resolve("OK")
     }
@@ -134,16 +137,19 @@ class Character {
 
     addTask(task) {
         if(!task?.script) return false;
-        if(this.tasks.find((queue) => queue.script == task.script)) return false;
-        this.tasks.push(task)
-        console.log("ADDED TASK", task.script, this.tasks)
+        if(this.#tasks.find((queue) => queue.script == task.script)) return false;
+        this.#tasks.push(task)
+        console.log("ADDED TASK", task.script, this.#tasks)
         return
     }
 
-    removeTask(name){
-        this.tasks = this.tasks.filter((queue) => queue.script !== name); // THis'll remove them all. May want to just remove first later
-        console.log("REMOVED TASK", name, this.tasks)
+    getTasks(){
+        return this.#tasks;
+    }
 
+    removeTask(name){
+        this.#tasks = this.#tasks.filter((queue) => queue.script !== name); // THis'll remove them all. May want to just remove first later
+        console.log("REMOVED TASK", name, this.#tasks)
         return;
     }
 
@@ -217,14 +223,15 @@ class Character {
 
     async potionLoop(){
         while(this.character.socket){
-            if(!Object.keys(this.character.c).length) await utils.usePotionIfLow(this);
             await new Promise(resolve => setTimeout(resolve, 2000));
+            if(!Object.keys(this.character.c).length) await utils.usePotionIfLow(this);
         }
     }
 
     // Sell junk when we can.
     async sellLoop(){
         while(this.character.socket){
+            await new Promise(resolve => setTimeout(resolve, 2000));
             if(this.character.canSell()){
                 const itemsToSell = this.character.items.map((item, index) => {
                     if(!item) return
@@ -238,12 +245,12 @@ class Character {
                     });
                 }
             }
-            await new Promise(resolve => setTimeout(resolve, 2000));
         }
     }
 
     async adminLoop(){
         while(this.character.socket){
+            await new Promise(resolve => setTimeout(resolve, 2000));
             if(!this.character.party && !this.isLeader && this.leader && !this.sentPartyRequest) {
                 console.log(this.name, "Sending party request to", this.leader.name)
                 await this.character.sendPartyRequest(this.leader.name);
@@ -258,41 +265,40 @@ class Character {
                 await this.character.respawn().catch(() => {});
             }
 
-            await new Promise(resolve => setTimeout(resolve, 2000));
         }
 
     }
 
     async attackLoop(){
         while(this.character.socket){
+            await new Promise(resolve => setTimeout(resolve, 500));
             if(!this.target || (this.character.type == "priest" && (this.character.max_hp * 0.7) >= this.character.hp )){
-                await new Promise(resolve => setTimeout(resolve, 2000));
+                await new Promise(resolve => setTimeout(resolve, 1500));
                 continue;
             }
             if(this.character.canUse("attack")){
                 await this.character.basicAttack(this.target?.id).catch(async (error) => {});
             }
-            await new Promise(resolve => setTimeout(resolve, 500));
         }
     }
 
     async moveLoop(){
         while(this.character.socket){
+            await new Promise(resolve => setTimeout(resolve, 500));
             if(!this.target){
-                await new Promise(resolve => setTimeout(resolve, 500));
                 continue;
             }
             // If we're out of range, move to the target
-            if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.tasks[0]?.force && !this.character.moving){
+            if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.#tasks[0]?.force && !this.character.moving){
                 console.log("Trying to move to", this.target?.id, "IS MOVING", this.character.moving)
                 await this.character.smartMove(this.target, { getWithin: this.character.range / 2 }).catch(() => {});
             }
-            await new Promise(resolve => setTimeout(resolve, 500));
         }
     }
 
     async buyPotionLoop(){
         while(this.character.socket){
+            await new Promise(resolve => setTimeout(resolve, 1000));
             const {hpot, mpot} = this.calculatePotionItems();
             const hpotCount = this.character.countItem(hpot);
             const mpotCount = this.character.countItem(mpot);
@@ -308,17 +314,17 @@ class Character {
                 }
             
             }
-            await new Promise(resolve => setTimeout(resolve, 1000));
         }
     }
 
     async findSpecialMonsterLoop(){
         while(this.character.socket){
+            await new Promise(resolve => setTimeout(resolve, 4000));
             [...this.character.entities.values()].forEach((entity) => {
                 if(!this.specialMonsters.includes(entity.type)) return
                 if(entity.target && !this.party.members.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
                 this.party.members.forEach((member) => {
-                    if(member.tasks.find((task) => task.script == "specialMonster" && task.args?.entity?.id == entity.id)) return;
+                    if(member.getTasks().find((task) => task.script == "specialMonster" && task.args?.entity?.id == entity.id)) return;
                     member.addTask({
                         script: "specialMonster", 
                         user: this.name, 
@@ -329,15 +335,15 @@ class Character {
                 })
 
             })
-            await new Promise(resolve => setTimeout(resolve, 4000));
         }
     }
 
     async checkEventBossesLoop(){
         while(this.character.socket && this.character.S){
+            await new Promise(resolve => setTimeout(resolve, 20000));
             console.log("CHECKING BOSS MOBS", this.character.S)
             Object.entries(this.character.S).forEach(([event, data]) => {
-                if(!data.live || !bosses[event] || this.tasks.find((task) => task.script == event) && data?.target) return;
+                if(!data.live || !bosses[event] || this.#tasks.find((task) => task.script == event) && data?.target) return;
                 console.log("Adding event", event);
                 this.addTask({
                     script: event, 
@@ -347,7 +353,6 @@ class Character {
                     }
                 })
             })
-            await new Promise(resolve => setTimeout(resolve, 20000));
         }
     }
 
@@ -360,16 +365,16 @@ class Character {
 
     async monsterHuntLoop(){
         while(this.character.socket){
-            console.log("MONSTER HUNT IS", this.character.s?.monsterhunt)
             await new Promise(resolve => setTimeout(resolve, 1000));
-            if(!this.character.s?.monsterhunt && !this.tasks.find((task) => task.script == "getMonsterHunt")){
+            console.log("MONSTER HUNT IS", this.character.s?.monsterhunt)
+            if(!this.character.s?.monsterhunt && !this.#tasks.find((task) => task.script == "getMonsterHunt")){
                 this.addTask({
                     script: "getMonsterHunt", 
                     user: this.name
                 })
                 continue
             }
-            if(this.character.s?.monsterhunt?.c == 0 && !this.tasks.find((task) => task.script == "finishMonsterHunt")){
+            if(this.character.s?.monsterhunt?.c == 0 && !this.#tasks.find((task) => task.script == "finishMonsterHunt")){
                 this.addTask({
                     script : "finishMonsterHunt", 
                     user: this.name
@@ -383,6 +388,13 @@ class Character {
                 })
             }
         }
+    }
+
+    checkPartyPresence(party){
+        return party.map((member) => {
+            if(!this.character.players.get(member.character.id)) return
+            return member
+        }).filter(Boolean)
     }
     
 }

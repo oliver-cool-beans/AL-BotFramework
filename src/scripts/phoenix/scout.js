@@ -3,7 +3,8 @@ import utils from "../utils/index.js";
 // Scout phoenix positions
 async function scout(spawns, bot, party) {
     var nearbyPhoenix = bot.character.getEntity({ returnNearest: true, type: "phoenix" })
-    while(!nearbyPhoenix){
+    while(!nearbyPhoenix && !bot.getTasks().length){
+        await new Promise(resolve => setTimeout(resolve, 500));
         console.log("SEARCHING SPAWNS FOR PHOENIX ************", !!bot.character.socket, bot.character.ready, bot.character.map)
         if(!bot.character.socket || !bot.character.ready || bot.character.map == "jail") {
             console.log("Returning in scout")
@@ -14,6 +15,7 @@ async function scout(spawns, bot, party) {
             var success = false;
             console.log("*** Moving to ", spawns[index], "***")
             while(!success && bot.isRunning){
+                await new Promise(resolve => setTimeout(resolve, 500));
                 while(bot.character.map == "jail" && bot.isRunning){
                     console.log("Waiting to port out of jail, then returning to scout");
                     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -29,20 +31,17 @@ async function scout(spawns, bot, party) {
                 }
                 nearbyPhoenix = bot.character.getEntity({ returnNearest: true, type: "phoenix" })
                 success = result;
-                await new Promise(resolve => setTimeout(resolve, 500));
             }
             // Is there an issue with smart move? rejects when blinkTimout 1000, but it should really keep going after that. 
 
         }
-        console.log("resolving phoenix")
-        await new Promise(resolve => setTimeout(resolve, 500));
     }
 
     if(nearbyPhoenix) {
         if(!nearbyPhoenix.target) {
             console.log(`This ${nearbyPhoenix.name} has no target, waiting until it does, or 30 seconds`)
             const expireWait = new Date()
-            expireWait.setSeconds(expireWait.getSeconds() + 30);
+            expireWait.setSeconds(expireWait.getSeconds() + 0);
             while(!nearbyPhoenix.target){
                 console.log("Waiting...")
                 if(expireWait - new Date() <= 0) break;
@@ -59,7 +58,7 @@ async function scout(spawns, bot, party) {
 
 function setPartyTasks(bot, party, target){
     party.forEach((member) => {
-        if(!member?.character?.ready || member.name == bot.name) return;
+        if(!member?.character?.ready) return;
         if(member.characterClass == "merchant") return;
         member.target = target;
         member.addTask({

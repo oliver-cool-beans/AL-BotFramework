@@ -1,6 +1,6 @@
 
 async function buyPotions(bot, party, merchant, args) {
-    console.log("BUYING POTIONS!!", bot.tasks)
+    console.log("BUYING POTIONS!!", bot.getTasks())
     const {nextPosition, amount = 200} = args
     const {hpot, mpot} = bot.calculatePotionItems();
     const hpotCount = bot.character.countItem(hpot);

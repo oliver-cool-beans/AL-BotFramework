@@ -21,6 +21,7 @@ async function loopFunctions() {
 
 async function taunt(bot){
     while(bot.isRunning){
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait the timeout and try again
         if(bot.character.canUse("taunt") && bot.target){
             // If our target has a target, and that target isn't us and it's someone else in our party
             if(bot.target.target && bot.target.target !== bot.name){ 
@@ -30,17 +31,16 @@ async function taunt(bot){
                 })
             }
         }
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait the timeout and try again
     }
 
 }
 
 async function charge(bot){
     while(bot.isRunning){
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
         if(bot.character.canUse("charge")){
             bot.character.charge().catch(() => {});
         }
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
     }
 
 }

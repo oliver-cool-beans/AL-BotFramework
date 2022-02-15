@@ -29,13 +29,14 @@ async function loopFunctions() {
 
 async function regenLoop(bot){
     while(bot.isRunning){
-        if(bot.character.mp < bot.character.max_hp) await bot.character.regenMP().catch(() => {});
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
+        if(bot.character.mp < bot.character.max_hp) await bot.character.regenMP().catch(() => {});
     }
 }
 async function mluckLoop(bot) {
     let mluckCount;
     while(bot.isRunning){
+        await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
         const mluckPlayers = Array.from(bot.character.players.values()).map((player) => {
             if(bot.AL.Tools.distance(bot.character, player) > bot.AL.Game.G.skills.mluck.range) return;
             if(player.s?.mluck?.f !== bot.name && !player.s?.mluck?.strong && player.ctype !== "merchant" && !player.npc){
@@ -48,7 +49,6 @@ async function mluckLoop(bot) {
                 console.log("CANNOT MLUCK", error)
             })
         }
-        await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
 
     }
 }

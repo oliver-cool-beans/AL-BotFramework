@@ -19,6 +19,7 @@ async function loopFunctions(){
 
 async function healParty(bot){
     while(bot.character.socket){
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
         const validMembers = bot.party.members.filter((member) => {
             if(!member.character?.hp) return false
             console.log(member.name, member.character.hp)
@@ -41,7 +42,6 @@ async function healParty(bot){
                 console.log("Failed to heal", error)
             })
         }
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
     }
 
 }

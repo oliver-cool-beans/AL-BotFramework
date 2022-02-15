@@ -12,6 +12,7 @@ import frog from "./frog/index.js";
 import crab from "./crab/index.js";
 import snake from "./snake/index.js";
 import bigbird from "./bigbird/index.js";
+import osnake from "./osnake/index.js";
 
 import monsterHunt from "./monsterHunt/index.js";
 

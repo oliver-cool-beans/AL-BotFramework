@@ -6,43 +6,20 @@
 
 import utils from "../../scripts/utils/index.js";
 
-async function specialMonster(bot, party, merchant, args = {}) {
-    console.log(bot.name, "RUNNING SPECIAL MONSTER FOR", args.target?.type)
-    const target = args.target
+const targets = ["osnake"];
 
-    // Check if this entity is still alive;
-    if(!bot.character.entities.get(target.id)){
-        //try moving and try again
-        await bot.character.smartMove(target).catch(() => {})
-        if(!bot.character.entities.get(target.id) && target.map == bot.character.map){
-            console.log("This special monster is no longer alive");
-            bot.target = null;
-            bot.removeTask("specialMonster");
-            return Promise.resolve("OK");
-        }
-    }
-
-    if(bot.partyMonsters.includes(target?.type)){
-        if(bot.checkPartyPresence(party).length <= 1) {
-            console.log(bot.name, "the party has not assembled yet")
-            return Promise.resolve("Party not present");
-        }
-    }
-
+async function osnake(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
-    if(!target?.id) return Promise.reject("No Entity");
 
     const {hpot, mpot} = bot.calculatePotionItems();
 
     if(bot.characterClass == "merchant") return Promise.resolve("Not a combat class");
     
-    const rallyPosition = args.entity
+    const rallyPosition = "osnake";
 
-    if(!bot.runningScriptName == "specialMonster") {
-        bot.runningScriptName = "specialMonster"
-        await bot.character.smartMove(rallyPosition).catch((error) => {
-            console.log("FAILED TO SMART MOVE IN SPECIAL", error)
-        });;
+    if(!bot.runningScriptName == "osnake") {
+        bot.runningScriptName = "osnake"
+        await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
     
 
@@ -73,22 +50,18 @@ async function specialMonster(bot, party, merchant, args = {}) {
         }
     }
 
-
-
-    if(!bot.target && bot.target?.id !== target.id){
-        bot.target = target;
-    }
     // If we've got no target, get a valid target;
     if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
-        bot.target = utils.findClosestTarget(bot.AL, bot.character, party, [target.type]);
+        bot.target = utils.findClosestTarget(bot.AL, bot.character, party, targets);
+        if(!bot.target) await bot.character.smartMove("osnake").catch(() => {});
     }
 
     return Promise.resolve("Finished");
 }
 
 function checkTarget(target, entities = {}){
-    if(!target) return false;
+    if(!target || !Object.keys(entities)) return false;
     return entities?.get && !!entities.get(target?.id);
 }
 
-export default specialMonster;
+export default osnake;

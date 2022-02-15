@@ -8,6 +8,7 @@ import scout from "./scout.js"
 import utils from "../utils/index.js";
 
 async function phoenix(bot, party, merchant, arg) {
+    console.log(bot.name, "PHOENIX TARGET IS", bot.target?.name)
     if (bot.character.rip) {
         console.log(bot.character.name, "IS DEAD, returning from Phoenix script");
         return;
@@ -45,7 +46,8 @@ async function phoenix(bot, party, merchant, arg) {
     if (bot.character.ctype == "mage" && !bot.target) {
         console.log("FINDING PHOENIX", bot.target?.name)
         const phoenixSpawns = bot.character.locateMonster("phoenix");
-        while (!bot.target && bot.character.ready && bot.character.socket) {
+        while (!bot.target && bot.character.ready && bot.character.socket && !bot.getTasks().length) {
+            await new Promise(resolve => setTimeout(resolve, 500));
             await scout(phoenixSpawns, bot, party).catch(() => {
                 console.log("SCOUT HAS ERRORED")
             })
@@ -82,8 +84,8 @@ async function phoenix(bot, party, merchant, arg) {
     if (!bot.character.ready) return Promise.reject("Character not ready");
 
     if (!bot.target && !party.find((member) => member?.target?.name == "Phoenix" && checkTarget(member.target, member.character.entities))) {
-        bot.tasks.shift();
-        console.log("bot Tasks for", bot.name, bot.tasks)
+        bot.removeTask("phoenix");
+        console.log("bot Tasks for", bot.name, bot.getTasks())
     }
     await new Promise(resolve => setTimeout(resolve, 2000));
     return Promise.resolve("Finished");
