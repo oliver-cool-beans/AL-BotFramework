@@ -6,7 +6,7 @@ import dragold from "./dragold.js"
 const bosses = {
     franky: franky, 
     snowman: snowman, 
-    dragold: dragold
+    //dragold: dragold
     //pinkgoo: pinkgoo
 }
 

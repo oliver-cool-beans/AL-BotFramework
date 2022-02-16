@@ -51,8 +51,8 @@ class Character {
         this.serverRegion = "ASIA", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["goldenbat", "cutebee", "mvampire"]
-        this.partyMonsters = ["mvampire"]
+        this.specialMonsters = ["goldenbat", "cutebee"]
+        this.partyMonsters = []
     }
 
     async start(AL) {
@@ -392,8 +392,8 @@ class Character {
 
     checkPartyPresence(party){
         return party.map((member) => {
-            if(!this.character.players.get(member.character.id)) return
-            return member
+            if(member.character.map == this.character.map) return member
+            return
         }).filter(Boolean)
     }
     
