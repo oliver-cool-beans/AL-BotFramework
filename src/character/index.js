@@ -29,13 +29,14 @@ const characterFunctions = {
 
 class Character {
     #tasks = []
-    constructor(characterName, characterClass, scriptName, isLeader){
+    constructor(characterName, characterClass, scriptName, isLeader, logger){
         
         const limiter = new Bottleneck({
             minTime: 1,
             maxConcurrent: 1
         });
 
+        this.logger = logger;
         this.name = characterName;
         this.limiter = limiter;
         this.characterClass = characterClass;
@@ -57,11 +58,11 @@ class Character {
 
     async start(AL) {
         if(!AL) return Promise.reject("Missing AL Client")
-
+        this.log("Starting")
         this.AL = AL;
         this.character = this.character || await common.startCharacter(this, "ASIA", "I").catch(() => {});
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
-            console.log("Error Loading class functions", error)
+            this.log(`Error Loading class functions, ${error}`)
         })
         return Promise.resolve("OK");
     };
@@ -92,27 +93,34 @@ class Character {
         }
 
         this.adminLoop(); // Resurrect if we need to
-        if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => console.log("ERROR", error))
+        if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => this.log(`ERROR: ${error}`))
         while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 500)); 
-            console.log("OFFICIAL TASKS", this.#tasks)
+            this.log(`DATA: ${JSON.stringify({
+                tasks: this.tasks, 
+                hp: this.character.hp, 
+                mp: this.character.mp, 
+                ready: this.character.ready,
+                hasSocket: !!this.character.socket, 
+                targetName: this.character.target?.name,
+                botTargetName: this.character.target?.name, 
+                monsterHunt: this.character.s?.monsterhunt
+            })}`)
+
             if(!this.character.socket){
-                console.log(this.name, "has no socket, reconnecting...");
+                this.log(`Has no socket, reconnecting...`);
                 await this.reconnect();
                 continue;
             }
 
             if(!this.character.socket || this.character.disconnected) return;
-            console.log("BOT TASKS", this.#tasks)
             if(this.#tasks.length){
                 if(!await {...scripts, ...tasks}[this.#tasks[0].script]){
-                    console.log("REMOVE 1")
                     this.removeTask(this.#tasks[0].script);
                     continue
                 }
                 await {...scripts, ...tasks}[this.#tasks[0].script](this, party.members, this.merchant, this.#tasks[0].args).catch((error) => {
-                    console.log(this.name, "task error with", error)
-                    console.log("REMOVE 2")
+                    this.log(`task error with, ${error}`)
                     this.removeTask(this.#tasks[0].script)
                 });
                 continue;
@@ -121,25 +129,29 @@ class Character {
             try{
                 await scripts[this.scriptName](this, party.members, this.merchant, this.scriptArgs)
             }catch(error){
-                console.log(`${this.name} errored running script ${this.scriptName} error:`, error)
+                this.log(`${this.name} errored running script ${this.scriptName} error: ${JSON.stringify(error)}`)
             }
          
         }
         return Promise.resolve("OK")
     }
-
+    log(log, labels){
+        this.logger.info(log, {
+            ...labels, 
+            character: this.name
+        })
+    }
     setScript(name, args = null){
         this.scriptName = name;
         this.scriptArgs = args;
-        console.log("Script is now", this.scriptName)
-
+        this.log(`Script is now, ${this.scriptName}`)
     }
 
     addTask(task) {
         if(!task?.script) return false;
         if(this.#tasks.find((queue) => queue.script == task.script)) return false;
         this.#tasks.push(task)
-        console.log("ADDED TASK", task.script, this.#tasks)
+        this.log(`Added Task, task.script,  ${JSON.stringify(this.#tasks)}`)
         return
     }
 
@@ -149,13 +161,13 @@ class Character {
 
     removeTask(name){
         this.#tasks = this.#tasks.filter((queue) => queue.script !== name); // THis'll remove them all. May want to just remove first later
-        console.log("REMOVED TASK", name, this.#tasks)
+        this.log(`Removed Task: ${name} ${JSON.stringify(this.#tasks)}`)
         return;
     }
 
     async reconnect(){
         this.disconnect();
-        return await common.startCharacter(this, "US", "I");
+        return await common.startCharacter(this, "ASIA", "I");
     }
 
     disconnect(){
@@ -185,7 +197,7 @@ class Character {
         }).flat().filter(Boolean);
 
         if(duplicatedMessages.length){
-            console.log("Duplicate found returning");
+            this.log("Duplicate found returning");
             return
         }
 
@@ -222,7 +234,7 @@ class Character {
     }
 
     async potionLoop(){
-        while(this.character.socket){
+        while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 2000));
             if(!Object.keys(this.character.c).length) await utils.usePotionIfLow(this);
         }
@@ -230,7 +242,7 @@ class Character {
 
     // Sell junk when we can.
     async sellLoop(){
-        while(this.character.socket){
+        while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 2000));
             if(this.character.canSell()){
                 const itemsToSell = this.character.items.map((item, index) => {
@@ -241,7 +253,7 @@ class Character {
                 }).filter(Boolean);
                 for(var item in itemsToSell){
                     await this.character.sell(itemsToSell[item].index).catch((error) => {
-                        console.log(`${this.name} errored selling item ${itemsToSell[item].name}`, error)
+                        this.log(`${this.name} errored selling item ${itemsToSell[item].name} ${JSON.stringify(error)}`)
                     });
                 }
             }
@@ -249,16 +261,16 @@ class Character {
     }
 
     async adminLoop(){
-        while(this.character.socket){
-            await new Promise(resolve => setTimeout(resolve, 2000));
+        while(this.isRunning){
+            await new Promise(resolve => setTimeout(resolve, 20000));
             if(!this.character.party && !this.isLeader && this.leader && !this.sentPartyRequest) {
-                console.log(this.name, "Sending party request to", this.leader.name)
+                this.log(`Sending party request to, ${this.leader.name}`)
                 await this.character.sendPartyRequest(this.leader.name);
                 this.sentPartyRequest = true;
             }
             if(this.character.map == "jail") {
-                console.log("PORTING OUT OF JAIL")
-                await this.character.leaveMap().catch((error) => console.log("JAIL PORT ERRORED", error));
+                this.log("PORTING OUT OF JAIL")
+                await this.character.leaveMap().catch((error) => this.log(`JAIL PORT ERRORED ${JSON.stringify(error)}`));
             }
             if(this.character.rip) {
                 this.target = null
@@ -270,7 +282,7 @@ class Character {
     }
 
     async attackLoop(){
-        while(this.character.socket){
+        while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 500));
             if(!this.target || (this.character.type == "priest" && (this.character.max_hp * 0.7) >= this.character.hp )){
                 await new Promise(resolve => setTimeout(resolve, 1500));
@@ -283,21 +295,21 @@ class Character {
     }
 
     async moveLoop(){
-        while(this.character.socket){
+        while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 500));
             if(!this.target){
                 continue;
             }
             // If we're out of range, move to the target
             if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.#tasks[0]?.force && !this.character.moving){
-                console.log("Trying to move to", this.target?.id, "IS MOVING", this.character.moving)
+                this.log(`Trying to move to, ${this.target?.id}, IS MOVING: ${this.character.moving}`)
                 await this.character.smartMove(this.target, { getWithin: this.character.range / 2 }).catch(() => {});
             }
         }
     }
 
     async buyPotionLoop(){
-        while(this.character.socket){
+        while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 1000));
             const {hpot, mpot} = this.calculatePotionItems();
             const hpotCount = this.character.countItem(hpot);
@@ -318,7 +330,7 @@ class Character {
     }
 
     async findSpecialMonsterLoop(){
-        while(this.character.socket){
+        while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 4000));
             [...this.character.entities.values()].forEach((entity) => {
                 if(!this.specialMonsters.includes(entity.type)) return
@@ -341,10 +353,10 @@ class Character {
     async checkEventBossesLoop(){
         while(this.character.socket && this.character.S){
             await new Promise(resolve => setTimeout(resolve, 20000));
-            console.log("CHECKING BOSS MOBS", this.character.S)
+            this.log(`Checking Boss Mobs: ${JSON.stringify(this.character.S)}`)
             Object.entries(this.character.S).forEach(([event, data]) => {
                 if(!data.live || !bosses[event] || this.#tasks.find((task) => task.script == event) && data?.target) return;
-                console.log("Adding event", event);
+                this.log(`Adding event ${JSON.stringify(event)}`);
                 this.addTask({
                     script: event, 
                     user: this.name, 
@@ -358,15 +370,14 @@ class Character {
 
     async switchServer(region, identifier){
         if(region == this.serverRegion && identifier == this.identifier) return false;
-        console.log(`${this.name} - Switching servers to ${region} ${identifier}`);
+        this.log(`Switching servers to ${region} ${identifier}`);
         this.disconnect();
         return await common.startCharacter(this, region, identifier)
     }
 
     async monsterHuntLoop(){
-        while(this.character.socket){
+        while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log("MONSTER HUNT IS", this.character.s?.monsterhunt)
             if(!this.character.s?.monsterhunt && !this.#tasks.find((task) => task.script == "getMonsterHunt")){
                 this.addTask({
                     script: "getMonsterHunt", 

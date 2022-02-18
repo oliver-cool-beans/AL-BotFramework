@@ -60,27 +60,21 @@ async function compoundItems(bot){
                 // console.log(`There are ${levelAboveCount.length} of ${itemName} in all tabs ABOVE level ${level}`)
                 
                 if(!items.length) return obj // If we've got no items just return
-                itemName == "intearring" && console.log(`${itemName}: Level ${level} allTabs: ${allTabsCount.length} LevelAbove: ${levelAboveCount.length}`)
                 if(allTabsCount.length >= 3 && (levelAboveCount.length || poppedItems?.[itemName]?.[level])) obj[level] = items; // If we've got 3 or more, and items exist above this level, process all
                 if(allTabsCount.length > 3 && !levelAboveCount.length) obj[level] = items; // If we've got MORE than 3 and no items exist above the level, process all
                 if(allTabsCount.length > 3 && !levelAboveCount.length && !poppedItems?.[itemName]?.[level]) { // If we've got MORE than 3 and no items above the level, and we haven't buffered on yet.
-                    itemName == "intearring" && console.log(`Popping ${itemName} at level ${level} SlotName ${slotName} = BeforePop ${obj[level]}`)
                     obj[level].pop();
                     allTabsCount.pop();
                     poppedItems[itemName] = poppedItems[itemName] ? {...poppedItems[itemName], [level]: true}
                     : {[level]: true}
-                    itemName == "intearring" && console.log(`AfterPOP ${obj[level]}`)
                 } 
                 // Check if divisible by 3, if it's not then cut off X from the end until it is
                 if(allTabsCount.length && obj[level]){
                     if(allTabsCount.length % 3 !== 0) {
                         const spliceAmount = allTabsCount.length % 3 > obj[level]?.length ? obj[level]?.length : allTabsCount.length % 3; // Don't splice more than is in this tab;
-                        itemName == "intearring" && console.log(`Splicing ${spliceAmount} of ${itemName} at level ${level}. Length is ${allTabsCount.length} is divisible by 3? ${allTabsCount.length % 3} `)
-                        itemName == "intearring" && console.log(`Before splice ${obj[level]}`)
 
                         spliceAmount && obj[level].splice(obj[level].length - spliceAmount, spliceAmount); // Remove X from the end of the array
                     }
-                    itemName == "intearring" && console.log(`After Splice`, obj[level])
                 }
                 if(!obj[level]?.length) delete obj[level];
                 return obj;

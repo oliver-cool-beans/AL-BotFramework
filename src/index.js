@@ -4,11 +4,13 @@
 
 import AL from "alclient"
 import {discord} from "./discord/index.cjs";
+import logger from "./logger/index.cjs";
 import scripts from "./scripts/index.js";
 import Character from "./character/index.js";
 import Party from "./party/index.js";
 
 async function init() {
+    const newLogger = logger();
     const {AL_EMAIL, AL_PASSWORD, AUTO_START, PARTY_CONFIG, DEFAULT_SCRIPT} = process.env;
     
     const {DISCORD_TOKEN, DISCORD_CLIENT_ID, DISCORD_GUILD_ID, DISCORD_CHANNEL_ID} = process.env;
@@ -22,7 +24,7 @@ async function init() {
 
     await AL.Pathfinder.prepare(AL.Game.G)
     const characters = Object.values(AL.Game.characters).map((char, index) => {
-        return new Character(char.name, char.type, DEFAULT_SCRIPT, !index)
+        return new Character(char.name, char.type, DEFAULT_SCRIPT, !index, newLogger)
     })
     console.log(`Found ${characters.length} characters`);
     const party = new Party(characters, PARTY_CONFIG)
