@@ -52,7 +52,7 @@ class Character {
         this.serverRegion = "ASIA", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["goldenbat", "cutebee"]
+        this.specialMonsters = ["goldenbat", "cutebee", "skeletor", "mvampire"]
         this.partyMonsters = []
     }
 
@@ -135,12 +135,14 @@ class Character {
         }
         return Promise.resolve("OK")
     }
+
     log(log, labels){
         this.logger.info(log, {
             ...labels, 
             character: this.name
         })
     }
+
     setScript(name, args = null){
         this.scriptName = name;
         this.scriptArgs = args;
@@ -151,7 +153,7 @@ class Character {
         if(!task?.script) return false;
         if(this.#tasks.find((queue) => queue.script == task.script)) return false;
         this.#tasks.push(task)
-        this.log(`Added Task, task.script,  ${JSON.stringify(this.#tasks)}`)
+        this.log(`Added Task ${task.script}`)
         return
     }
 
@@ -160,7 +162,7 @@ class Character {
     }
 
     removeTask(name){
-        this.#tasks = this.#tasks.filter((queue) => queue.script !== name); // THis'll remove them all. May want to just remove first later
+        this.#tasks = this.#tasks.filter((queue) => queue.script !== name); // This'll remove them all. May want to just remove first later
         this.log(`Removed Task: ${name} ${JSON.stringify(this.#tasks)}`)
         return;
     }
@@ -300,10 +302,16 @@ class Character {
             if(!this.target){
                 continue;
             }
+            if(this.strategies?.move?.[this.target.type]){
+                await this.strategies.move[this.target.type](this, this.party.members).catch((error) => {
+                    this.log(`Failed to run move strategy ${JSON.stringify(error)}`)
+                })
+                continue
+            }
             // If we're out of range, move to the target
             if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.#tasks[0]?.force && !this.character.moving){
                 this.log(`Trying to move to, ${this.target?.id}, IS MOVING: ${this.character.moving}`)
-                await this.character.smartMove(this.target, { getWithin: this.character.range / 2 }).catch(() => {});
+                await this.character.smartMove(this.target, { getWithin: this.attackRange || this.character.range / 2 }).catch(() => {});
             }
         }
     }

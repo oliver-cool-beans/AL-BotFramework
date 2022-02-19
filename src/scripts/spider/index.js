@@ -1,21 +1,28 @@
+/*
+    This is a script, it is responsible for setting and removing targets
+    as well as any additional logic around aquiring these targets.
+    and should not be used for anything else, as the attack and move loops do the rest.
+*/
+
 import utils from "../../scripts/utils/index.js";
 
+const targets = ['spider'];
 
-async function franky(bot, party, merchant, args = {}){
-    this.attackRange = 25;
+async function spider(bot, party, merchant, args) {
+    if(!bot.character.ready) return Promise.reject("Character not ready");
 
-    if(!bot.character?.S?.franky?.live) {
-        console.log("Franky is no longer live, removing task");
-        bot.removeTask("franky");
-        return;
+    const {hpot, mpot} = bot.calculatePotionItems();
+
+    if(bot.characterClass == "merchant") return Promise.resolve("Not a combat class");
+    
+    const rallyPosition = "spider";
+
+    if(!bot.runningScriptName == "spider") {
+        bot.runningScriptName = "spider"
+        await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
+    
 
-    
-    if(!bot.runningScriptName == "franky") {
-        bot.runningScriptName = "franky"
-    }
-    
-    
     await utils.checkIfPotionsLow(bot, 20) && bot.addTask({
         script: "buyPotions", 
         user: bot.name, 
@@ -37,24 +44,18 @@ async function franky(bot, party, merchant, args = {}){
         }
     })
 
-    
     if(bot.character.chests.size){
         for(let [key, value] of bot.character.chests){
             await bot.character.openChest(key).catch((error) => {});
         }
     }
 
-
-    if(!bot.target || bot.target?.name !== "Franky"){
-        await bot.character.smartMove(args.event).catch(() => {});
-    }
-
-     // If we've got no target, get a valid target;
+    // If we've got no target, get a valid target;
     if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
-        bot.target = utils.findClosestTarget(bot.AL, bot.character, party, "franky");
+        bot.target = utils.findClosestTarget(bot.AL, bot.character, party, targets);
+        if(!bot.target) await bot.character.smartMove("spider").catch(() => {});
     }
 
-    this.attackRange = this.character.range / 2;
     return Promise.resolve("Finished");
 }
 
@@ -63,4 +64,4 @@ function checkTarget(target, entities = {}){
     return entities?.get && !!entities.get(target?.id);
 }
 
-export default franky
+export default spider;

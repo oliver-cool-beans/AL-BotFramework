@@ -13,6 +13,15 @@ import crab from "./crab/index.js";
 import snake from "./snake/index.js";
 import bigbird from "./bigbird/index.js";
 import osnake from "./osnake/index.js";
+import arcticbee from "./arcticbee/index.js";
+import squigtoad from "./squigtoad/index.js";
+import croc from "./croc/index.js";
+import cgoo from "./cgoo/index.js";
+import rat from "./rat/index.js";
+import scorpion from "./scorpion/index.js";
+import spider from "./spider/index.js";
+import gscorpion from "./gscorpion/index.js";
+import boar from "./boar/index.js";
 
 import monsterHunt from "./monsterHunt/index.js";
 
@@ -28,9 +37,19 @@ const scripts = {
     frog,
     crab, 
     snake,
+    arcticbee,
+    squigtoad,
+    croc,
+    rat,
+    scorpion,
+    gscorpion,
+    spider,
+    cgoo,
+    osnake,
+   // boar,
     specialMonster, 
     monsterHunt,
-   // bigbird,
+  //  bigbird,
     ...bosses
 }
 
