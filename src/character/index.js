@@ -52,7 +52,7 @@ class Character {
         this.serverRegion = "ASIA", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["goldenbat", "cutebee", "skeletor", "mvampire"]
+        this.specialMonsters = ["goldenbat", "cutebee", "mvampire"]
         this.partyMonsters = []
     }
 
@@ -163,7 +163,7 @@ class Character {
 
     removeTask(name){
         this.#tasks = this.#tasks.filter((queue) => queue.script !== name); // This'll remove them all. May want to just remove first later
-        this.log(`Removed Task: ${name} ${JSON.stringify(this.#tasks)}`)
+        this.log(`Removed Task: ${name}`)
         return;
     }
 
@@ -364,7 +364,7 @@ class Character {
             this.log(`Checking Boss Mobs: ${JSON.stringify(this.character.S)}`)
             Object.entries(this.character.S).forEach(([event, data]) => {
                 if(!data.live || !bosses[event] || this.#tasks.find((task) => task.script == event) && data?.target) return;
-                this.log(`Adding event ${JSON.stringify(event)}`);
+                this.log(`Adding event`);
                 this.addTask({
                     script: event, 
                     user: this.name, 
