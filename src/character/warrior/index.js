@@ -3,7 +3,7 @@
     load: Character class function added onto the Character class when starter
     loop: Functions that will be executed only for this class, every time during their while loop;
 */
-import moveStrategies from "./strategies/index.js";
+import { moveStrategies, attackStrategies } from "./strategies/index.js";
 
 export default {
     load: loadFunctions,
@@ -18,6 +18,7 @@ async function loopFunctions() {
     if(!this?.character) return;
     this.strategies = {
         move: {...moveStrategies}, 
+        attack: {...attackStrategies}
     }
     charge(this);
     taunt(this);

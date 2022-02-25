@@ -1,11 +1,15 @@
 import kiteTarget from "./kiteTarget.js";
 import kiteBoss from "./kiteTarget.js";
+import cleave from "./cleave.js";
 
-const moveStrategies = {
+
+export const moveStrategies = {
     "skeletor": kiteBoss, 
     "mvampire": kiteBoss,
     "bigbird": kiteTarget, 
-    "boar": kiteTarget
+    "boar": kiteTarget, 
 }
 
-export default moveStrategies
+export const attackStrategies = {
+    "bee": cleave
+}

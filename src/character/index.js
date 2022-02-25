@@ -101,19 +101,18 @@ class Character {
                 hp: this.character.hp, 
                 mp: this.character.mp, 
                 ready: this.character.ready,
-                hasSocket: !!this.character.socket, 
+                disconnected: this.character.disconnected,
                 targetName: this.character.target?.name,
-                botTargetName: this.character.target?.name, 
+                botTargetName: this.target?.name, 
                 monsterHunt: this.character.s?.monsterhunt
             })}`)
 
-            if(!this.character.socket){
-                this.log(`Has no socket, reconnecting...`);
+            if(!this.character.ready || !this.character.socket || this.character.disconnected){
+                this.log(`Has no socket or is not ready or is disconnected, reconnecting...`);
                 await this.reconnect();
                 continue;
             }
 
-            if(!this.character.socket || this.character.disconnected) return;
             if(this.#tasks.length){
                 if(!await {...scripts, ...tasks}[this.#tasks[0].script]){
                     this.removeTask(this.#tasks[0].script);
@@ -153,6 +152,7 @@ class Character {
         if(!task?.script) return false;
         if(this.#tasks.find((queue) => queue.script == task.script)) return false;
         this.#tasks.push(task)
+        this.#tasks = this.#tasks.sort((a, b) => a.priority || 99 - b.priority || 99)
         this.log(`Added Task ${task.script}`)
         return
     }
@@ -164,6 +164,7 @@ class Character {
     removeTask(name){
         this.#tasks = this.#tasks.filter((queue) => queue.script !== name); // This'll remove them all. May want to just remove first later
         this.log(`Removed Task: ${name}`)
+        this.#tasks = this.#tasks.sort((a, b) => a.priority || 99 - b.priority || 99)
         return;
     }
 
@@ -286,9 +287,18 @@ class Character {
     async attackLoop(){
         while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 500));
-            if(!this.target || (this.character.type == "priest" && (this.character.max_hp * 0.7) >= this.character.hp )){
+            if(!this.target){
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 continue;
+            }
+
+            if(this.strategies?.attack?.[this.target.type]){
+                try{
+                    await this.strategies.attack[this.target.type](this, this.party.members)
+                    continue
+                }catch(error){
+                    this.log(`Failed to run attack strategy ${JSON.stringify(error)}`)
+                }
             }
             if(this.character.canUse("attack")){
                 await this.character.basicAttack(this.target?.id).catch(async (error) => {});
@@ -348,9 +358,10 @@ class Character {
                     member.addTask({
                         script: "specialMonster", 
                         user: this.name, 
+                        priority: 5,
                         args: {
                             target: entity
-                        }
+                        }, 
                     })
                 })
 
@@ -368,6 +379,7 @@ class Character {
                 this.addTask({
                     script: event, 
                     user: this.name, 
+                    priority: 3,
                     args: {
                         event: data
                     }

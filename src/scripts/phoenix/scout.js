@@ -16,8 +16,8 @@ async function scout(spawns, bot, party) {
             console.log("*** Moving to ", spawns[index], "***")
             while(!success && bot.isRunning){
                 await new Promise(resolve => setTimeout(resolve, 500));
-                while(bot.character.map == "jail" && bot.isRunning){
-                    console.log("Waiting to port out of jail, then returning to scout");
+                while(bot.character.map == "jail" && bot.character.ready && bot.isRunning){
+                    console.log("Waiting to port out of jail, then returning to scout", bot.character.ready, bot.isRunning, bot.character.map);
                     await new Promise(resolve => setTimeout(resolve, 1000));
                 }
                 const result = await bot.character.smartMove(spawns[index], {getWithin: 50, useBlink: true}).catch((error) => {
@@ -63,8 +63,9 @@ function setPartyTasks(bot, party, target){
         member.target = target;
         member.addTask({
             script: "phoenix", 
-            user: bot.name
-        })
+            user: bot.name, 
+            priority: 4
+        });
     })
 }   
 

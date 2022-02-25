@@ -26,6 +26,7 @@ async function frog(bot, party, merchant, args) {
     await utils.checkIfPotionsLow(bot, 20) && bot.addTask({
         script: "buyPotions", 
         user: bot.name, 
+        priority: 2,
         force: true,
         args: {
             nextPosition: rallyPosition, 
@@ -36,6 +37,7 @@ async function frog(bot, party, merchant, args) {
     if(bot.character.isFull()) bot.addTask({
         script: "bankItems", 
         user: bot.name, 
+        priority: 1,
         force: true,
         args: {
             itemsToHold: [hpot, mpot, "tracker"], 
