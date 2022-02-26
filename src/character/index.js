@@ -93,25 +93,10 @@ class Character {
         }
 
         this.adminLoop(); // Resurrect if we need to
+        this.logLoop();
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => this.log(`ERROR: ${error}`))
         while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 500)); 
-            this.log(`DATA: ${JSON.stringify({
-                tasks: this.tasks, 
-                hp: this.character.hp, 
-                mp: this.character.mp, 
-                ready: this.character.ready,
-                disconnected: this.character.disconnected,
-                targetName: this.character.target?.name,
-                botTargetName: this.target?.name, 
-                monsterHunt: this.character.s?.monsterhunt
-            })}`)
-
-            if(!this.character.ready || !this.character.socket || this.character.disconnected){
-                this.log(`Has no socket or is not ready or is disconnected, reconnecting...`);
-                await this.reconnect();
-                continue;
-            }
 
             if(this.#tasks.length){
                 if(!await {...scripts, ...tasks}[this.#tasks[0].script]){
@@ -128,7 +113,7 @@ class Character {
             try{
                 await scripts[this.scriptName](this, party.members, this.merchant, this.scriptArgs)
             }catch(error){
-                this.log(`${this.name} errored running script ${this.scriptName} error: ${JSON.stringify(error)}`)
+                this.log(`${this.name} errored running script ${this.scriptName} error: ${error}`)
             }
          
         }
@@ -142,6 +127,21 @@ class Character {
         })
     }
 
+    async logLoop(){
+        while(this.isRunning){
+            await new Promise(resolve => setTimeout(resolve, 5000));
+            this.log(`DATA: ${JSON.stringify({
+                tasks: this.tasks, 
+                hp: this.character.hp, 
+                mp: this.character.mp, 
+                ready: this.character.ready,
+                disconnected: this.character.disconnected,
+                targetName: this.character.target?.name,
+                botTargetName: this.target?.name, 
+                monsterHunt: this.character.s?.monsterhunt
+            })}`)
+        }
+    }
     setScript(name, args = null){
         this.scriptName = name;
         this.scriptArgs = args;
@@ -280,6 +280,13 @@ class Character {
                 await this.character.respawn().catch(() => {});
             }
 
+            if(!this.character.ready || !this.character.socket || this.character.disconnected){
+                this.log(`Has no socket or is not ready or is disconnected, reconnecting...`);
+                await this.reconnect();
+                continue;
+            }
+
+
         }
 
     }
@@ -312,6 +319,7 @@ class Character {
             if(!this.target){
                 continue;
             }
+            if(this.character.c?.town) continue
             if(this.strategies?.move?.[this.target.type]){
                 await this.strategies.move[this.target.type](this, this.party.members).catch((error) => {
                     this.log(`Failed to run move strategy ${JSON.stringify(error)}`)
@@ -354,6 +362,7 @@ class Character {
                 if(!this.specialMonsters.includes(entity.type)) return
                 if(entity.target && !this.party.members.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
                 this.party.members.forEach((member) => {
+                    if(!member.specialMonsters.includes(entity.type)) return
                     if(member.getTasks().find((task) => task.script == "specialMonster" && task.args?.entity?.id == entity.id)) return;
                     member.addTask({
                         script: "specialMonster", 
