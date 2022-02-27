@@ -2,7 +2,7 @@
 async function kiteTarget(bot, party){
     try{
         // Find the target entity
-        const target = bot.target
+        const target = bot.character.target
         if(!target) {
         };
         const distance = bot.AL.Tools.distance(bot.character, target);
@@ -12,7 +12,7 @@ async function kiteTarget(bot, party){
             bot.character.stopSmartMove().catch(() => { /* Suppress errors */ })
         }
     
-        const kiteDistance = bot.target.target == bot.name ? Math.min(bot.target.range * 5) : Math.min(bot.character.range) // If we're the target, run! if not, close in
+        const kiteDistance = bot.character.target == bot.name ? Math.min(bot.character.target.range * 5) : Math.min(bot.character.range) // If we're the target, run! if not, close in
         const distanceToMove = distance - kiteDistance
         const angleFromBotToMonster = Math.atan2(target.y - bot.character.y, target.x - bot.character.x)
         let potentialSpot = { map: bot.character.map, x: bot.character.x + distanceToMove * Math.cos(angleFromBotToMonster), y: bot.character.y + distanceToMove * Math.sin(angleFromBotToMonster) }

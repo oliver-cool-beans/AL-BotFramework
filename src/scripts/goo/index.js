@@ -10,11 +10,15 @@ const targets = ["goo"];
 
 async function goo(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
+    var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, targets);
 
-    const {hpot, mpot} = bot.calculatePotionItems();
+    if(!bot.checkTarget(targetData, bot.character.entities, targets)) {
+        bot.setTarget(null);
+        targetData = utils.findClosestTarget(bot.AL, bot.character, party, targets);
+    }
 
-    if(bot.characterClass == "merchant") return Promise.resolve("Not a combat class");
-    
+    if(bot.character.target !== targetData?.id) bot.setTarget(targetData?.id);
+
     const rallyPosition = "goo";
 
     if(!bot.runningScriptName == "goo") {
@@ -22,48 +26,13 @@ async function goo(bot, party, merchant, args) {
         await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
     
-
-    await utils.checkIfPotionsLow(bot, 20) && bot.addTask({
-        script: "buyPotions", 
-        user: bot.name, 
-        priority: 2,
-        force: true,
-        args: {
-            nextPosition: rallyPosition, 
-            amount: 200
-        }
-    });
-
-    if(bot.character.isFull()) bot.addTask({
-        script: "bankItems", 
-        user: bot.name, 
-        priority: 1,
-        force: true,
-        args: {
-            itemsToHold: [hpot, mpot, "tracker"], 
-            goldToHold: 20000,
-            nextPosition: rallyPosition
-        }
-    })
-
-    if(bot.character.chests.size){
-        for(let [key, value] of bot.character.chests){
-            await bot.character.openChest(key).catch((error) => {});
-        }
-    }
-
     // If we've got no target, get a valid target;
-    if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
-        bot.target = utils.findClosestTarget(bot.AL, bot.character, party, targets);
-        if(!bot.target) await bot.character.smartMove("goo").catch(() => {});
+    if(!bot.character.target) {
+        await bot.character.smartMove("goo").catch(() => {});
     }
 
     return Promise.resolve("Finished");
 }
 
-function checkTarget(target, entities = {}){
-    if(!target || !Object.keys(entities)) return false;
-    return entities?.get && !!entities.get(target?.id);
-}
 
 export default goo;

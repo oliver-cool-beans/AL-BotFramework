@@ -16,7 +16,7 @@ async function specialMonster(bot, party, merchant, args = {}) {
         await bot.character.smartMove(target).catch(() => {})
         if(!bot.character.entities.get(target.id) && target.map == bot.character.map){
             console.log("This special monster is no longer alive");
-            bot.target = null;
+            bot.character.target = null;
             bot.removeTask("specialMonster");
             return Promise.resolve("OK");
         }
@@ -30,12 +30,10 @@ async function specialMonster(bot, party, merchant, args = {}) {
     }
 
     if(!bot.character.ready) return Promise.reject("Character not ready");
+    bot.character.target = bot.character.getTargetEntity() || null;
     if(!target?.id) return Promise.reject("No Entity");
 
-    const {hpot, mpot} = bot.calculatePotionItems();
 
-    if(bot.characterClass == "merchant") return Promise.resolve("Not a combat class");
-    
     const rallyPosition = args.entity
 
     if(!bot.runningScriptName == "specialMonster") {
@@ -44,53 +42,19 @@ async function specialMonster(bot, party, merchant, args = {}) {
             console.log("FAILED TO SMART MOVE IN SPECIAL", error)
         });;
     }
-    
 
-    await utils.checkIfPotionsLow(bot, 20) && bot.addTask({
-        script: "buyPotions", 
-        user: bot.name, 
-        priority: 2,
-        force: true,
-        args: {
-            nextPosition: rallyPosition, 
-            amount: 200
-        }
-    });
-
-    if(bot.character.isFull()) bot.addTask({
-        script: "bankItems", 
-        user: bot.name, 
-        priority: 1,
-        force: true,
-        args: {
-            itemsToHold: [hpot, mpot, "tracker"], 
-            goldToHold: 20000,
-            nextPosition: rallyPosition
-        }
-    })
-
-    if(bot.character.chests.size){
-        for(let [key, value] of bot.character.chests){
-            await bot.character.openChest(key).catch((error) => {});
-        }
+    if(!bot.character.target && bot.character.target?.id !== target.id){
+        bot.character.target = target;
     }
 
-
-
-    if(!bot.target && bot.target?.id !== target.id){
-        bot.target = target;
-    }
     // If we've got no target, get a valid target;
-    if(!bot.target || !checkTarget(bot?.target, bot.character.entities)) {
-        bot.target = utils.findClosestTarget(bot.AL, bot.character, party, [target.type]);
+    if(!bot.character.target || !bot.checkTarget(bot?.target, bot.character.entities, targets)) {
+        bot.character.target = utils.findClosestTarget(bot.AL, bot.character, party, [target.type]);
     }
 
     return Promise.resolve("Finished");
 }
 
-function checkTarget(target, entities = {}){
-    if(!target) return false;
-    return entities?.get && !!entities.get(target?.id);
-}
+
 
 export default specialMonster;

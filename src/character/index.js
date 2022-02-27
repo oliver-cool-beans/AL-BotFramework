@@ -46,7 +46,6 @@ class Character {
         this.scriptName = scriptName;
         this.character = null;
         this.isRunning = false;
-        this.target = null;
         this.merchant = null;
         this.notificationBuffer = [];
         this.serverRegion = "ASIA", 
@@ -85,7 +84,8 @@ class Character {
             this.buyPotionLoop(); // Buy potions if we can and we need some;
             this.potionLoop(); // Use a potion if we need to
             this.attackLoop(); // Attack our target if we can
-            this.moveLoop(); // Move to our target if we should     
+            this.moveLoop(); // Move to our target if we should   
+            this.lootLoop(); // Loots chests  
             this.sellLoop(); // Sell junk when we can
             this.findSpecialMonsterLoop(); // Check for special monsters and attack them
             this.checkEventBossesLoop(); // Check for boss events
@@ -94,8 +94,9 @@ class Character {
 
         this.adminLoop(); // Resurrect if we need to
         this.logLoop();
+        
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => this.log(`ERROR: ${error}`))
-        while(this.isRunning){
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 500)); 
 
             if(this.#tasks.length){
@@ -117,6 +118,7 @@ class Character {
             }
          
         }
+        this.log("Existing Run... this bot is now stopped")
         return Promise.resolve("OK")
     }
 
@@ -128,7 +130,7 @@ class Character {
     }
 
     async logLoop(){
-        while(this.isRunning){
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 5000));
             this.log(`DATA: ${JSON.stringify({
                 tasks: this.tasks, 
@@ -136,8 +138,8 @@ class Character {
                 mp: this.character.mp, 
                 ready: this.character.ready,
                 disconnected: this.character.disconnected,
-                targetName: this.character.target?.name,
-                botTargetName: this.target?.name, 
+                targetName: this.character.target && this.character.target.type,
+                targetId: this.character.target && this.character.target.id,
                 monsterHunt: this.character.s?.monsterhunt
             })}`)
         }
@@ -152,8 +154,10 @@ class Character {
         if(!task?.script) return false;
         if(this.#tasks.find((queue) => queue.script == task.script)) return false;
         this.#tasks.push(task)
-        this.#tasks = this.#tasks.sort((a, b) => a.priority || 99 - b.priority || 99)
-        this.log(`Added Task ${task.script}`)
+        this.#tasks = this.#tasks.sort((a, b) => (a.priority || 99) - (b.priority || 99))
+        this.log(`${this.name} Added Task ${task.script} First Task is now ${this.#tasks[0].script} at priority, ${this.#tasks[0].priority}`)
+        this.log(`${this.name} Second Task is now ${this.#tasks[1]?.script} at priority, ${this.#tasks[1]?.priority}`)
+
         return
     }
 
@@ -170,19 +174,36 @@ class Character {
 
     async reconnect(){
         this.disconnect();
-        return await common.startCharacter(this, "ASIA", "I");
+        this.log("Disconnected, waiting 5 seconds then reconnecting")
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        await this.start(this.AL)
+        await this.run(this.party, this.discord, this.AL, this.isLeader);
     }
 
     disconnect(){
         if(!this.character) return "Character not connected";
-        this.character.disconnect();
         this.isRunning = false;
+        this.character.disconnect();
         this.character = false;
         return
 
     }
+
     resetTarget(){
-        this.target = null
+        this.character.target = null
+    }
+
+    setTarget(target){
+        this.character.target = target
+    };
+
+    checkTarget(target, entities = {}, targets){
+        if(!target || !Object.keys(entities)) return false;
+        if(!targets.includes(target.type)) return false;
+        if(this.AL.Tools.distance(this.character, target) < 100 && !this.character.entities.get(target.id)){
+            return false;    
+        }
+        return true;
     }
 
     notifyChatMessage(channel, message, map, owner){
@@ -237,16 +258,18 @@ class Character {
     }
 
     async potionLoop(){
-        while(this.isRunning){
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 2000));
+            if(!this.character) continue
             if(!Object.keys(this.character.c).length) await utils.usePotionIfLow(this);
         }
     }
 
     // Sell junk when we can.
     async sellLoop(){
-        while(this.isRunning){
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 2000));
+            if(!this.character) continue
             if(this.character.canSell()){
                 const itemsToSell = this.character.items.map((item, index) => {
                     if(!item) return
@@ -264,8 +287,9 @@ class Character {
     }
 
     async adminLoop(){
-        while(this.isRunning){
-            await new Promise(resolve => setTimeout(resolve, 20000));
+        while(this.isRunning){ 
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if(!this.character) continue
             if(!this.character.party && !this.isLeader && this.leader && !this.sentPartyRequest) {
                 this.log(`Sending party request to, ${this.leader.name}`)
                 await this.character.sendPartyRequest(this.leader.name);
@@ -276,7 +300,7 @@ class Character {
                 await this.character.leaveMap().catch((error) => this.log(`JAIL PORT ERRORED ${JSON.stringify(error)}`));
             }
             if(this.character.rip) {
-                this.target = null
+                this.character.target = null
                 await this.character.respawn().catch(() => {});
             }
 
@@ -286,78 +310,131 @@ class Character {
                 continue;
             }
 
+            if(this.character.esize <= 0){
+                const {hpot, mpot} = this.calculatePotionItems();
+                this.addTask({
+                    script: "bankItems", 
+                    user: this.name, 
+                    priority: 1,
+                    force: true,
+                    args: {
+                        itemsToHold: [hpot, mpot, "tracker"], 
+                        goldToHold: 20000,
+                        nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}
+                    }
+                })
+            } 
 
         }
 
     }
 
     async attackLoop(){
-        while(this.isRunning){
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 500));
-            if(!this.target){
+            if(!this.character) continue
+            if(!this.character.target){
+                console.log("Character has no target", this.character.target)
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 continue;
             }
 
-            if(this.strategies?.attack?.[this.target.type]){
+            const targetData = this.character.getTargetEntity();
+            if(this.strategies?.attack?.[targetData?.type]){
                 try{
-                    await this.strategies.attack[this.target.type](this, this.party.members)
+                    await this.strategies.attack[targetData.type](this, this.party.members)
                     continue
                 }catch(error){
                     this.log(`Failed to run attack strategy ${JSON.stringify(error)}`)
                 }
             }
             if(this.character.canUse("attack")){
-                await this.character.basicAttack(this.target?.id).catch(async (error) => {});
+                await this.character.basicAttack(targetData?.id).catch(async (error) => {});
             }
         }
     }
 
     async moveLoop(){
-        while(this.isRunning){
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 500));
-            if(!this.target){
+            if(!this.character) continue
+
+            if(!this.character.target){
                 continue;
             }
-            if(this.character.c?.town) continue
-            if(this.strategies?.move?.[this.target.type]){
-                await this.strategies.move[this.target.type](this, this.party.members).catch((error) => {
+
+            const targetData = this.character.getTargetEntity()
+            || this.party.members.find((member) => member?.character?.target == this.character?.target && member?.character?.getTargetEntity())?.character.getTargetEntity();
+            // If we can't find the target, check if someone in our party has it
+        
+            if(Object.keys(this.character.c).length) continue
+            if(this.strategies?.move?.[targetData?.type]){
+                await this.strategies.move[targetData?.type](this, this.party.members).catch((error) => {
                     this.log(`Failed to run move strategy ${JSON.stringify(error)}`)
                 })
                 continue
             }
+
             // If we're out of range, move to the target
-            if(this.AL.Tools.distance(this.character, this.target) > this.character.range && !this.#tasks[0]?.force && !this.character.moving){
-                this.log(`Trying to move to, ${this.target?.id}, IS MOVING: ${this.character.moving}`)
-                await this.character.smartMove(this.target, { getWithin: this.attackRange || this.character.range / 2 }).catch(() => {});
+            if(this.AL.Tools.distance(this.character, targetData) > this.character.range && !this.#tasks[0]?.force && !this.character.moving){
+                this.log(`Trying to move to, ${targetData?.id}, IS MOVING: ${this.character.moving}`)
+                await this.character.smartMove(targetData, { getWithin: this.attackRange || this.character.range / 2 }).catch(() => {});
             }
         }
     }
 
     async buyPotionLoop(){
-        while(this.isRunning){
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 1000));
+            if(!this.character) continue
+
             const {hpot, mpot} = this.calculatePotionItems();
-            const hpotCount = this.character.countItem(hpot);
-            const mpotCount = this.character.countItem(mpot);
+            const hpotCount = this.character?.countItem(hpot);
+            const mpotCount = this.character?.countItem(mpot);
             if(hpotCount < 200) {
                 if(this.character.canBuy(hpot)){
                     await this.character.buy(hpot, 200 - hpotCount).catch(() => {})
                 }
             }
-        
             if(mpotCount < 200) {
                 if(this.character.canBuy(mpot)){
                     await this.character.buy(mpot, 200 - mpotCount).catch(() => {})
                 }
             
             }
+            
+            if(!this.character.canBuy(hpot) || !this.character.canBuy(mpot)){
+                await utils.checkIfPotionsLow(this, 20) && this.addTask({
+                    script: "buyPotions", 
+                    user: this.name, 
+                    priority: 5,
+                    force: true,
+                    args: {
+                        nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}, 
+                        amount: 200
+                    }
+                });
+            }
+        }
+    }
+
+    async lootLoop(){
+        while(this.isRunning){
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if(!this.character) continue
+
+            if(this.character.chests.size){
+                for(let [key, value] of this.character.chests){
+                    await this.character.openChest(key).catch((error) => {console.log("Failed to loot", error)});
+                }
+            }
         }
     }
 
     async findSpecialMonsterLoop(){
-        while(this.isRunning){
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 4000));
+            if(!this.character) continue
             [...this.character.entities.values()].forEach((entity) => {
                 if(!this.specialMonsters.includes(entity.type)) return
                 if(entity.target && !this.party.members.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
@@ -379,8 +456,10 @@ class Character {
     }
 
     async checkEventBossesLoop(){
-        while(this.character.socket && this.character.S){
+        while(this.isRunning && this.character){
             await new Promise(resolve => setTimeout(resolve, 20000));
+            if(!this.character) continue
+
             this.log(`Checking Boss Mobs: ${JSON.stringify(this.character.S)}`)
             Object.entries(this.character.S).forEach(([event, data]) => {
                 if(!data.live || !bosses[event] || this.#tasks.find((task) => task.script == event) && data?.target) return;
@@ -405,8 +484,9 @@ class Character {
     }
 
     async monsterHuntLoop(){
-        while(this.isRunning){
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 1000));
+            if(!this.character) continue
             if(!this.character.s?.monsterhunt && !this.#tasks.find((task) => task.script == "getMonsterHunt")){
                 this.addTask({
                     script: "getMonsterHunt", 
@@ -417,14 +497,16 @@ class Character {
             if(this.character.s?.monsterhunt?.c == 0 && !this.#tasks.find((task) => task.script == "finishMonsterHunt")){
                 this.addTask({
                     script : "finishMonsterHunt", 
-                    user: this.name
+                    user: this.name, 
+                    priority: 80
                 })
                 continue
             }
             if(scripts[this.character.s?.monsterhunt?.id]){ // If we've got a script for this monster
                 this.addTask({
                     script: "monsterHunt", 
-                    user: this.name
+                    user: this.name, 
+                    priority: 80
                 })
             }
         }

@@ -11,7 +11,6 @@ export default {
 }
 
 async function loadFunctions () {
-    this.specialMonsters.push("skeletor")
     this.strategies = {
         move: {...moveStrategies}, 
     }

@@ -2,7 +2,7 @@
 async function kiteTarget(bot, party){
     try{
         // Find the target entity
-        const target = bot.target
+        const target = bot.character.target
         if(!target) {
         };
         const distance = bot.AL.Tools.distance(bot.character, target);

@@ -2,19 +2,22 @@ function findClosestTarget (AL, character, party = [], eligibleTargets = [], avo
 
     const partyTargets = party.map((member) => {
         // if the member has a target, check if the member can one shot that target (if not we can help)
-        if(member?.target?.id && allowAssistance && member.character.canKillInOneShot){
-           if(!member.character.canKillInOneShot(member.target)) return null; // If they can't one shot and we're allowing assistance, don't exclude this target.
+        if(member?.character?.target && allowAssistance && member.character.canKillInOneShot){
+           if(!member.character.canKillInOneShot(member.character.getTargetEntity())) return null; // If they can't one shot and we're allowing assistance, don't exclude this target.
         }
-        return member?.target?.id
+        return member?.character?.target
     }).filter(Boolean);
 
-    const playerTargets = avoidPlayerTargets ? Array.from(character.players.values()).map((player) => player.id !== character.id && player.target).filter(Boolean) : [];
+    const playerTargets = avoidPlayerTargets ? Array.from(character.players.values()).map((player) => {
+        if(player.id !== character.id && player.target) return player.target
+    }).filter(Boolean) : [];
+
     const entities = [...character.entities.values() ];
     const validEntities = entities.filter((entity) => {
         if(!eligibleTargets.includes(entity.type)) return
         if(entity.cooperative) return entity; // Ignore all the player/party avoidance if it's a coop monster
-        if(avoidPartyTargets && partyTargets.includes(entity.type)) return; // Avoid the same target as a party member
-        if(avoidPlayerTargets && playerTargets.includes(entity.type)) return; // Avoid other players targets;
+        if(avoidPartyTargets && partyTargets.includes(entity.id)) return; // Avoid the same target as a party member
+        if(avoidPlayerTargets && playerTargets.includes(entity.id)) return; // Avoid other players targets;
         return entity;
     }).sort((entityA, entityB) => {
         // If the priority is higher in the target array, it comes first

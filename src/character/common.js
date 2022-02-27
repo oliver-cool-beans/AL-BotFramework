@@ -40,8 +40,8 @@ const common = {
         //On magiport request from another player
         bot.character.socket.on("magiport", async (data) => {
             if(!partyNames.includes(data.name)) return // If it's not from a partymember reject
+            bot.character.stopSmartMove().catch(() => { /* Suppress errors */ })
             console.log(`Accepting magiport from ${data.name}`)
-            bot.target = null;
             bot.character.acceptMagiport(data.name).catch(async () => {
                 await new Promise(resolve => setTimeout(resolve, 2000)); // Wait the timeout and try again
                 bot.character.acceptMagiport(data.name).catch(() => {})

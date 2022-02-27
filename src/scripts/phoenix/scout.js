@@ -48,28 +48,21 @@ async function scout(spawns, bot, party) {
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
         }
-        bot.target = nearbyPhoenix;
-        setPartyTasks(bot, party, bot.target);
-        await magiportParty(bot, party); 
+        bot.character.target = nearbyPhoenix?.id;
+        bot.addTask({
+            script: "phoenix", 
+            user: bot.name, 
+            priority: 4, 
+            args: {
+                target: nearbyPhoenix
+            }
+        });
+        await magiportParty(bot, party, nearbyPhoenix); 
     }
     return Promise.resolve(nearbyPhoenix);
 }
 
-
-function setPartyTasks(bot, party, target){
-    party.forEach((member) => {
-        if(!member?.character?.ready) return;
-        if(member.characterClass == "merchant") return;
-        member.target = target;
-        member.addTask({
-            script: "phoenix", 
-            user: bot.name, 
-            priority: 4
-        });
-    })
-}   
-
-async function magiportParty(bot, party) {
+async function magiportParty(bot, party, target) {
     for(var index in party){
         if(party[index].characterClass == "merchant") continue
         if(!party[index]?.character?.ready || party[index].name == bot.name) continue;
@@ -85,6 +78,14 @@ async function magiportParty(bot, party) {
         await bot.character.magiport(party[index].character.id).catch((error) => {
             console.log("Error magiporting", party[index].name, error)
         })
+        party[index].addTask({
+            script: "phoenix", 
+            user: bot.name, 
+            priority: 4, 
+            args: {
+                target: target
+            }
+        });
         await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
     }
     return Promise.resolve("OK")
