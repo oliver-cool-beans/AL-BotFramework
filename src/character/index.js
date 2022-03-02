@@ -310,7 +310,7 @@ class Character {
                 continue;
             }
 
-            if(this.character.esize <= 0){
+            if(this.character.esize <= 0) {
                 const {hpot, mpot} = this.calculatePotionItems();
                 this.addTask({
                     script: "bankItems", 
@@ -319,11 +319,23 @@ class Character {
                     force: true,
                     args: {
                         itemsToHold: [hpot, mpot, "tracker"], 
-                        goldToHold: 20000,
+                        goldToHold: 100000,
                         nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}
                     }
                 })
-            } 
+            }
+
+            if(this.character.gold < 100000){
+                this.addTask({
+                    script: "withdrawGold", 
+                    user: this.name, 
+                    priority: 1, 
+                    args: {
+                        goldToHold: 100000, 
+                        nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}
+                    }
+                })
+            }
 
         }
 

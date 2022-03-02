@@ -2,7 +2,8 @@ import utils from "../../scripts/utils/index.js";
 
 
 async function franky(bot, party, merchant, args = {}){
-    this.attackRange = 25;
+    bot.attackRange = 25;
+    var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, "franky");
 
     if(!bot.character?.S?.franky?.live) {
         console.log("Franky is no longer live, removing task");
@@ -16,16 +17,17 @@ async function franky(bot, party, merchant, args = {}){
     }
     
 
-    if(!bot.character.target || bot.character.target?.name !== "Franky"){
+    if(targetData?.name !== "Franky"){
+        bot.character.target = null;
         await bot.character.smartMove(args.event).catch(() => {});
     }
 
      // If we've got no target, get a valid target;
-    if(!bot.character.target || !bot.checkTarget(bot?.target, bot.character.entities, targets)) {
+    if(!bot.character.target) {
         bot.character.target = utils.findClosestTarget(bot.AL, bot.character, party, "franky");
     }
 
-    this.attackRange = this.character.range / 2;
+    bot.attackRange = bot.character.range / 2;
     return Promise.resolve("Finished");
 }
 

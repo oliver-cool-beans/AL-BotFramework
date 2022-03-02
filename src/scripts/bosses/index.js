@@ -4,7 +4,7 @@ import pinkgoo from "./pinkgoo.js"
 import dragold from "./dragold.js"
 
 const bosses = {
-    //franky: franky, 
+    franky: franky, 
     //snowman: snowman, 
     //dragold: dragold
     //pinkgoo: pinkgoo
