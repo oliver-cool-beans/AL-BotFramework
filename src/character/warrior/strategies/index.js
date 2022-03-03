@@ -6,7 +6,6 @@ import cleave from "./cleave.js";
 export const moveStrategies = {
     "skeletor": kiteBoss, 
     "mvampire": kiteBoss,
-    "bigbird": kiteTarget, 
     "boar": kiteTarget, 
 }
 

@@ -49,7 +49,7 @@ const scripts = {
    // boar,
     specialMonster, 
     monsterHunt,
-  //  bigbird,
+    //bigbird,
     ...bosses
 }
 

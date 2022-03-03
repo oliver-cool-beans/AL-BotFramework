@@ -105,7 +105,7 @@ class Character {
                     continue
                 }
                 await {...scripts, ...tasks}[this.#tasks[0].script](this, party.members, this.merchant, this.#tasks[0].args).catch((error) => {
-                    this.log(`task ${this.tasks[0]?.name} errored with, ${error}`)
+                    this.log(`task ${this.#tasks[0]?.name} errored with, ${error}`)
                     this.removeTask(this.#tasks[0]?.script)
                 });
                 continue;

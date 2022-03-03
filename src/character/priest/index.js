@@ -3,6 +3,8 @@
     load: Character class function added onto the Character class when starter
     loop: Functions that will be executed only for this class, every time during their while loop;
 */
+import { attackStrategies } from "./strategies/index.js";
+
 export default {
     load: loadFunctions,
     loop: loopFunctions
@@ -12,10 +14,13 @@ async function loadFunctions () {
     return Promise.resolve('OK');
 }
 
-async function loopFunctions(){
-    healParty(this)
+async function loopFunctions() {
+    if(!this?.character) return;
+    this.strategies = {
+        attack: {...attackStrategies}
+    }
+    return
 }
-
 
 async function healParty(bot){
     while(bot.character.socket){
