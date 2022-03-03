@@ -35,7 +35,7 @@ async function phoenix(bot, party, merchant, args = {}) {
         console.log("TARGET IS NOW MEMBER", bot.character.target, targetData?.type)
     }   
 
-    if (targetData?.map == bot.character.map && !bot.character.entities.get(targetData?.id)) {
+    if (targetData?.map == bot.character.map && !bot.character.entities?.get(targetData?.id)) {
         console.log(bot.name, "THIS PHOENIX IS DEAD")
         targetData = null;
         bot.setTarget(null)
