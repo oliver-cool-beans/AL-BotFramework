@@ -389,7 +389,6 @@ class Character {
 
             // If we're out of range, move to the target
             if(this.AL.Tools.distance(this.character, targetData) > this.character.range && !this.#tasks[0]?.force && !this.character.moving){
-                this.log(`Trying to move to, ${targetData?.id}, IS MOVING: ${this.character.moving}`)
                 await this.character.smartMove(targetData, { getWithin: this.attackRange || this.character.range / 2 }).catch(() => {});
             }
         }

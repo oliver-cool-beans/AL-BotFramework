@@ -11,14 +11,14 @@ const targets = ['phoenix'];
 
 async function phoenix(bot, party, merchant, args = {}) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
+
     var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, targets)
-    || args?.target
-    console.log(bot.name, "IS RUNNING PHOENIX *****************", targetData?.type, args?.target?.id)
-    /*if(!bot.checkTarget(targetData, bot.character.entities, targets)) {
-        console.log(bot.name, "CHECK TARGET IS FALSE")
-        bot.setTarget(null);
-        targetData = utils.findClosestTarget(bot.AL, bot.character, party, targets);
-    } */
+    if(!targetData){
+        console.log(bot.name, "No phoenix in area, setting target from args")
+        targetData = args?.target
+    }
+
+    console.log(bot.name, "IS RUNNING PHOENIX *****************", targetData?.type, args?.target?.id, targetData?.hp, targetData?.dead)
 
     if(bot.runningScriptName != "phoenix" && targetData?.id) {
         bot.runningScriptName = "phoenix" 
@@ -58,6 +58,9 @@ async function phoenix(bot, party, merchant, args = {}) {
             })
         }
     }
+
+    const validPhoenix = bot.character.entities.get(targetData?.id)
+    console.log(bot.name, "Valid Phoenix found", validPhoenix?.map, validPhoenix?.id, validPhoenix?.hp, validPhoenix?.dead)
 
 
     await new Promise(resolve => setTimeout(resolve, 2000));
