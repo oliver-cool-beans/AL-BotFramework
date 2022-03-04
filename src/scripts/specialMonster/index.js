@@ -48,7 +48,7 @@ async function specialMonster(bot, party, merchant, args = {}) {
     }
 
     // If we've got no target, get a valid target;
-    if(!bot.character.target || !bot.checkTarget(bot?.target, bot.character.entities, targets)) {
+    if(!bot.character.target || !bot.checkTarget(bot?.target, bot.character.entities, [target.type])) {
         bot.character.target = utils.findClosestTarget(bot.AL, bot.character, party, [target.type]);
     }
 
