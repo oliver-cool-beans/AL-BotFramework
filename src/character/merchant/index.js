@@ -34,15 +34,15 @@ async function regenLoop(bot){
     }
 }
 async function mluckLoop(bot) {
-    let mluckCount;
     while(bot.isRunning){
         await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again
-        const mluckPlayers = Array.from(bot.character.players.values()).map((player) => {
+        const mluckPlayers = bot.character?.players && Array.from(bot.character.players.values()).map((player) => {
             if(bot.AL.Tools.distance(bot.character, player) > bot.AL.Game.G.skills.mluck.range) return;
             if(player.s?.mluck?.f !== bot.name && !player.s?.mluck?.strong && player.ctype !== "merchant" && !player.npc){
                 return player;
             }
-        }).filter(Boolean);
+        }).filter(Boolean) || [];
+
         for(var player in mluckPlayers){
             console.log("MLUCKING", mluckPlayers[player]?.id);
             mluckPlayers[player].id && bot.character.mluck(mluckPlayers[player].id).catch((error) => {

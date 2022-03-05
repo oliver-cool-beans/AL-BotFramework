@@ -4,6 +4,16 @@ const merchantStandItems = {
     "gem0": {
         qty: "all", 
         price: "1000000"
+    }, 
+    "vitearring": {
+        level: 4, 
+        qty: "all", 
+        price: 100000000
+    }, 
+    "wbook0" : {
+        level: 4, 
+        qty: "all", 
+        price: 400000000
     }
    /* "intearring": {
         level: 3, 
