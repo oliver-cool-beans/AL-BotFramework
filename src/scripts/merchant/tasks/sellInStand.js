@@ -3,7 +3,7 @@ import utils from "../../utils/index.js";
 const merchantStandItems = {
     "gem0": {
         qty: "all", 
-        price: "1000000"
+        price: 1000000
     }, 
     "vitearring": {
         level: 4, 
@@ -14,6 +14,10 @@ const merchantStandItems = {
         level: 4, 
         qty: "all", 
         price: 400000000
+    },
+    "tracker": {
+        qty: "all", 
+        price: 3000000
     }
    /* "intearring": {
         level: 3, 
