@@ -50,7 +50,7 @@ async function scout(spawns, bot, party) {
         }
         bot.character.target = nearbyPhoenix?.id;
         bot.addTask({
-            script: "phoenix", 
+            script: "specialMonster", 
             user: bot.name, 
             priority: 4, 
             args: {
@@ -79,7 +79,7 @@ async function magiportParty(bot, party, target) {
             console.log("Error magiporting", party[index].name, error)
         })
         party[index].addTask({
-            script: "phoenix", 
+            script: "specialMonster", 
             user: bot.name, 
             priority: 4, 
             args: {

@@ -7,50 +7,43 @@
 import utils from "../../scripts/utils/index.js";
 
 async function specialMonster(bot, party, merchant, args = {}) {
-    console.log(bot.name, "RUNNING SPECIAL MONSTER FOR", args.target?.type)
-    const target = args.target
-
-    // Check if this entity is still alive;
-    if(!bot.character.entities.get(target.id)){
-        //try moving and try again
-        await bot.character.smartMove(target).catch(() => {})
-        if(!bot.character.entities.get(target.id) && target.map == bot.character.map){
-            console.log("This special monster is no longer alive");
-            bot.character.target = null;
-            bot.removeTask("specialMonster");
-            return Promise.resolve("OK");
-        }
-    }
-
-    if(bot.partyMonsters.includes(target?.type)){
-        if(bot.checkPartyPresence(party).length <= 1) {
-            console.log(bot.name, "the party has not assembled yet")
-            return Promise.resolve("Party not present");
-        }
-    }
-
     if(!bot.character.ready) return Promise.reject("Character not ready");
-    bot.character.target = bot.character.getTargetEntity() || null;
-    if(!target?.id) return Promise.reject("No Entity");
-
-
-    const rallyPosition = args.entity
+    if(!args.target?.type) return;
 
     if(!bot.runningScriptName == "specialMonster") {
         bot.runningScriptName = "specialMonster"
-        await bot.character.smartMove(rallyPosition).catch((error) => {
-            console.log("FAILED TO SMART MOVE IN SPECIAL", error)
-        });;
     }
 
-    if(!bot.character.target && bot.character.target?.id !== target.id){
-        bot.character.target = target;
+    // Get target if in range, or set to the arg target data
+    // Do I have a character target? if not, do I have an arg target? if so set it
+    var targetData = bot.character.getTargetEntity() || {}
+
+    if(targetData.id !== args.target.id ){
+        targetData = utils.findClosestTarget(bot.AL, bot.character, party, [args.target.type]) || args?.target;
     }
 
-    // If we've got no target, get a valid target;
-    if(!bot.character.target || !bot.checkTarget(bot?.target, bot.character.entities, [target.type])) {
-        bot.character.target = utils.findClosestTarget(bot.AL, bot.character, party, [target.type]);
+    if(!targetData?.id) return;
+
+    // Can I see my target in my immediate surroundings?
+    if(bot.character.entities.get(targetData.id)){
+        bot.setTarget(targetData.id);
+        return;
     }
+
+    const distance = bot.AL.Tools.distance(bot.character, targetData);
+    // If i'm on the same map, and less than 500m then it's probably dead, remove target, remove task
+    if(targetData.map == bot.character.map && distance <= 500){
+        bot.setTarget(null)
+        bot.removeTask("specialMonster");
+        console.log(bot.name, "Removed Special Monster task")
+        return;
+    }
+
+    // If i'm not on the same map or distance, move to the target, repeat above
+    await bot.character.smartMove(targetData).catch((error) => {
+        console.log(bot.name, "FAILED TO MOVE TO SPECIAL MONSTER", error);
+    })
+
 
     return Promise.resolve("Finished");
 }

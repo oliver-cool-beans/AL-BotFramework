@@ -3,6 +3,8 @@ import compoundItems from "./tasks/compoundItems.js";
 import buyAndSell from "./tasks/buyAndSell.js";
 import sellInStand from "./tasks/sellInStand.js";
 import serverWideMluck from "./tasks/serverWideMluck.js";
+import mine from "./tasks/mine.js";
+import fish from "./tasks/fish.js";
 
 async function scheduler(bot, force = false){
     if(bot.characterClass !== "merchant") return Promise.resolve(`Not a merchant ${bot.name}, ${bot.characterClass}`);
@@ -26,13 +28,12 @@ async function scheduler(bot, force = false){
         }
 
         await bot.character.smartMove('main', {avoidTownWarps: true}).catch(() => {});
-        
-       /* await serverWideMluck(bot).catch((error) => {
-            console.log("ServerWideMluck Failed", error)
-        }); */
-    
+            
     }
 
+    await mine(bot).catch(() => {});
+    await fish(bot).catch(() => {});
+    
     if(!bot.character.stand){
         await sellInStand(bot);
     }

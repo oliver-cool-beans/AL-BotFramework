@@ -136,7 +136,7 @@ async function compoundItems(bot){
     
 
     console.log("Depositing back in Bank");
-    await utils.goToBank(bot, ['cscroll0', 'cscroll1', 'scroll0', 'scroll1', 'stand'], 1000000, 'main');
+    await utils.goToBank(bot, bot.itemsToKeep, 1000000, 'main');
     console.log("Finished compound script")
 
     return Promise.resolve(true)

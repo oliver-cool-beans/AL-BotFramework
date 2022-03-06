@@ -39,7 +39,7 @@ const merchantStandItems = {
 async function sellInStand(bot){
 
     console.log("Depositing back in Bank");
-    await utils.goToBank(bot, ['stand0'], 50000000);
+    await utils.goToBank(bot, bot.itemsToKeep, 50000000);
     await bot.character.withdrawGold(50000000 - bot.character.gold).catch(() => {})
     await utils.withdrawItemsFromBank(bot, {"stand0": {qty: 1}});
     await utils.withdrawItemsFromBank(bot, merchantStandItems);
