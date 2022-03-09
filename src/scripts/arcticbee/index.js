@@ -6,9 +6,9 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["articbee"];
+const targets = ["arcticbee"];
 
-async function articbee(bot, party, merchant, args) {
+async function arcticbee(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
     var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, targets);
 
@@ -19,20 +19,20 @@ async function articbee(bot, party, merchant, args) {
 
     if(bot.character.target !== targetData?.id) bot.setTarget(targetData?.id);
 
-    const rallyPosition = "articbee";
+    const rallyPosition = "arcticbee";
 
-    if(!bot.runningScriptName == "articbee") {
-        bot.runningScriptName = "articbee"
+    if(!bot.runningScriptName == "arcticbee") {
+        bot.runningScriptName = "arcticbee"
         await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("articbee").catch(() => {});
+        await bot.character.smartMove("arcticbee").catch(() => {});
     }
 
     return Promise.resolve("Finished");
 }
 
 
-export default articbee;
+export default arcticbee;
