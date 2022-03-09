@@ -48,7 +48,7 @@ class Character {
         this.isRunning = false;
         this.merchant = null;
         this.notificationBuffer = [];
-        this.serverRegion = "ASIA", 
+        this.serverRegion = "US", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
         this.specialMonsters = []
@@ -471,19 +471,48 @@ class Character {
             await new Promise(resolve => setTimeout(resolve, 20000));
             if(!this.character) continue
 
+            // Load from local data
             this.log(`Checking Boss Mobs: ${JSON.stringify(this.character.S)}`)
             Object.entries(this.character.S).forEach(([event, data]) => {
-                if(!data.live || !bosses[event] || this.#tasks.find((task) => task.script == event) && data?.target) return;
+                if(!data.live || !bosses[event] || !data?.target) return;
+                if(this.#tasks.find((task) => task.script == event && task.args.serverIdentifier == this.character.serverData.name && task.args.serverRegion == this.character.serverData.region)){
+                    return
+                }
                 this.log(`Adding event`);
                 this.addTask({
                     script: event, 
                     user: this.name, 
                     priority: 3,
                     args: {
-                        event: data
+                        event: data, 
+                        serverRegion: this.character.serverData.region, 
+                        serverIdentifier: this.character.serverData.name
                     }
                 })
-            })
+            });
+
+            // Now load from external data
+            if(this.party.dataPool.aldata){
+                this.party.dataPool.aldata.forEach((event) => {
+                    if(!bosses[event.type] || !event.target) return;
+                    if(this.#tasks.find((task) => task.script == event.type && task.args.serverIdentifier == event.serverIdentifier && task.args.serverRegion == event.serverRegion)){
+                        return
+                    }
+                    this.log(`Adding inter-server event for ${event.type}`)
+                    this.addTask({
+                        script: event.type, 
+                        user: this.name,
+                        priority: 3, 
+                        args: {
+                            event: event, 
+                            serverRegion: event.serverRegion, 
+                            serverIdentifier: event.serverIdentifier
+                        }
+                        
+                    })
+                    
+                })
+            }
         }
     }
 

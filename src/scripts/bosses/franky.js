@@ -5,9 +5,18 @@ async function franky(bot, party, merchant, args = {}){
     bot.attackRange = 25;
     var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, "franky");
 
+    if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
+        bot.log(`Switching servers to ${args.serverRegion} ${args.serverIdentifier}`)
+        args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
+    }
+    
     if(!bot.character?.S?.franky?.live) {
         console.log("Franky is no longer live, removing task");
         bot.removeTask("franky");
+        if((bot.serverIdentifier !==  bot.character.serverData.name) || (bot.serverRegion !==  bot.character.serverData.region)){
+            bot.log(`Switching back to home server ${bot.serverRegion} ${bot.serverIdentifier}`)
+            await bot.switchServer(bot.serverRegion, bot.serverIdentifier)
+        }
         return;
     }
 

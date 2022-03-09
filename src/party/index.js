@@ -2,11 +2,14 @@
     A class responsible for adding and removing members from the party
 */
 
+import DataPool from "./dataPool.js";
+
 class Party {
     constructor(characters, partyConfig = {}){
         this.members = [];
         this.allCharacters = characters;
         this.config = partyConfig
+        this.dataPool = new DataPool();
     }
     addMember(characterName) {
         const character = this.allCharacters.find((char) => characterName == char.name)
