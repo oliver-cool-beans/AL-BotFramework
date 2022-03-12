@@ -53,6 +53,7 @@ class Character {
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
         this.specialMonsters = []
         this.partyMonsters = []
+        this.isSwitchingServers = false;
     }
 
     async start(AL) {
@@ -88,7 +89,7 @@ class Character {
             this.lootLoop(); // Loots chests  
             this.sellLoop(); // Sell junk when we can
             this.findSpecialMonsterLoop(); // Check for special monsters and attack them
-            this.checkEventBossesLoop(); // Check for boss events
+            //this.checkEventBossesLoop(); // Check for boss events
             this.monsterHuntLoop(); // Check for monster hunts
         }
 
@@ -99,13 +100,14 @@ class Character {
         while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 500)); 
 
+            console.log("TARGET", this.character?.target)
             if(this.#tasks.length){
                 if(!await {...scripts, ...tasks}[this.#tasks[0]?.script]){
                     this.removeTask(this.#tasks[0]?.script);
                     continue
                 }
                 await {...scripts, ...tasks}[this.#tasks[0].script](this, party.members, this.merchant, this.#tasks[0].args).catch((error) => {
-                    this.log(`task ${this.#tasks[0]?.name} errored with, ${error}`)
+                    this.log(`task ${this.#tasks[0]?.script} errored with, ${error}`)
                     this.removeTask(this.#tasks[0]?.script)
                 });
                 continue;
@@ -175,16 +177,16 @@ class Character {
     async reconnect(){
         this.disconnect();
         this.log("Disconnected, waiting 5 seconds then reconnecting")
-        await new Promise(resolve => setTimeout(resolve, 5000));
         await this.start(this.AL)
         await this.run(this.party, this.discord, this.AL, this.isLeader);
     }
 
-    disconnect(){
+    async disconnect(){
         if(!this.character) return "Character not connected";
         this.isRunning = false;
         this.character.disconnect();
         this.character = false;
+        await new Promise(resolve => setTimeout(resolve, 5000));
         return
 
     }
@@ -343,11 +345,11 @@ class Character {
 
     async attackLoop(){
         while(this.isRunning){ 
+            console.log("Attack loop is running")
             await new Promise(resolve => setTimeout(resolve, 500));
             if(!this.character) continue
             if(!this.character.target){
                 console.log("Character has no target", this.character.target)
-                await new Promise(resolve => setTimeout(resolve, 1500));
                 continue;
             }
 
@@ -518,9 +520,16 @@ class Character {
 
     async switchServer(region, identifier){
         if(region == this.serverRegion && identifier == this.identifier) return false;
+        console.log("running switch server", this.isSwitchingServers)
+        if(this.isSwitchingServers) return false;
+        console.log("AM I SWITCHING?", this.isSwitchingServers)
+        this.isSwitchingServers = true;
         this.log(`Switching servers to ${region} ${identifier}`);
-        this.disconnect();
-        return await common.startCharacter(this, region, identifier)
+        await this.disconnect();
+        console.log("Finished disconnecting")
+        this.character = await common.startCharacter(this, region, identifier).catch(() => {});
+        await this.run(this.party, this.discord, this.AL, this.isLeader);
+        this.isSwitchingServers = false;
     }
 
     async monsterHuntLoop(){

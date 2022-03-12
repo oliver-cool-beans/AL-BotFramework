@@ -1,15 +1,28 @@
 import utils from "../../scripts/utils/index.js";
 
 
-async function franky(bot, party, merchant, args = {}){
+async function franky(bot, party, merchant, args = {}){    
     bot.attackRange = 25;
-    var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, "franky");
 
+    console.log("running franky")
     if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
-        bot.log(`Switching servers to ${args.serverRegion} ${args.serverIdentifier}`)
+        console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)
         args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
+        return;
     }
     
+    if(!bot.character?.S) {
+        console.log("Running franky, but no S populated yet")
+        return
+    }
+
+    var targetData = bot.character.getTargetEntity() || bot.character.getEntity({ returnNearest: true, type: "franky" })
+
+     console.log("TARGET DATA", targetData?.id)
+    if(targetData?.id && !bot.character?.target){
+        bot.character.target = targetData?.id
+    }
+
     if(!bot.character?.S?.franky?.live) {
         console.log("Franky is no longer live, removing task");
         bot.removeTask("franky");
@@ -29,11 +42,6 @@ async function franky(bot, party, merchant, args = {}){
     if(targetData?.name !== "Franky"){
         bot.character.target = null;
         await bot.character.smartMove(args.event).catch(() => {});
-    }
-
-     // If we've got no target, get a valid target;
-    if(!bot.character.target) {
-        bot.character.target = utils.findClosestTarget(bot.AL, bot.character, party, "franky");
     }
 
     bot.attackRange = bot.character.range / 2;
