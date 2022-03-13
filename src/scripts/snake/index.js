@@ -6,7 +6,7 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["snake"];
+const targets = ["snake", "osnake"];
 
 async function snake(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");

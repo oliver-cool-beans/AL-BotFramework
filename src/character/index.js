@@ -98,9 +98,8 @@ class Character {
         
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => this.log(`ERROR: ${error}`))
         while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 500)); 
+            await new Promise(resolve => setTimeout(resolve, 50)); 
 
-            console.log("TARGET", this.character?.target)
             if(this.#tasks.length){
                 if(!await {...scripts, ...tasks}[this.#tasks[0]?.script]){
                     this.removeTask(this.#tasks[0]?.script);
@@ -345,8 +344,7 @@ class Character {
 
     async attackLoop(){
         while(this.isRunning){ 
-            console.log("Attack loop is running")
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 50));
             if(!this.character) continue
             if(!this.character.target){
                 console.log("Character has no target", this.character.target)
