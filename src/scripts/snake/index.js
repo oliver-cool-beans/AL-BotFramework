@@ -19,7 +19,7 @@ async function snake(bot, party, merchant, args) {
 
     if(bot.character.target !== targetData?.id) bot.setTarget(targetData?.id);
 
-    const rallyPosition = "snake";
+    const rallyPosition = {x: -541.2208544380876, y: -536.1707341024603, map: 'halloween'};
 
     if(!bot.runningScriptName == "snake") {
         bot.runningScriptName = "snake"

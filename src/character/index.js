@@ -347,7 +347,7 @@ class Character {
             await new Promise(resolve => setTimeout(resolve, 50));
             if(!this.character) continue
             if(!this.character.target){
-                console.log("Character has no target", this.character.target)
+              //  console.log("Character has no target", this.character.target)
                 continue;
             }
 
