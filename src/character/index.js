@@ -51,7 +51,7 @@ class Character {
         this.serverRegion = "US", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = []
+        this.specialMonsters = ["greenjr"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
     }
@@ -444,7 +444,7 @@ class Character {
 
     async findSpecialMonsterLoop(){
         while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 4000));
+            await new Promise(resolve => setTimeout(resolve, 1000));
             if(!this.character) continue
             [...this.character.entities.values()].forEach((entity) => {
                 if(!this.specialMonsters.includes(entity.type)) return

@@ -28,7 +28,7 @@ async function snake(bot, party, merchant, args) {
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("snake").catch(() => {});
+        await bot.character.smartMove(rallyPosition).catch(() => {});
     }
 
     return Promise.resolve("Finished");
