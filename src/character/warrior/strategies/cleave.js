@@ -7,7 +7,6 @@ async function cleave(bot, party){
                 && !entity.target // and does not have a target
         }) || [];
     
-        console.log(nearbyEntities.length, "Cleave?")
         if(nearbyEntities.length < 3) return Promise.reject("Not enough entities");
     
         if(bot.character.canUse("cleave")){

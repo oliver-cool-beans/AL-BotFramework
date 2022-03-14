@@ -38,7 +38,7 @@ async function energize(bot){
         if(bot.character.canUse("energize") && lowEnergyPartyMembers.length){
             const energyToGive = lowEnergyPartyMembers[0].character.max_mp - lowEnergyPartyMembers[0].character.mp
             console.log("Energizing", lowEnergyPartyMembers[0]?.character.name, energyToGive)
-            bot.character.energize(lowEnergyPartyMembers[0].character?.name, energyToGive);
+            bot.character.energize(lowEnergyPartyMembers[0].character?.name, energyToGive).catch(() => {})
         }
     }
 }
