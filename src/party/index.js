@@ -11,6 +11,12 @@ class Party {
         this.config = partyConfig
         this.dataPool = new DataPool();
     }
+
+    getTank() {
+        // TODO make this smarter, check for shields or armor value/hp as well as class
+        const tank = this.members.find((member) => member.character.ctype == "warrior");
+        return tank?.name || null
+    }
     addMember(characterName) {
         const character = this.allCharacters.find((char) => characterName == char.name)
         if(!this.members.find((char) => characterName == char.name) && character){

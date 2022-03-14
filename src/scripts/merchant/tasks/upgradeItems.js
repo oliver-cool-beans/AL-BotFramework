@@ -102,6 +102,7 @@ async function upgradeItems(bot){
     for(var index in bot.character.items){
         item = bot.character.items[index];
         if(!item) continue;
+        if(bot.itemsToKeep.includes(item.name)) continue;
         if(!bot.AL.Game.G.items[item.name]?.upgrade) continue;
         console.log("Attempting to upgrade", item)
         const requiredScroll = `scroll${bot.character.calculateItemGrade(item)}`

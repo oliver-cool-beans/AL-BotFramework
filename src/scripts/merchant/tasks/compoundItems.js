@@ -111,6 +111,7 @@ async function compoundItems(bot){
     for(var index in bot.character.items){
         item = bot.character.items[index];
         if(!item) continue;
+        if(bot.itemsToKeep.includes(item.name)) continue;
         if(!bot.AL.Game.G.items[item.name]?.compound) continue;
         console.log("Attempting to compound", item)
         itemArray = bot.character.locateItemsByLevel(bot.character.items, {excludeLockedItems: true})?.[item.name]?.[item.level]?.slice(0, 3);
