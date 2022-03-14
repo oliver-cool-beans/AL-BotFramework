@@ -22,6 +22,7 @@ import scorpion from "./scorpion/index.js";
 import spider from "./spider/index.js";
 import gscorpion from "./gscorpion/index.js";
 import boar from "./boar/index.js";
+import armadillo from "./armadillo/index.js";
 
 import monsterHunt from "./monsterHunt/index.js";
 
@@ -46,6 +47,7 @@ const scripts = {
     spider,
     cgoo,
     osnake,
+    armadillo,
    // boar,
     specialMonster, 
     monsterHunt,
