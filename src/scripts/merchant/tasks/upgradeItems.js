@@ -27,6 +27,8 @@ async function upgradeItems(bot){
             if(!slotItem) return acc;
             if(!bot.AL.Game.G.items[slotItem.name]?.upgrade) return acc; // If this item is not upgradeable
             if(slotItem.level >= 8) return acc; // If the item is gte level 8
+            if(slotItem.p) return acc; // Item is special
+            if(slotItem.l) return acc // Item is locked
             if(!acc[slotItem.name]) acc[slotItem.name] = {};
             acc[slotItem.name][slotItem.level]?.length ? acc[slotItem.name][slotItem.level].push(index) 
             : acc[slotItem.name][slotItem.level] = [index]

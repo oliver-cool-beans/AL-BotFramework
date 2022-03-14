@@ -27,6 +27,8 @@ async function compoundItems(bot){
             if(!slotItem) return acc;
             if(!bot.AL.Game.G.items[slotItem.name]?.compound) return acc; // If this item is not compoundable
             if(slotItem.level >= 4) return acc // If the item level gte 4
+            if(slotItem.p) return acc; // Item is special
+            if(slotItem.l) return acc // Item is locked
             if(!acc[slotItem.name]) acc[slotItem.name] = {};
             acc[slotItem.name][slotItem.level]?.length ? acc[slotItem.name][slotItem.level].push(index) 
             : acc[slotItem.name][slotItem.level] = [index]
