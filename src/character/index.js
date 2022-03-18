@@ -311,7 +311,7 @@ class Character {
                 continue;
             }
 
-            if(this.character.esize <= 0) {
+            if(this.character.esize <= 0 && this.character.ctype !== "merchant") {
                 const {hpot, mpot} = this.calculatePotionItems();
                 this.addTask({
                     script: "bankItems", 
@@ -319,7 +319,7 @@ class Character {
                     priority: 1,
                     force: true,
                     args: {
-                        itemsToHold: [hpot, mpot, "tracker"], 
+                        itemsToHold: [hpot, mpot, "tracker"].concat(this.itemsToHold), 
                         goldToHold: 100000,
                         nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}
                     }

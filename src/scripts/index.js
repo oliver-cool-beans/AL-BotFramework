@@ -23,7 +23,7 @@ import spider from "./spider/index.js";
 import gscorpion from "./gscorpion/index.js";
 import boar from "./boar/index.js";
 import armadillo from "./armadillo/index.js";
-
+import stoneworm from "./stoneworm/index.js";
 import monsterHunt from "./monsterHunt/index.js";
 
 const scripts = {
@@ -51,6 +51,7 @@ const scripts = {
    // boar,
     specialMonster, 
     monsterHunt,
+    stoneworm,
     //bigbird,
     ...bosses
 }
