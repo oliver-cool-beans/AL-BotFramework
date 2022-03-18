@@ -31,7 +31,8 @@ async function loopFunctions() {
 async function regenLoop(bot){
     while(bot.isRunning){
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
-        if(bot.character.mp < bot.character.max_hp) await bot.character.regenMP().catch(() => {});
+        if(!bot.character) continue
+        if(bot.character.mp < bot.character.max_mp) await bot.character.regenMP().catch(() => {});
     }
 }
 async function mluckLoop(bot) {

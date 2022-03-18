@@ -5,8 +5,7 @@ async function scout(spawns, bot, party) {
     var nearbyPhoenix = bot.character.getEntity({ returnNearest: true, type: "phoenix" })
     while(!nearbyPhoenix && !bot.getTasks().length){
         await new Promise(resolve => setTimeout(resolve, 500));
-        console.log("SEARCHING SPAWNS FOR PHOENIX ************", !!bot.character.socket, bot.character.ready, bot.character.map)
-        if(!bot.character.socket || !bot.character.ready || bot.character.map == "jail") {
+        if(!bot.character?.socket || !bot.character?.ready || bot.character?.map == "jail") {
             console.log("Returning in scout")
             return await new Promise(resolve => setTimeout(resolve, 2000));
         };

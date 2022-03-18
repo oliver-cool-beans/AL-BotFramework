@@ -23,8 +23,9 @@ async function loopFunctions() {
 }
 
 async function healParty(bot){
-    while(bot.character.socket){
+    while(bot.isRunning){
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
+        if(!bot.character) continue;
         const validMembers = bot.party.members.filter((member) => {
             if(!member.character?.hp) return false
             console.log(member.name, member.character.hp)

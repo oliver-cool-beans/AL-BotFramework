@@ -342,6 +342,10 @@ class Character {
 
     }
 
+    async sendItems(limit, characterName){
+
+    }
+    
     async attackLoop(){
         while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 50));
