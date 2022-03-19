@@ -33,7 +33,11 @@ class DataPool {
             await new Promise(resolve => setTimeout(resolve, this.initialised ? 60000 : 1000));
             console.log("Refreshing AL Data")
             if(!this.initialised) this.initialised = true;
-            this.isRunning && await this.refreshALData();
+            try{
+                this.isRunning && await this.refreshALData();
+            }catch(error){
+                console.log("ERROR REFRESHING DATA", error)
+            }
             console.log("DATA IS NOW", this.aldata)
         }
     }

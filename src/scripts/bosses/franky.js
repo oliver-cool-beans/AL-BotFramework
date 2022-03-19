@@ -23,6 +23,7 @@ async function franky(bot, party, merchant, args = {}){
         bot.character.target = targetData?.id
     }
 
+    
     if(!bot.character?.S?.franky?.live) {
         console.log("Franky is no longer live, removing task");
         bot.removeTask("franky");

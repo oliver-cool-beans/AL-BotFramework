@@ -89,7 +89,7 @@ class Character {
             this.lootLoop(); // Loots chests  
             this.sellLoop(); // Sell junk when we can
             this.findSpecialMonsterLoop(); // Check for special monsters and attack them
-            //this.checkEventBossesLoop(); // Check for boss events
+            this.checkEventBossesLoop(); // Check for boss events
             this.monsterHuntLoop(); // Check for monster hunts
         }
 
@@ -495,7 +495,7 @@ class Character {
                 })
             });
 
-            // Now load from external data
+          /*  // Now load from external data
             if(this.party.dataPool.aldata){
                 this.party.dataPool.aldata.forEach((event) => {
                     if(!bosses[event.type] || !event.target) return;
@@ -516,7 +516,7 @@ class Character {
                     })
                     
                 })
-            }
+            } */
         }
     }
 
