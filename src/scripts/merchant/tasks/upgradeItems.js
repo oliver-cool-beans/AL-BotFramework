@@ -102,6 +102,7 @@ async function upgradeItems(bot){
     for(var index in bot.character.items){
         item = bot.character.items[index];
         if(!item) continue;
+        if(item.level >= 8) continue;
         if(bot.itemsToKeep.includes(item.name)) continue;
         if(!bot.AL.Game.G.items[item.name]?.upgrade) continue;
         console.log("Attempting to upgrade", item)
@@ -109,8 +110,6 @@ async function upgradeItems(bot){
         console.log("RequiredScroll", requiredScroll);
         var scrollPosition = bot.character.locateItem(requiredScroll);
         if(scrollPosition == undefined && !bot.character.canBuy(requiredScroll)) {
-            console.log("SCROLL POSITION", bot.character.locateItem(requiredScroll))
-            console.log("NO SCROLL and can't buy one??", bot.character.canBuy(requiredScroll))
             continue
         }
         if(scrollPosition == undefined) {

@@ -19,7 +19,7 @@ async function loadFunctions () {
     this.deliverBuyOrder = deliverBuyOrder
     this.processStoreOrder = processStoreOrder
     this.runTasks = runTasks
-    this.itemsToKeep = ['cscroll0', 'cscroll1', 'scroll0', 'scroll1', 'stand', 'rod', 'pickaxe']
+    this.itemsToKeep = ['cscroll0', 'cscroll1', 'cscroll2', 'scroll0', 'scroll1', 'scroll2', 'stand', 'rod', 'pickaxe']
     return
 }
 

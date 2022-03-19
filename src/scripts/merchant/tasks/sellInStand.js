@@ -13,11 +13,15 @@ const merchantStandItems = {
     "wbook0" : {
         level: 4, 
         qty: "all", 
-        price: 400000000
+        price: 100000000
     },
     "tracker": {
         qty: "all", 
         price: 3000000
+    }, 
+    "ink": {
+        qty: "all",
+        price: 10000000
     }
    /* "intearring": {
         level: 3, 

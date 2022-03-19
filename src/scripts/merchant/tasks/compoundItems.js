@@ -111,6 +111,7 @@ async function compoundItems(bot){
     for(var index in bot.character.items){
         item = bot.character.items[index];
         if(!item) continue;
+        if(item.level >= 4) continue;
         if(bot.itemsToKeep.includes(item.name)) continue;
         if(!bot.AL.Game.G.items[item.name]?.compound) continue;
         console.log("Attempting to compound", item)
@@ -120,8 +121,6 @@ async function compoundItems(bot){
 
         var scrollPosition = bot.character.locateItem(requiredScroll);
         if(scrollPosition == undefined && !bot.character.canBuy(requiredScroll)) {
-            console.log("SCROLL POSITION", bot.character.locateItem(requiredScroll))
-            console.log("NO SCROLL and can't buy one??", bot.character.canBuy(requiredScroll))
             continue
         }
         if(scrollPosition == undefined) {
