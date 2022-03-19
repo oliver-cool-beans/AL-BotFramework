@@ -87,6 +87,7 @@ async function upgradeItems(bot){
 
     for(var safeItemName in allSafeItems){
         console.log("Withdrawing All Of", safeItemName);
+        if(bot.character.esize <= 1) continue;
         await withdrawAllOfItem(bot, safeItemName, allSafeItems[safeItemName])  
         console.log("Finished withdrawing", safeItemName)
       
