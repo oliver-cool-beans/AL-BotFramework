@@ -32,6 +32,7 @@ async function energize(bot){
             return member.character.mp <= (member.character.max_mp * 0.8) 
             && bot.AL.Tools.distance(bot.character, member.character) <= 320
             && bot.name != member.name
+            && bot.character.ctype !== "mage"
         })
 
         console.log(lowEnergyPartyMembers.length, "Low energy")
