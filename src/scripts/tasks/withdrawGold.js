@@ -1,7 +1,6 @@
 const bankingPosition = { map: "bank", x: 0, y: -200 };
 
 async function withdrawGold(bot, party, merchant, args) {
-    console.log("WITHDRAWING GOLD", bot.name)
     const {goldToHold, nextPosition} = args;
     while(!["bank", "bank_b", "bank_u"].includes(bot.character.map) && !bot.character.moving){
         await bot.character.smartMove(bankingPosition, { avoidTownWarps: true }).catch(() => {})
@@ -11,7 +10,9 @@ async function withdrawGold(bot, party, merchant, args) {
     await bot.character.smartMove(bankingPosition, { avoidTownWarps: true }).catch(() => {})
 
     try{
-        if (bot.character.gold < goldToHold) await bot.character.withdrawGold(goldToHold - bot.character.gold)
+        if (bot.character.gold < goldToHold && (goldToHold - bot.character.gold) > 0){
+            await bot.character.withdrawGold(goldToHold - bot.character.gold)
+        }
     }catch(error){
         console.log("Error withdrawing gold", error)
     }
