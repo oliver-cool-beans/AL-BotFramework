@@ -29,10 +29,11 @@ async function energize(bot){
         await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
         if(!bot.character) continue
         const lowEnergyPartyMembers = bot.party.members.filter((member) => {
+            if(!member.character) return
             return member.character.mp <= (member.character.max_mp * 0.8) 
             && bot.AL.Tools.distance(bot.character, member.character) <= 320
             && bot.name != member.name
-        })
+        });
 
         if(bot.character.canUse("energize") && lowEnergyPartyMembers.length){
             const energyToGive = lowEnergyPartyMembers[0].character.max_mp - lowEnergyPartyMembers[0].character.mp
