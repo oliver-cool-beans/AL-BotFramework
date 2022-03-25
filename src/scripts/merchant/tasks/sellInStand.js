@@ -44,7 +44,7 @@ async function sellInStand(bot){
 
     console.log("Depositing back in Bank");
     await utils.goToBank(bot, bot.itemsToKeep, 50000000);
-    await bot.character.withdrawGold(50000000 - bot.character.gold)
+    if(bot.character.gold < 5000000) await bot.character.withdrawGold(50000000 - bot.character.gold)
     await utils.withdrawItemsFromBank(bot, {"stand0": {qty: 1}});
     await utils.withdrawItemsFromBank(bot, merchantStandItems);
 
