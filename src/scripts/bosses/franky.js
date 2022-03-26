@@ -4,7 +4,6 @@ import utils from "../../scripts/utils/index.js";
 async function franky(bot, party, merchant, args = {}){    
     bot.attackRange = 25;
 
-    console.log("running franky")
     if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
         console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)
         args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
@@ -18,8 +17,7 @@ async function franky(bot, party, merchant, args = {}){
 
     var targetData = bot.character.getTargetEntity() || bot.character.getEntity({ returnNearest: true, type: "franky" })
 
-     console.log("TARGET DATA", targetData?.id)
-    if(targetData?.id && !bot.character?.target){
+     if(targetData?.id && targetData?.id !== bot.character?.target){
         bot.character.target = targetData?.id
     }
 
