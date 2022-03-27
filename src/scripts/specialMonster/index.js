@@ -7,6 +7,7 @@
 import utils from "../../scripts/utils/index.js";
 
 async function specialMonster(bot, party, merchant, args = {}) {
+    console.log("Running special monster")
     if(!bot.character.ready) return Promise.reject("Character not ready");
     if(!args.target?.type) return;
 

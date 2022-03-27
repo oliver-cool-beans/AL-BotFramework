@@ -26,6 +26,9 @@ async function compoundItems(bot){
         bank[slotName] = value.reduce((acc, slotItem, index) => {
             if(!slotItem) return acc;
             if(!bot.AL.Game.G.items[slotItem.name]?.compound) return acc; // If this item is not compoundable
+            if(slotItem.level >= 4) return acc // If the item level gte 4
+            if(slotItem.p) return acc; // Item is special
+            if(slotItem.l) return acc // Item is locked
             if(!acc[slotItem.name]) acc[slotItem.name] = {};
             acc[slotItem.name][slotItem.level]?.length ? acc[slotItem.name][slotItem.level].push(index) 
             : acc[slotItem.name][slotItem.level] = [index]
@@ -108,6 +111,8 @@ async function compoundItems(bot){
     for(var index in bot.character.items){
         item = bot.character.items[index];
         if(!item) continue;
+        if(item.level >= 4) continue;
+        if(bot.itemsToKeep.includes(item.name)) continue;
         if(!bot.AL.Game.G.items[item.name]?.compound) continue;
         console.log("Attempting to compound", item)
         itemArray = bot.character.locateItemsByLevel(bot.character.items, {excludeLockedItems: true})?.[item.name]?.[item.level]?.slice(0, 3);
@@ -116,8 +121,6 @@ async function compoundItems(bot){
 
         var scrollPosition = bot.character.locateItem(requiredScroll);
         if(scrollPosition == undefined && !bot.character.canBuy(requiredScroll)) {
-            console.log("SCROLL POSITION", bot.character.locateItem(requiredScroll))
-            console.log("NO SCROLL and can't buy one??", bot.character.canBuy(requiredScroll))
             continue
         }
         if(scrollPosition == undefined) {

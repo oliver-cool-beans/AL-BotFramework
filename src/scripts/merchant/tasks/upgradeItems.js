@@ -26,6 +26,9 @@ async function upgradeItems(bot){
         bank[slotName] = value.reduce((acc, slotItem, index) => {
             if(!slotItem) return acc;
             if(!bot.AL.Game.G.items[slotItem.name]?.upgrade) return acc; // If this item is not upgradeable
+            if(slotItem.level >= 8) return acc; // If the item is gte level 8
+            if(slotItem.p) return acc; // Item is special
+            if(slotItem.l) return acc // Item is locked
             if(!acc[slotItem.name]) acc[slotItem.name] = {};
             acc[slotItem.name][slotItem.level]?.length ? acc[slotItem.name][slotItem.level].push(index) 
             : acc[slotItem.name][slotItem.level] = [index]
@@ -84,6 +87,7 @@ async function upgradeItems(bot){
 
     for(var safeItemName in allSafeItems){
         console.log("Withdrawing All Of", safeItemName);
+        if(bot.character.esize <= 1) continue;
         await withdrawAllOfItem(bot, safeItemName, allSafeItems[safeItemName])  
         console.log("Finished withdrawing", safeItemName)
       
@@ -99,14 +103,14 @@ async function upgradeItems(bot){
     for(var index in bot.character.items){
         item = bot.character.items[index];
         if(!item) continue;
+        if(item.level >= 8) continue;
+        if(bot.itemsToKeep.includes(item.name)) continue;
         if(!bot.AL.Game.G.items[item.name]?.upgrade) continue;
         console.log("Attempting to upgrade", item)
         const requiredScroll = `scroll${bot.character.calculateItemGrade(item)}`
         console.log("RequiredScroll", requiredScroll);
         var scrollPosition = bot.character.locateItem(requiredScroll);
         if(scrollPosition == undefined && !bot.character.canBuy(requiredScroll)) {
-            console.log("SCROLL POSITION", bot.character.locateItem(requiredScroll))
-            console.log("NO SCROLL and can't buy one??", bot.character.canBuy(requiredScroll))
             continue
         }
         if(scrollPosition == undefined) {

@@ -6,7 +6,7 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["snake"];
+const targets = ["snake", "osnake"];
 
 async function snake(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
@@ -19,7 +19,7 @@ async function snake(bot, party, merchant, args) {
 
     if(bot.character.target !== targetData?.id) bot.setTarget(targetData?.id);
 
-    const rallyPosition = "snake";
+    const rallyPosition = {x: -541.2208544380876, y: -536.1707341024603, map: 'halloween'};
 
     if(!bot.runningScriptName == "snake") {
         bot.runningScriptName = "snake"
@@ -28,7 +28,7 @@ async function snake(bot, party, merchant, args) {
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("snake").catch(() => {});
+        await bot.character.smartMove(rallyPosition).catch(() => {});
     }
 
     return Promise.resolve("Finished");

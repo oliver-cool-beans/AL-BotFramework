@@ -2,11 +2,20 @@
     A class responsible for adding and removing members from the party
 */
 
+import DataPool from "./dataPool.js";
+
 class Party {
     constructor(characters, partyConfig = {}){
         this.members = [];
         this.allCharacters = characters;
         this.config = partyConfig
+        this.dataPool = new DataPool(characters);
+    }
+
+    getTank() {
+        // TODO make this smarter, check for shields or armor value/hp as well as class
+        const tank = this.members.find((member) => member.character.ctype == "warrior");
+        return tank?.name || null
     }
     addMember(characterName) {
         const character = this.allCharacters.find((char) => characterName == char.name)

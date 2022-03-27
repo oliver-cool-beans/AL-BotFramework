@@ -51,8 +51,9 @@ class Character {
         this.serverRegion = "ASIA", 
         this.serverIdentifier = "I"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = []
+        this.specialMonsters = ["greenjr"]
         this.partyMonsters = []
+        this.isSwitchingServers = false;
     }
 
     async start(AL) {
@@ -97,7 +98,7 @@ class Character {
         
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => this.log(`ERROR: ${error}`))
         while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 500)); 
+            await new Promise(resolve => setTimeout(resolve, 50)); 
 
             if(this.#tasks.length){
                 if(!await {...scripts, ...tasks}[this.#tasks[0]?.script]){
@@ -105,7 +106,7 @@ class Character {
                     continue
                 }
                 await {...scripts, ...tasks}[this.#tasks[0].script](this, party.members, this.merchant, this.#tasks[0].args).catch((error) => {
-                    this.log(`task ${this.#tasks[0]?.name} errored with, ${error}`)
+                    this.log(`task ${this.#tasks[0]?.script} errored with, ${error}`)
                     this.removeTask(this.#tasks[0]?.script)
                 });
                 continue;
@@ -175,16 +176,16 @@ class Character {
     async reconnect(){
         this.disconnect();
         this.log("Disconnected, waiting 5 seconds then reconnecting")
-        await new Promise(resolve => setTimeout(resolve, 5000));
         await this.start(this.AL)
         await this.run(this.party, this.discord, this.AL, this.isLeader);
     }
 
-    disconnect(){
+    async disconnect(){
         if(!this.character) return "Character not connected";
         this.isRunning = false;
         this.character.disconnect();
         this.character = false;
+        await new Promise(resolve => setTimeout(resolve, 5000));
         return
 
     }
@@ -296,7 +297,6 @@ class Character {
                 this.sentPartyRequest = true;
             }
             if(this.character.map == "jail") {
-                this.log("PORTING OUT OF JAIL")
                 await this.character.leaveMap().catch((error) => this.log(`JAIL PORT ERRORED ${JSON.stringify(error)}`));
             }
             if(this.character.rip) {
@@ -310,7 +310,7 @@ class Character {
                 continue;
             }
 
-            if(this.character.esize <= 0) {
+            if(this.character.esize <= 0 && this.character.ctype !== "merchant") {
                 const {hpot, mpot} = this.calculatePotionItems();
                 this.addTask({
                     script: "bankItems", 
@@ -318,7 +318,7 @@ class Character {
                     priority: 1,
                     force: true,
                     args: {
-                        itemsToHold: [hpot, mpot, "tracker"], 
+                        itemsToHold: [hpot, mpot, "tracker"].concat(this.itemsToHold), 
                         goldToHold: 100000,
                         nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}
                     }
@@ -336,18 +336,16 @@ class Character {
                     }
                 })
             }
-
         }
 
     }
-
+    
     async attackLoop(){
         while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 50));
             if(!this.character) continue
             if(!this.character.target){
-                console.log("Character has no target", this.character.target)
-                await new Promise(resolve => setTimeout(resolve, 1500));
+              //  console.log("Character has no target", this.character.target)
                 continue;
             }
 
@@ -444,7 +442,7 @@ class Character {
 
     async findSpecialMonsterLoop(){
         while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 4000));
+            await new Promise(resolve => setTimeout(resolve, 1000));
             if(!this.character) continue
             [...this.character.entities.values()].forEach((entity) => {
                 if(!this.specialMonsters.includes(entity.type)) return
@@ -471,27 +469,63 @@ class Character {
             await new Promise(resolve => setTimeout(resolve, 20000));
             if(!this.character) continue
 
+            // Load from local data
             this.log(`Checking Boss Mobs: ${JSON.stringify(this.character.S)}`)
             Object.entries(this.character.S).forEach(([event, data]) => {
-                if(!data.live || !bosses[event] || this.#tasks.find((task) => task.script == event) && data?.target) return;
+                if(!data.live || !bosses[event]) return;
+                if(this.#tasks.find((task) => task.script == event && task.args.serverIdentifier == this.character.serverData.name && task.args.serverRegion == this.character.serverData.region)){
+                    return
+                }
                 this.log(`Adding event`);
                 this.addTask({
                     script: event, 
                     user: this.name, 
                     priority: 3,
                     args: {
-                        event: data
+                        event: data, 
+                        serverRegion: this.character.serverData.region, 
+                        serverIdentifier: this.character.serverData.name
                     }
                 })
-            })
+            });
+
+          /*  // Now load from external data
+            if(this.party.dataPool.aldata){
+                this.party.dataPool.aldata.forEach((event) => {
+                    if(!bosses[event.type] || !event.target) return;
+                    if(this.#tasks.find((task) => task.script == event.type && task.args.serverIdentifier == event.serverIdentifier && task.args.serverRegion == event.serverRegion)){
+                        return
+                    }
+                    this.log(`Adding inter-server event for ${event.type}`)
+                    this.addTask({
+                        script: event.type, 
+                        user: this.name,
+                        priority: 3, 
+                        args: {
+                            event: event, 
+                            serverRegion: event.serverRegion, 
+                            serverIdentifier: event.serverIdentifier
+                        }
+                        
+                    })
+                    
+                })
+            } */
         }
     }
 
     async switchServer(region, identifier){
         if(region == this.serverRegion && identifier == this.identifier) return false;
+        console.log("running switch server", this.isSwitchingServers)
+        if(this.isSwitchingServers) return false;
+        console.log("AM I SWITCHING?", this.isSwitchingServers)
+        this.isSwitchingServers = true;
         this.log(`Switching servers to ${region} ${identifier}`);
-        this.disconnect();
-        return await common.startCharacter(this, region, identifier)
+        await this.disconnect();
+        console.log("Finished disconnecting")
+        this.character = await common.startCharacter(this, region, identifier).catch(() => {});
+        await this.run(this.party, this.discord, this.AL, this.isLeader);
+        this.isSwitchingServers = false;
     }
 
     async monsterHuntLoop(){

@@ -5,11 +5,14 @@ import sellInStand from "./tasks/sellInStand.js";
 import serverWideMluck from "./tasks/serverWideMluck.js";
 import mine from "./tasks/mine.js";
 import fish from "./tasks/fish.js";
+import findAndExchange from "./tasks/findAndExchange.js";
 
 async function scheduler(bot, force = false){
     if(bot.characterClass !== "merchant") return Promise.resolve(`Not a merchant ${bot.name}, ${bot.characterClass}`);
     
     const date = new Date();
+    if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
+
     if(shouldRunSchedule(bot.scheduleLastRun)){
         console.log("Running schedule")
         if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
@@ -33,7 +36,11 @@ async function scheduler(bot, force = false){
 
     await mine(bot).catch(() => {});
     await fish(bot).catch(() => {});
-    
+
+   /*await findAndExchange(bot).catch((error) => {
+       console.log("FAILED EXCHANGE RUN", error)
+   })*/
+
     if(!bot.character.stand){
         await sellInStand(bot);
     }

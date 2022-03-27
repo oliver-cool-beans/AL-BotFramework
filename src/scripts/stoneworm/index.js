@@ -6,9 +6,9 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["osnake", "snake"];
+const targets = ["stoneworm"];
 
-async function osnake(bot, party, merchant, args) {
+async function stoneworm(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
     var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, targets);
 
@@ -19,20 +19,20 @@ async function osnake(bot, party, merchant, args) {
 
     if(bot.character.target !== targetData?.id) bot.setTarget(targetData?.id);
 
-    const rallyPosition = "osnake";
+    const rallyPosition = "stoneworm";
 
-    if(!bot.runningScriptName == "osnake") {
-        bot.runningScriptName = "osnake"
+    if(!bot.runningScriptName == "stoneworm") {
+        bot.runningScriptName = "stoneworm"
         await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("osnake").catch(() => {});
+        await bot.character.smartMove("stoneworm").catch(() => {});
     }
 
     return Promise.resolve("Finished");
 }
 
 
-export default osnake;
+export default stoneworm;

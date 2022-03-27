@@ -30,11 +30,14 @@ async function taunt(bot){
         await new Promise(resolve => setTimeout(resolve, 2000)); // Wait the timeout and try again
         if(!bot.character) continue
         if(bot.character.canUse("taunt") && bot.character.target){
-            // If our target has a target, and that target isn't us and it's someone else in our party
+            const tank = bot.party.getTank();
             const targetData = bot.character.getTargetEntity();
-            if(targetData?.target?.target && targetData?.target?.target !== bot.name){ 
-                if(!bot.party.members.find((member) => member.name == targetData?.target?.target)) return //check if the target is a member of our party
-                bot.character.taunt(targetData?.target?.id).catch((error) => {
+            if(!targetData?.id) continue
+            if(targetData?.target, "TARGET's TARGET")
+            if(tank && targetData?.target == tank) continue // If the target's target is the party tank, don't taunt
+            if(targetData?.target && targetData?.target !== bot.name){ 
+                if(!bot.party.members.find((member) => member.name == targetData?.target)) continue //check if the target is a member of our party
+                bot.character.taunt(targetData?.id).catch((error) => {
                     console.log("Cannot taunt", error)
                 })
             }

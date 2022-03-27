@@ -1,4 +1,3 @@
-const { party } = require("./index.cjs");
 
 function create(scriptChoices, partyNames){
     return  {

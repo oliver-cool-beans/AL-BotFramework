@@ -13,11 +13,15 @@ const merchantStandItems = {
     "wbook0" : {
         level: 4, 
         qty: "all", 
-        price: 400000000
+        price: 100000000
     },
     "tracker": {
         qty: "all", 
         price: 3000000
+    }, 
+    "ink": {
+        qty: "all",
+        price: 10000000
     }
    /* "intearring": {
         level: 3, 
@@ -40,7 +44,7 @@ async function sellInStand(bot){
 
     console.log("Depositing back in Bank");
     await utils.goToBank(bot, bot.itemsToKeep, 50000000);
-    await bot.character.withdrawGold(50000000 - bot.character.gold).catch(() => {})
+    if(bot.character.gold < 5000000) await bot.character.withdrawGold(50000000 - bot.character.gold)
     await utils.withdrawItemsFromBank(bot, {"stand0": {qty: 1}});
     await utils.withdrawItemsFromBank(bot, merchantStandItems);
 

@@ -1,13 +1,34 @@
 import utils from "../../scripts/utils/index.js";
 
 
-async function franky(bot, party, merchant, args = {}){
+async function franky(bot, party, merchant, args = {}){    
     bot.attackRange = 25;
-    var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, "franky");
 
+    if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
+        console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)
+        args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
+        return;
+    }
+    
+    if(!bot.character?.S) {
+        console.log("Running franky, but no S populated yet")
+        return
+    }
+
+    var targetData = bot.character.getTargetEntity() || bot.character.getEntity({ returnNearest: true, type: "franky" })
+
+     if(targetData?.id && targetData?.id !== bot.character?.target){
+        bot.character.target = targetData?.id
+    }
+
+    
     if(!bot.character?.S?.franky?.live) {
         console.log("Franky is no longer live, removing task");
         bot.removeTask("franky");
+        if((bot.serverIdentifier !==  bot.character.serverData.name) || (bot.serverRegion !==  bot.character.serverData.region)){
+            bot.log(`Switching back to home server ${bot.serverRegion} ${bot.serverIdentifier}`)
+            await bot.switchServer(bot.serverRegion, bot.serverIdentifier)
+        }
         return;
     }
 
@@ -20,11 +41,6 @@ async function franky(bot, party, merchant, args = {}){
     if(targetData?.name !== "Franky"){
         bot.character.target = null;
         await bot.character.smartMove(args.event).catch(() => {});
-    }
-
-     // If we've got no target, get a valid target;
-    if(!bot.character.target) {
-        bot.character.target = utils.findClosestTarget(bot.AL, bot.character, party, "franky");
     }
 
     bot.attackRange = bot.character.range / 2;
