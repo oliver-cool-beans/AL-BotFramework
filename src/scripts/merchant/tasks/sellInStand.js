@@ -21,7 +21,7 @@ const merchantStandItems = {
     }, 
     "ink": {
         qty: "all",
-        price: 10000000
+        price: 15000000
     }
    /* "intearring": {
         level: 3, 
