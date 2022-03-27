@@ -41,7 +41,6 @@ class DataPool {
         while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 1000));
             if(!this.isRunning) continue;
-            console.log("Refreshing AL Bank Data")
             const memberWithBank = this.allCharacters.find((char) => char.character && char.character.bank)
             if(!memberWithBank) continue;
             await this.sendALBankData(memberWithBank.character.bank, memberWithBank.character.owner).catch((error) => {
