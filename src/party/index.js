@@ -9,7 +9,7 @@ class Party {
         this.members = [];
         this.allCharacters = characters;
         this.config = partyConfig
-        this.dataPool = new DataPool();
+        this.dataPool = new DataPool(characters);
     }
 
     getTank() {

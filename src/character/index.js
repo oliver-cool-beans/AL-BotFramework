@@ -297,7 +297,6 @@ class Character {
                 this.sentPartyRequest = true;
             }
             if(this.character.map == "jail") {
-                this.log("PORTING OUT OF JAIL")
                 await this.character.leaveMap().catch((error) => this.log(`JAIL PORT ERRORED ${JSON.stringify(error)}`));
             }
             if(this.character.rip) {
@@ -337,12 +336,7 @@ class Character {
                     }
                 })
             }
-
         }
-
-    }
-
-    async sendItems(limit, characterName){
 
     }
     
@@ -478,7 +472,7 @@ class Character {
             // Load from local data
             this.log(`Checking Boss Mobs: ${JSON.stringify(this.character.S)}`)
             Object.entries(this.character.S).forEach(([event, data]) => {
-                if(!data.live || !bosses[event] || !data?.target) return;
+                if(!data.live || !bosses[event]) return;
                 if(this.#tasks.find((task) => task.script == event && task.args.serverIdentifier == this.character.serverData.name && task.args.serverRegion == this.character.serverData.region)){
                     return
                 }
