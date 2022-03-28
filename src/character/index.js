@@ -325,7 +325,7 @@ class Character {
                 })
             }
 
-            if(this.character.gold < 100000){
+            if(this.character.gold < 100000 && this.character.ctype !== "merchant"){
                 this.addTask({
                     script: "withdrawGold", 
                     user: this.name, 

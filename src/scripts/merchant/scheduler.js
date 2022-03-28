@@ -9,9 +9,7 @@ import findAndExchange from "./tasks/findAndExchange.js";
 
 async function scheduler(bot, force = false){
     if(bot.characterClass !== "merchant") return Promise.resolve(`Not a merchant ${bot.name}, ${bot.characterClass}`);
-    
     const date = new Date();
-    if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
 
     if(shouldRunSchedule(bot.scheduleLastRun)){
         console.log("Running schedule")
