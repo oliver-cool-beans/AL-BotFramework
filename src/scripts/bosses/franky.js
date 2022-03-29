@@ -43,7 +43,7 @@ async function franky(bot, party, merchant, args = {}){
         await bot.character.smartMove(args.event).catch(() => {});
     }
 
-    bot.attackRange = bot.character.range / 2;
+    bot.attackRange = 10;
     return Promise.resolve("Finished");
 }
 
