@@ -31,6 +31,8 @@ async function cgoo(bot, party, merchant, args) {
         await bot.character.smartMove("cgoo").catch(() => {});
     }
 
+    const gem1Loc = bot.character.locateItem("gem1");
+
     return Promise.resolve("Finished");
 }
 

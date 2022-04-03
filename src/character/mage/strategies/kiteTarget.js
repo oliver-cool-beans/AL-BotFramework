@@ -2,9 +2,10 @@
 async function kiteTarget(bot, party){
     try{
         // Find the target entity
-        const target = bot.character.target
-        if(!target) {
-        };
+        const target = bot.character.getTargetEntity();
+
+        if(!target) return
+
         const distance = bot.AL.Tools.distance(bot.character, target);
     
         // Stop smart moving when we can walk to the monster directly
