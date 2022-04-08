@@ -269,7 +269,7 @@ class Character {
     // Sell junk when we can.
     async sellLoop(){
         while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 200));
             if(!this.character) continue
             if(this.character.canSell()){
                 const itemsToSell = this.character.items.map((item, index) => {
