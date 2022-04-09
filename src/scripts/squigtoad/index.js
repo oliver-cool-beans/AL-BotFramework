@@ -6,7 +6,7 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["squigtoad"];
+const targets = ["squigtoad", "squig"];
 
 async function squigtoad(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");

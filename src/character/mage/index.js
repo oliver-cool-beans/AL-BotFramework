@@ -20,7 +20,7 @@ async function loadFunctions () {
 
 async function loopFunctions() {
     if(!this?.character) return;
-    energize(this)
+    //energize(this)
     return
 }
 

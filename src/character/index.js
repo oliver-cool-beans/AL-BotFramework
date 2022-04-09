@@ -51,7 +51,7 @@ class Character {
         this.serverRegion = "EU", 
         this.serverIdentifier = "PVP"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["greenjr"]
+        this.specialMonsters = ["greenjr", "wabbit"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
     }
@@ -348,8 +348,9 @@ class Character {
               //  console.log("Character has no target", this.character.target)
                 continue;
             }
-
-            const targetData = this.character.getTargetEntity();
+            
+            const attackingMe = this.character.getEntities({targetingMe: true})?.[0]
+            const targetData = this.character.getTargetEntity() || attackingMe
             if(this.strategies?.attack?.[targetData?.type]){
                 try{
                     await this.strategies.attack[targetData.type](this, this.party.members)
@@ -359,6 +360,7 @@ class Character {
                 }
             }
             if(this.character.canUse("attack")){
+                this.party.energizeMember(this);
                 await this.character.basicAttack(targetData?.id).catch(async (error) => {});
             }
         }
@@ -449,9 +451,10 @@ class Character {
                 if(entity.target && !this.party.members.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
                 this.party.members.forEach((member) => {
                     if(!member.specialMonsters.includes(entity.type)) return
-                    if(member.getTasks().find((task) => task.script == "specialMonster" && task.args?.entity?.id == entity.id)) return;
+                    if(member.getTasks().find((task) => ["specialMonster", entity.type].includes(task.script) && task.args?.entity?.id == entity.id)) return;
+                    const monsterScript = scripts[entity.type] || "specialMonster"
                     member.addTask({
-                        script: "specialMonster", 
+                        script: monsterScript, 
                         user: this.name, 
                         priority: 5,
                         args: {
@@ -466,7 +469,7 @@ class Character {
 
     async checkEventBossesLoop(){
         while(this.isRunning && this.character){
-            await new Promise(resolve => setTimeout(resolve, 20000));
+            await new Promise(resolve => setTimeout(resolve, 5000));
             if(!this.character) continue
 
             // Load from local data
@@ -489,10 +492,10 @@ class Character {
                 })
             });
 
-          /*  // Now load from external data
+            // Now load from external data
             if(this.party.dataPool.aldata){
                 this.party.dataPool.aldata.forEach((event) => {
-                    if(!bosses[event.type] || !event.target) return;
+                    if(!bosses[event.type] || (!event.target && !this.specialMonsters.includes(event.type)) || !event.map) return;
                     if(this.#tasks.find((task) => task.script == event.type && task.args.serverIdentifier == event.serverIdentifier && task.args.serverRegion == event.serverRegion)){
                         return
                     }
@@ -510,22 +513,28 @@ class Character {
                     })
                     
                 })
-            } */
+            }
         }
     }
 
     async switchServer(region, identifier){
-        if(region == this.serverRegion && identifier == this.identifier) return false;
-        console.log("running switch server", this.isSwitchingServers)
-        if(this.isSwitchingServers) return false;
-        console.log("AM I SWITCHING?", this.isSwitchingServers)
-        this.isSwitchingServers = true;
-        this.log(`Switching servers to ${region} ${identifier}`);
-        await this.disconnect();
-        console.log("Finished disconnecting")
-        this.character = await common.startCharacter(this, region, identifier).catch(() => {});
-        await this.run(this.party, this.discord, this.AL, this.isLeader);
-        this.isSwitchingServers = false;
+        try{
+            if(region == this.serverRegion && identifier == this.identifier) return false;
+            console.log("running switch server", this.isSwitchingServers)
+            if(this.isSwitchingServers && !this.character.ready) return false;
+            console.log("AM I SWITCHING?", this.isSwitchingServers)
+            this.isSwitchingServers = true;
+            this.log(`Switching servers to ${region} ${identifier}`);
+            await this.disconnect();
+            console.log("Finished disconnecting")
+            this.character = await common.startCharacter(this, region, identifier)
+            await this.run(this.party, this.discord, this.AL, this.isLeader);
+            this.isSwitchingServers = false;
+        }catch(error){
+            this.log(`Error switching servers ${error}`)
+            this.isSwitchingServers = false;
+        }
+
     }
 
     async monsterHuntLoop(){

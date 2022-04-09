@@ -12,7 +12,7 @@ class DataPool {
         this.aldata = null
         this.isRunning = true;
         this.initialised = false;
-        this.monsters = ['franky']
+        this.monsters = ['franky', 'wabbit']
         this.refreshLoop();
         this.bankDataLoop();
         this.lastSent = {
@@ -51,7 +51,7 @@ class DataPool {
 
     async refreshLoop(){
         while(this.isRunning){
-            await new Promise(resolve => setTimeout(resolve, this.initialised ? 60000 : 1000));
+            await new Promise(resolve => setTimeout(resolve, this.initialised ? 15000 : 1000));
             console.log("Refreshing AL Data")
             if(!this.initialised) this.initialised = true;
             try{

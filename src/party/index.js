@@ -12,6 +12,22 @@ class Party {
         this.dataPool = new DataPool(characters);
     }
 
+    energizeMember(bot){
+        try{
+            const mageInRange = this.members.find((member) => member.character.ctype == "mage" && bot.AL.Tools.distance(bot.character, member.character) < 1000 && member.character.canUse("energize"))
+            if(!mageInRange) return;
+            if(mageInRange.character.canUse("energize") && mageInRange?.character?.id){
+                const energyToGive = bot.character.max_mp - bot.character.mp
+                mageInRange.character.energize(bot.character?.id, energyToGive).catch((error) => {
+                })
+                return
+            }
+        }catch(error){
+            console.log("Failed to party energize", error)
+        }
+
+    }
+
     getTank() {
         // TODO make this smarter, check for shields or armor value/hp as well as class
         const tank = this.members.find((member) => member.character.ctype == "warrior");
