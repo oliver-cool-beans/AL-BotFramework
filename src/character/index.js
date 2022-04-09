@@ -133,6 +133,7 @@ class Character {
     async logLoop(){
         while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 5000));
+            if(!this.character) continue;
             this.log(`DATA: ${JSON.stringify({
                 tasks: this.tasks, 
                 hp: this.character.hp, 
