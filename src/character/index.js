@@ -436,7 +436,7 @@ class Character {
 
             if(this.character.chests.size){
                 for(let [key, value] of this.character.chests){
-                    await this.character.openChest(key).catch((error) => {console.log("Failed to loot", error)});
+                    this.character && await this.character.openChest(key).catch((error) => {console.log("Failed to loot", error)});
                 }
             }
         }
