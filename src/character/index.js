@@ -414,7 +414,7 @@ class Character {
             
             }
             
-            if(!this.character.canBuy(hpot) || !this.character.canBuy(mpot)){
+            if(!this.character?.canBuy(hpot) || !this.character?.canBuy(mpot)){
                 await utils.checkIfPotionsLow(this, 20) && this.addTask({
                     script: "buyPotions", 
                     user: this.name, 
