@@ -103,7 +103,7 @@ async function purchaseBuyOrder(task){
     if(!task?.buy) return Promise.reject("Invalid Task");
     await Promise.all(Object.entries(task.buy).map(async ([key, value]) => {
         await this.character.smartMove("main").catch(() => {});
-        if(this.character.canBuy(key)){
+        if(this.character?.canBuy(key)){
             await this.character.buy(key, value).catch(() => {});
             console.log("Merchant just processed buy order:", "purchased", key, "QTY:", value);
             return Promise.resolve("Complete");

@@ -110,7 +110,7 @@ async function upgradeItems(bot){
         const requiredScroll = `scroll${bot.character.calculateItemGrade(item)}`
         console.log("RequiredScroll", requiredScroll);
         var scrollPosition = bot.character.locateItem(requiredScroll);
-        if(scrollPosition == undefined && !bot.character.canBuy(requiredScroll)) {
+        if(scrollPosition == undefined && !bot.character?.canBuy(requiredScroll)) {
             continue
         }
         if(scrollPosition == undefined) {

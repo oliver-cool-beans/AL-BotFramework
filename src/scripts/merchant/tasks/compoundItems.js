@@ -120,7 +120,7 @@ async function compoundItems(bot){
         const requiredScroll = `cscroll${bot.character.calculateItemGrade(item)}`
 
         var scrollPosition = bot.character.locateItem(requiredScroll);
-        if(scrollPosition == undefined && !bot.character.canBuy(requiredScroll)) {
+        if(scrollPosition == undefined && !bot.character?.canBuy(requiredScroll)) {
             continue
         }
         if(scrollPosition == undefined) {

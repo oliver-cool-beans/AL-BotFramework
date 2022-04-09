@@ -350,7 +350,10 @@ class Character {
                 continue;
             }
             
-            const attackingMe = this.character.getEntities({targetingMe: true})?.find((target) => target.id !== this.character.target)
+            const attackingMe = this.character.getEntities({targetingMe: true})?.find((target) => {
+                return target.id !== this.character.target && this.AL.Tools.distance(this.character, target) <= this.character.range
+            });
+            
             const targetData = attackingMe || this.character.getTargetEntity()
             if(this.strategies?.attack?.[targetData?.type]){
                 try{
@@ -404,12 +407,12 @@ class Character {
             const hpotCount = this.character?.countItem(hpot);
             const mpotCount = this.character?.countItem(mpot);
             if(hpotCount < 200) {
-                if(this.character.canBuy(hpot)){
+                if(this.character && this.character.canBuy(hpot)){
                     await this.character.buy(hpot, 200 - hpotCount).catch(() => {})
                 }
             }
             if(mpotCount < 200) {
-                if(this.character.canBuy(mpot)){
+                if(this.character && this.character.canBuy(mpot)){
                     await this.character.buy(mpot, 200 - mpotCount).catch(() => {})
                 }
             
