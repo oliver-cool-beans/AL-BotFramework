@@ -349,8 +349,8 @@ class Character {
                 continue;
             }
             
-            const attackingMe = this.character.getEntities({targetingMe: true})?.[0]
-            const targetData = this.character.getTargetEntity() || attackingMe
+            const attackingMe = this.character.getEntities({targetingMe: true})?.find((target) => target.id !== this.character.target)
+            const targetData = attackingMe || this.character.getTargetEntity()
             if(this.strategies?.attack?.[targetData?.type]){
                 try{
                     await this.strategies.attack[targetData.type](this, this.party.members)
