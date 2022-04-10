@@ -99,7 +99,7 @@ class Character {
         this.logLoop();
         
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => this.log(`ERROR: ${error}`))
-        while(this.isRunning){ 
+        while(this.isRunning && this.character && this.character.ready){ 
             await new Promise(resolve => setTimeout(resolve, 50)); 
             if(this.#tasks.length){
                 if(!await {...scripts, ...tasks}[this.#tasks[0]?.script]){
