@@ -27,6 +27,8 @@ async function findAndExchange(bot){
             itemLoc = null
             itemData = bot.character.items[i];
             if(!itemData) continue;
+            const gItem = bot.character.G.items[itemData.name]
+            if(gItem.e && itemData.q < gItem.e) continue
             if(itemsToExchange.includes(itemData.name) ){
                 exchangeLocation = bot.character.locateExchangeNPC(itemData.name);
                 console.log("*** exchange location for", itemData.name, "is", exchangeLocation)
