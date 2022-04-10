@@ -55,10 +55,14 @@ const common = {
     }, 
     startCharacter: async (bot, serverName, serverFlag) => {
         const classFunctionName = `start${bot.characterClass.toLowerCase().charAt(0).toUpperCase()}${bot.characterClass.slice(1)}`
+        if(bot.party.allCharacters.find((char) => char.character && char.character.map == "bank")) return false;
+
         return await bot.AL.Game[classFunctionName](bot.name, serverName, serverFlag).catch(async (error) => {  // Start the character class from ALClient eg startWarrior
             const waitTime = error.match(/_(.*?)_/)?.[1]
             if(!waitTime) return Promise.reject(error);
             console.log("Timeout detected, waiting", parseInt(waitTime), "seconds");
+            
+            if(bot.party.allCharacters.find((char) => char.character && char.character.map == "bank")) return false;
 
             await new Promise(resolve => setTimeout(resolve, parseInt(waitTime * 1000))); // Wait the timeout and try again
             return await bot.AL.Game[classFunctionName](bot.name, serverName, serverFlag).catch((error) => Promise.reject(error))
