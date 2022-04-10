@@ -50,6 +50,7 @@ async function wabbit(bot, party, merchant, args = {}){
                 await new Promise(resolve => setTimeout(resolve, 100));
                 console.log("SEARCHING FOR WABBIT IN", currentMap.monsters[monster].type)
                 const wabbit = bot.character.getEntity({ returnNearest: true, type: "wabbit" })
+                if(wabbit) console.log("FOUND WABBIT", wabbit?.id, wabbit?.map, wabbit?.x, wabbit?.y)
                 if(wabbit?.id){
                     bot.character.target = wabbit?.id
                     targetData = wabbit;

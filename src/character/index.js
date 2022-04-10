@@ -88,7 +88,7 @@ class Character {
             this.moveLoop(); // Move to our target if we should   
             this.lootLoop(); // Loots chests  
             this.findSpecialMonsterLoop(); // Check for special monsters and attack them
-            this.checkEventBossesLoop(); // Check for boss events
+            //this.checkEventBossesLoop(); // Check for boss events
             this.monsterHuntLoop(); // Check for monster hunts
             this.defenceLoop(); // Defensive actions like scare
         }
