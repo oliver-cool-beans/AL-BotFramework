@@ -31,7 +31,21 @@ async function cgoo(bot, party, merchant, args) {
         await bot.character.smartMove("cgoo").catch(() => {});
     }
 
-    const gem1Loc = bot.character.locateItem("gem1");
+    const tasks = bot.getTasks();
+    
+    if(bot.character.countItem("gem1") >= 50 && !tasks.find((task) => task.script == "bankItems")){
+        this.addTask({
+            script: "bankItems", 
+            user: this.name, 
+            priority: 1,
+            force: true,
+            args: {
+                itemsToHold: [hpot, mpot, "tracker"].concat(this.itemsToHold), 
+                goldToHold: 100000,
+                nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}
+            }
+        })
+    }
 
     return Promise.resolve("Finished");
 }
