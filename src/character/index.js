@@ -50,7 +50,7 @@ class Character {
         this.notificationBuffer = [];
         this.serverRegion = "EU", 
         this.serverIdentifier = "PVP"
-        this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}] // TODO put this in dynamic config accessable by discord
+        this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, {name: "phelmet", level: 0}, {name: "gphelmet", level: 0}] // TODO put this in dynamic config accessable by discord
         this.specialMonsters = ["greenjr", "wabbit"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
@@ -87,13 +87,15 @@ class Character {
             this.attackLoop(); // Attack our target if we can
             this.moveLoop(); // Move to our target if we should   
             this.lootLoop(); // Loots chests  
-            this.sellLoop(); // Sell junk when we can
             this.findSpecialMonsterLoop(); // Check for special monsters and attack them
             this.checkEventBossesLoop(); // Check for boss events
             this.monsterHuntLoop(); // Check for monster hunts
+            this.defenceLoop(); // Defensive actions like scare
         }
 
         this.adminLoop(); // Resurrect if we need to
+        this.sellLoop(); // Sell junk when we can
+        this.randomEmotionLoop(); // Just random emotions for fun
         this.logLoop();
         
         if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => this.log(`ERROR: ${error}`))
@@ -341,8 +343,25 @@ class Character {
 
     }
     
+    async defenceLoop(){
+        while(this.isRunning && this.character){
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if(!this.character) continue
+            // Get anyone attacking me who's we're not prepared to fight
+            const attackingMe = this.character.getEntities({targetingMe: true})?.find((target) => {
+                return target.id !== this.character.target 
+                && this.AL.Tools.distance(this.character, target) <= this.character.range
+                && !scripts[target.type]
+            });
+
+            if(attackingMe){
+                await this.character.scare().catch(() => {})
+            }
+        }
+    }
+
     async attackLoop(){
-        while(this.isRunning){ 
+        while(this.isRunning && this.character){ 
             await new Promise(resolve => setTimeout(resolve, 50));
             if(!this.character) continue
             if(!this.character.target){
@@ -351,9 +370,11 @@ class Character {
             }
             
             const attackingMe = this.character.getEntities({targetingMe: true})?.find((target) => {
-                return target.id !== this.character.target && this.AL.Tools.distance(this.character, target) <= this.character.range
+                return target.id !== this.character.target 
+                && this.AL.Tools.distance(this.character, target) <= this.character.range
+                && scripts[target.type]
             });
-            
+
             const targetData = attackingMe || this.character.getTargetEntity()
             if(this.strategies?.attack?.[targetData?.type]){
                 try{
@@ -393,7 +414,7 @@ class Character {
 
             // If we're out of range, move to the target
             if(this.AL.Tools.distance(this.character, targetData) > this.character.range && !this.#tasks[0]?.force && !this.character.moving){
-                await this.character.smartMove(targetData, { getWithin: this.attackRange || this.character.range / 2 }).catch(() => {});
+                await this.character.smartMove(targetData, { getWithin: this.attackRange || this.character.range / 2, useBlink: true }).catch(() => {});
             }
         }
     }
@@ -468,6 +489,17 @@ class Character {
                 })
 
             })
+        }
+    }
+
+    async randomEmotionLoop(){
+        const validEmotions = Object.keys(this.character.emx);
+        if(!validEmotions.length) return;
+        while(this.isRunning && this.character){
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            if(!this.character) continue;
+            const emotionIndex = Math.floor(Math.random() * validEmotions.length)
+            this.character.socket.emit("emotion",{name: validEmotions[emotionIndex]})
         }
     }
 

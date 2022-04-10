@@ -35,9 +35,9 @@ async function scheduler(bot, force = false){
     await mine(bot).catch(() => {});
     await fish(bot).catch(() => {});
 
-   /*await findAndExchange(bot).catch((error) => {
+   await findAndExchange(bot).catch((error) => {
        console.log("FAILED EXCHANGE RUN", error)
-   })*/
+   })
 
     if(!bot.character.stand){
         await sellInStand(bot);

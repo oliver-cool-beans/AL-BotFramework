@@ -4,7 +4,10 @@ const itemsToExchange = [
     "gem0", 
     "candy1",
     "candy0", 
-    "seashell" 
+    "seashell", 
+    "armorbox", 
+    "weaponbox", 
+    "goldenegg"
 ]
 
 async function findAndExchange(bot){
@@ -33,7 +36,7 @@ async function findAndExchange(bot){
                 };
                 console.log("ITEM DATA IS", itemData)
                 while(itemData.q){
-                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                     if(!bot.character.canExchange(itemData.name)) break;
 
                     itemLoc = bot.character.locateItem(itemData.name, bot.character.items)
@@ -42,9 +45,8 @@ async function findAndExchange(bot){
                     console.log("QTY LEFT", bot.character.items[itemLoc])
                     console.log("** Exchanging ** ", itemData.name, "in slot", itemLoc)
 
-                    await bot.character.exchange(itemLoc).catch((error) => {
-                        console.log("FAILED TO EXCHANGE", error)
-                    })
+                    if(bot.character.q.exchange) continue
+                    bot.character.exchange(itemLoc).catch(() => {})
                 }
             }
         }

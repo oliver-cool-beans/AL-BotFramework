@@ -1,10 +1,6 @@
 import utils from "../../utils/index.js";
 
 const merchantStandItems = {
-    "gem0": {
-        qty: "all", 
-        price: 1000000
-    }, 
     "vitearring": {
         level: 4, 
         qty: "all", 
@@ -23,25 +19,42 @@ const merchantStandItems = {
         qty: "all",
         price: 15000000
     }, 
-    "jacko": {
+    "egg0": {
         qty: "all", 
-        price: 5000000
+        price: 99999999999
+    }, 
+    "egg1": {
+        qty: "all", 
+        price: 99999999999
+    }, 
+    "egg2": {
+        qty: "all", 
+        price: 99999999999
+    }, 
+    "egg3": {
+        qty: "all", 
+        price: 99999999999
+    }, 
+    "egg4": {
+        qty: "all", 
+        price: 99999999999
+    }, 
+    "egg5": {
+        qty: "all", 
+        price: 99999999999
+    }, 
+    "egg6": {
+        qty: "all", 
+        price: 99999999999
+    }, 
+    "egg7": {
+        qty: "all", 
+        price: 99999999999
+    }, 
+    "egg8": {
+        qty: "all", 
+        price: 99999999999
     }
-   /* "intearring": {
-        level: 3, 
-        qty: "all", 
-        price: 20000000
-    }, 
-    "strearring": {
-        level: 3, 
-        qty: "all",
-        price: 20000000
-    }, 
-    "dexearring": {
-        level: 3, 
-        qty: "all",
-        price: 40000000
-    } */
 }
 
 async function sellInStand(bot){
@@ -62,7 +75,7 @@ async function sellInStand(bot){
         itemData = bot.character.items[i];
         if(!itemData) continue;
         if(merchantStandItems[itemData?.name] && merchantStandItems[itemData?.name].level == itemData.level ){
-            await bot.character.listForSale(i, merchantStandItems[itemData?.name].price).catch((error) => {
+            await bot.character.listForSale(i, merchantStandItems[itemData?.name].price, null, itemData.q || 1).catch((error) => {
                 console.log("There was an issue listing item", itemData.name, error);
             })
             await new Promise(resolve => setTimeout(resolve, 1000)); // Wait

@@ -43,7 +43,7 @@ async function wabbit(bot, party, merchant, args = {}){
     if(targetData?.name !== "Wabbit"){
         console.log(bot.name, "Target is not wabbit, let's find one", "moving to", args.event)
         bot.character.target = null;
-        if(args.event.x) return await bot.character.smartMove({map: args.event.map, x: args.event.x, y: args.event.y}, {getWithin: 50}).catch(() => {});
+        if(args.event.x) return await bot.character.smartMove({map: args.event.map, x: args.event.x, y: args.event.y}, {getWithin: 50, useBlink: true}).catch(() => {});
         
         while(bot.character?.S?.wabbit?.live && targetData?.name !== "Wabbit"){
             for(var monster in currentMap.monsters){
