@@ -51,7 +51,7 @@ class Character {
         this.serverRegion = "EU", 
         this.serverIdentifier = "PVP"
         this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, {name: "phelmet", level: 0}, {name: "gphelmet", level: 0}] // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["greenjr", "wabbit"]
+        this.specialMonsters = ["greenjr", "wabbit", "skeletor"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
     }
@@ -353,8 +353,8 @@ class Character {
                 && this.AL.Tools.distance(this.character, target) <= this.character.range
                 && !scripts[target.type]
             });
-
-            if(attackingMe){
+            const isLowHp = (this.character.hp / this.character.max_hp) * 100 <= 30 ? true : false; 
+            if(attackingMe || isLowHp){
                 await this.character.scare().catch(() => {})
             }
         }
@@ -378,7 +378,7 @@ class Character {
             const targetData = attackingMe || this.character.getTargetEntity()
             if(this.strategies?.attack?.[targetData?.type]){
                 try{
-                    await this.strategies.attack[targetData.type](this, this.party.members)
+                    await this.strategies.attack[targetData.type](this, this.party.members, targetData)
                     continue
                 }catch(error){
                     this.log(`Failed to run attack strategy ${JSON.stringify(error)}`)

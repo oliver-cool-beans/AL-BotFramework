@@ -2,12 +2,14 @@ import utils from "../../utils/index.js";
 
 const itemsToExchange = [
     "gem0", 
+    "gem1",
     "candy1",
     "candy0", 
     "seashell", 
     "armorbox", 
     "weaponbox", 
-    "goldenegg"
+    "goldenegg", 
+    "gemfragment"
 ]
 
 async function findAndExchange(bot){
