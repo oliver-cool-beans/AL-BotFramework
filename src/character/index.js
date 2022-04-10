@@ -50,7 +50,7 @@ class Character {
         this.notificationBuffer = [];
         this.serverRegion = "EU", 
         this.serverIdentifier = "PVP"
-        this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, {name: "phelmet", level: 0}, {name: "gphelmet", level: 0}] // TODO put this in dynamic config accessable by discord
+        this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, {name: "phelmet", level: 0}, {name: "gphelmet", level: 0},  {name: "coat", level: 0},  {name: "pants", level: 0},  {name: "helmet", level: 0},  {name: "shoes", level: 0},  {name: "gloves", level: 0}] // TODO put this in dynamic config accessable by discord
         this.specialMonsters = ["greenjr", "wabbit", "skeletor"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
@@ -296,7 +296,7 @@ class Character {
             if(!this.character) continue
             if(!this.character.party && !this.isLeader && this.leader && !this.sentPartyRequest) {
                 this.log(`Sending party request to, ${this.leader.name}`)
-                await this.character.sendPartyRequest(this.leader.name);
+                await this.character.sendPartyRequest(this.leader.name).catch(() => {});
                 this.sentPartyRequest = true;
             }
             if(this.character.map == "jail") {
@@ -365,7 +365,10 @@ class Character {
             await new Promise(resolve => setTimeout(resolve, 50));
             if(!this.character) continue
             if(!this.character.target){
-              //  console.log("Character has no target", this.character.target)
+                //  console.log("Character has no target", this.character.target)
+                const quickTarget = this.character.getEntities({withinRange: this.character.range})
+                .find((entity) => this.character.canKillInOneShot(entity));
+                if(quickTarget) await this.character.basicAttack(quickTarget).catch(async (error) => {});
                 continue;
             }
             
@@ -432,6 +435,9 @@ class Character {
                     await this.character.buy(hpot, 200 - hpotCount).catch(() => {})
                 }
             }
+            // Check again just in case
+            if(!this.character) continue
+
             if(mpotCount < 200) {
                 if(this.character && this.character.canBuy(mpot)){
                     await this.character.buy(mpot, 200 - mpotCount).catch(() => {})
@@ -556,6 +562,7 @@ class Character {
     async switchServer(region, identifier){
         try{
             if(region == this.serverRegion && identifier == this.identifier) return false;
+            if(this.party.allCharacters.map((char) => char.character.map == "bank")) return false;
             console.log("running switch server", this.isSwitchingServers)
             if(this.isSwitchingServers && !this.character.ready) return false;
             console.log("AM I SWITCHING?", this.isSwitchingServers)
