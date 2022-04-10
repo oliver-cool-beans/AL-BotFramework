@@ -13,6 +13,7 @@ const itemsToExchange = [
 async function findAndExchange(bot){
 
     console.log("Finding items and exchange");
+    if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
 
     for(var item in itemsToExchange){
         await utils.goToBank(bot, bot.itemsToKeep, 50000000);
