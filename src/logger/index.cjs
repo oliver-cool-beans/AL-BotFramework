@@ -8,7 +8,7 @@ function logger(){
         transports: [
           new winston.transports.Console(),
           // Add Stackdriver Logging
-          loggingWinston,
+          //loggingWinston,
         ],
       });
 }
