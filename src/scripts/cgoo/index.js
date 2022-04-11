@@ -37,15 +37,15 @@ async function cgoo(bot, party, merchant, args) {
     if(itemPosition !== undefined && bot.character.items[itemPosition]?.q >= 50 && !tasks.find((task) => task.script == "bankItems")){
         const {hpot, mpot} = bot.calculatePotionItems();
 
-        this.addTask({
+        bot.addTask({
             script: "bankItems", 
-            user: this.name, 
+            user: bot.name, 
             priority: 1,
             force: true,
             args: {
-                itemsToHold: [hpot, mpot, "tracker"].concat(this.itemsToHold), 
+                itemsToHold: [hpot, mpot, "tracker"].concat(bot.itemsToHold), 
                 goldToHold: 100000,
-                nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}
+                nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}
             }
         })
     }

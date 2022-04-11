@@ -50,7 +50,7 @@ class Character {
         this.notificationBuffer = [];
         this.serverRegion = "EU", 
         this.serverIdentifier = "PVP"
-        this.itemsToSell = [{name: "hpbelt", level: 0}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, {name: "phelmet", level: 0}, {name: "gphelmet", level: 0},  {name: "coat", level: 0},  {name: "pants", level: 0},  {name: "helmet", level: 0},  {name: "shoes", level: 0},  {name: "gloves", level: 0}] // TODO put this in dynamic config accessable by discord
+        this.itemsToSell = [{name: "hpbelt", level: 0},  {name: "crabclaw"}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, {name: "phelmet", level: 0}, {name: "gphelmet", level: 0},  {name: "coat", level: 0},  {name: "pants", level: 0},  {name: "helmet", level: 0},  {name: "shoes", level: 0},  {name: "gloves", level: 0}] // TODO put this in dynamic config accessable by discord
         this.specialMonsters = ["greenjr", "wabbit", "skeletor"]
         this.partyMonsters = []
         this.isSwitchingServers = false;

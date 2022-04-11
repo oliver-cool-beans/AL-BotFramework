@@ -21,16 +21,20 @@ async function findAndExchange(bot){
         await utils.goToBank(bot, bot.itemsToKeep, 50000000);
         await utils.withdrawItemsFromBank(bot, {[itemsToExchange[item]] : {qty: "all"}});
 
-        var itemData
-        var exchangeLocation
-        var itemLoc
+        var itemData, exchangeLocation, itemLoc
+        var exchangeLimit = 0;
         for(var i in bot.character.items){
             exchangeLocation = null;
-            itemLoc = null
+            itemLoc = null;
             itemData = bot.character.items[i];
+
             if(!itemData) continue;
             const gItem = bot.character.G.items[itemData.name]
             if(gItem.e && itemData.q < gItem.e) continue
+
+            exchangeLimit = itemData.q - 10;
+            if(exchangeLimit < 0) exchangeLimit = itemData.q
+
             if(itemsToExchange.includes(itemData.name) ){
                 exchangeLocation = bot.character.locateExchangeNPC(itemData.name);
                 console.log("*** exchange location for", itemData.name, "is", exchangeLocation)
@@ -40,14 +44,15 @@ async function findAndExchange(bot){
                     console.log("We are not ready to exchange!!", itemData.name)
                 };
                 console.log("ITEM DATA IS", itemData)
-                while(itemData.q){
+                while(itemData.q > exchangeLimit){ // Only exchange 10 at a time so we don't flood our inventory and bank
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     if(!bot.character.canExchange(itemData.name)) break;
 
                     itemLoc = bot.character.locateItem(itemData.name, bot.character.items)
+                    itemData = bot.character.items[itemLoc]
                     console.log("itemLoc", itemLoc, itemData.name)
                     if(!itemLoc && itemLoc !== 0) break;
-                    console.log("QTY LEFT", bot.character.items[itemLoc])
+                    console.log("QTY LEFT", itemData.q, "exchangeLimit:", exchangeLimit)
                     console.log("** Exchanging ** ", itemData.name, "in slot", itemLoc)
 
                     if(bot.character.q.exchange) continue
