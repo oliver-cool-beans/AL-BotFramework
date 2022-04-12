@@ -56,7 +56,7 @@ const common = {
     startCharacter: async (bot, serverName, serverFlag) => {
         const classFunctionName = `start${bot.characterClass.toLowerCase().charAt(0).toUpperCase()}${bot.characterClass.slice(1)}`
         if(bot.party.allCharacters.find((char) => char.character && char.character.map == "bank")) return false;
-
+        bot.isConnecting = true;
         return await bot.AL.Game[classFunctionName](bot.name, serverName, serverFlag).catch(async (error) => {  // Start the character class from ALClient eg startWarrior
             const waitTime = error.match(/_(.*?)_/)?.[1]
             if(!waitTime) return Promise.reject(error);
