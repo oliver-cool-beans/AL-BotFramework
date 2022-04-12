@@ -566,7 +566,7 @@ class Character {
             });
 
             // Now load from external data
-            /*if(this.party.dataPool.aldata){
+            if(this.party.dataPool.aldata){
                 this.party.dataPool.aldata.forEach((event) => {
                     if(!bosses[event.type] || (!event.target && !this.specialMonsters.includes(event.type)) || !event.map) return;
                     if(this.#tasks.find((task) => task.script == event.type && task.args.serverIdentifier == event.serverIdentifier && task.args.serverRegion == event.serverRegion)){
@@ -586,7 +586,7 @@ class Character {
                     })
                     
                 })
-            } */
+            }
         }
         console.log("Event Boss loop has stopped ... ")
         return Promise.resolve("Finished")
