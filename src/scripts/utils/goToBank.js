@@ -14,7 +14,7 @@ async function goToBank(bot, itemsToHold, goldToHold, nextPosition) {
         } catch (e) {
             console.log(e)
         }
-        await new Promise(resolve => setTimeout(resolve, 200));
+        await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
     if (bot.character.gold > goldToHold) await bot.character.depositGold(bot.character.gold - goldToHold);
