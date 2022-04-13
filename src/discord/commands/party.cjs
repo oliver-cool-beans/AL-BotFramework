@@ -16,7 +16,7 @@ function create(scriptChoices, partyNames){
             description: "Run a script by name", 
             type: 3, 
             required: false,
-            choices: scriptChoices
+            choices: scriptChoices.slice(0, 24) // Discord only allows 25
           },
           {
             name: "disconnect", 

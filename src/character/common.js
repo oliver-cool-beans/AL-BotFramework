@@ -53,11 +53,11 @@ const common = {
 
         return Promise.resolve("OK");
     }, 
-    startCharacter: async (bot, serverName, serverFlag) => {
+    startCharacter: async (bot, serverRegion, serverIdentifier) => {
         const classFunctionName = `start${bot.characterClass.toLowerCase().charAt(0).toUpperCase()}${bot.characterClass.slice(1)}`
         if(bot.party.allCharacters.find((char) => char.character && char.character.map == "bank")) return false;
         bot.isConnecting = true;
-        return await bot.AL.Game[classFunctionName](bot.name, serverName, serverFlag).catch(async (error) => {  // Start the character class from ALClient eg startWarrior
+        return await bot.AL.Game[classFunctionName](bot.name, serverRegion, serverIdentifier).catch(async (error) => {  // Start the character class from ALClient eg startWarrior
             const waitTime = error.match(/_(.*?)_/)?.[1]
             if(!waitTime) return Promise.reject(error);
             console.log("Timeout detected, waiting", parseInt(waitTime), "seconds");
@@ -65,7 +65,7 @@ const common = {
             if(bot.party.allCharacters.find((char) => char.character && char.character.map == "bank")) return false;
 
             await new Promise(resolve => setTimeout(resolve, parseInt(waitTime * 1000))); // Wait the timeout and try again
-            return await bot.AL.Game[classFunctionName](bot.name, serverName, serverFlag).catch((error) => Promise.reject(error))
+            return await bot.AL.Game[classFunctionName](bot.name, serverRegion, serverIdentifier).catch((error) => Promise.reject(error))
         })
     },
 

@@ -48,9 +48,22 @@ class Character {
         this.isRunning = false;
         this.merchant = null;
         this.notificationBuffer = [];
-        this.serverRegion = "EU", 
-        this.serverIdentifier = "PVP"
-        this.itemsToSell = [{name: "hpbelt", level: 0},  {name: "crabclaw"}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, {name: "phelmet", level: 0}, {name: "gphelmet", level: 0},  {name: "coat", level: 0},  {name: "pants", level: 0},  {name: "helmet", level: 0},  {name: "shoes", level: 0},  {name: "gloves", level: 0}] // TODO put this in dynamic config accessable by discord
+        this.serverRegion = "ASIA", 
+        this.serverIdentifier = "I"
+        this.itemsToSell = [
+            {name: "hpbelt", level: 0},  {name: "crabclaw"}, {name: "hpamulet", level: 0}, 
+            {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, 
+            {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, 
+            {name: "phelmet", level: 0}, {name: "gphelmet", level: 0},  {name: "coat", level: 0},  
+            {name: "pants", level: 0},  {name: "helmet", level: 0},  {name: "shoes", level: 0},  
+            {name: "gloves", level: 0},  {name: "spores"},  {name: "leather"}, 
+            {name: "hhelmet", level: 0},  {name: "hgloves", level: 0},  {name: "hpants", level: 0}, 
+            {name: "spear", level: 0},  {name: "gloves", level: 0},  {name: "wbook0", level: 0}, 
+            {name: "gloves", level: 0},  {name: "rattail"},  {name: "smoke"},  {name: "bwing", level: 0}, 
+            {name: "dagger", level: 0},  {name: "sword", level: 0},  {name: "pmace", level: 0}, 
+            {name: "throwingstars", level: 0}
+        ] 
+            // TODO put this in dynamic config accessable by discord
         this.specialMonsters = ["greenjr", "wabbit", "skeletor"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
@@ -62,7 +75,7 @@ class Character {
         if(!AL) return Promise.reject("Missing AL Client")
         this.log("Starting")
         this.AL = AL;
-        this.character = this.character || await common.startCharacter(this, "EU", "PVP").catch(() => {});
+        this.character = this.character || await common.startCharacter(this, "ASIA", "I").catch(() => {});
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             this.log(`Error Loading class functions, ${error}`)
         })

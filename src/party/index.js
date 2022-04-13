@@ -16,7 +16,6 @@ class Party {
     async reconnectMemberLoop(){
         while(true){
             await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log("RUNNING")
             await Promise.all(this.members.map( async (member) => {
                 if(member.isSwitchingServers || member.isConnecting || !member.isRunning) return;
                 if(!member.character?.ready || !member?.character.socket || member.character?.disconnected){
