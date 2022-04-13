@@ -7,7 +7,7 @@ const common = {
 
         const partyNames = party.map((member) => member.name);;
 
-        if(!bot.isRunning) await bot.start().catch((error) => {
+        if(!bot.character?.ready) await bot.start().catch((error) => {
             return Promise.reject(`${bot.name} encounted an error running, ${error}`);
         });
 

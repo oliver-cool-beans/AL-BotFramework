@@ -75,7 +75,7 @@ class Character {
         if(!AL) return Promise.reject("Missing AL Client")
         this.log("Starting")
         this.AL = AL;
-        this.character = this.character || await common.startCharacter(this, "ASIA", "I").catch(() => {});
+        this.character = await common.startCharacter(this, "ASIA", "I").catch(() => {});
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             this.log(`Error Loading class functions, ${error}`)
         })
