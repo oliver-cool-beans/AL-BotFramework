@@ -14,6 +14,7 @@ async function loadFunctions () {
     this.strategies = {
         move: {...moveStrategies}, 
     }
+    this.elixirs = ['elixirint2', 'elixirint1', 'elixirint0']
     return Promise.resolve('OK');
 }
 

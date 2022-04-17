@@ -15,6 +15,7 @@ class DataPool {
         this.monsters = ['franky']
         this.refreshLoop();
         this.bankDataLoop();
+        this.bankData = {}
         this.lastSent = {
             bankData: null
         }
@@ -41,8 +42,9 @@ class DataPool {
         while(this.isRunning){
             await new Promise(resolve => setTimeout(resolve, 1000));
             if(!this.isRunning) continue;
-            const memberWithBank = this.allCharacters.find((char) => char.character && char.character.bank)
+            const memberWithBank = this.allCharacters.find((char) => char.character && char.character.bank && Object.keys(char.character.bank).length > 1)
             if(!memberWithBank) continue;
+            this.bankData = memberWithBank.character.bank
             await this.sendALBankData(memberWithBank.character.bank, memberWithBank.character.owner).catch((error) => {
                 console.log("Failed to send AL data", error)
             })
@@ -97,6 +99,7 @@ class DataPool {
         if(minsPassed < minutes) return false;
         return true;
     }
+    
 }
 
 export default DataPool;

@@ -371,16 +371,13 @@ class Character {
                     }
                 })
             }
-            /*const elixirsInBank = this.checkBankFor(this.elixirs)
-            const elixirsInInventory = this.character.items.filter((item) => {
-                if(item && this.elixirs.includes(item.name)) return item.name
-            })
+            const elixirsInBank = this.checkBankFor(this.elixirs)
 
             // If we've got no elixir, and the bank has elixirs we use
-            if(!this.character.slots.elixir && !elixirsInInventory.length && Object.keys(elixirsInBank).length){
+            if(!this.character.slots.elixir && Object.keys(elixirsInBank).length){
                 const chosenElixir = Object.keys(elixirsInBank)[0]
                 this.addTask({
-                    script: "withdrawFromBank", 
+                    script: "findAndUseElixir", 
                     user: this.name, 
                     priority: 8, 
                     args: {
@@ -389,11 +386,7 @@ class Character {
                 })
             }
 
-            if(!this.character.slots.elixir && elixirsInInventory.length){
-                console.log(this.name, "Equipping Elixir")
-                const elixirLocation = this.character.locateItem(elixirsInInventory[0]);
-                await this.character.equip(elixirLocation);
-            } */
+
         }
         console.log("Admin loop has stopped ... ")
         return Promise.resolve("Finished")
