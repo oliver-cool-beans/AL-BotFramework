@@ -68,7 +68,8 @@ class Character {
         this.partyMonsters = []
         this.isSwitchingServers = false;
         this.isConnecting = false;
-        this.loops = []
+        this.loops = [];
+        this.elixirs = [];
     }
 
     async start(AL) {
@@ -370,6 +371,29 @@ class Character {
                     }
                 })
             }
+            /*const elixirsInBank = this.checkBankFor(this.elixirs)
+            const elixirsInInventory = this.character.items.filter((item) => {
+                if(item && this.elixirs.includes(item.name)) return item.name
+            })
+
+            // If we've got no elixir, and the bank has elixirs we use
+            if(!this.character.slots.elixir && !elixirsInInventory.length && Object.keys(elixirsInBank).length){
+                const chosenElixir = Object.keys(elixirsInBank)[0]
+                this.addTask({
+                    script: "withdrawFromBank", 
+                    user: this.name, 
+                    priority: 8, 
+                    args: {
+                        itemsToWithdraw: {[chosenElixir]: {qty: 1}}
+                    }
+                })
+            }
+
+            if(!this.character.slots.elixir && elixirsInInventory.length){
+                console.log(this.name, "Equipping Elixir")
+                const elixirLocation = this.character.locateItem(elixirsInInventory[0]);
+                await this.character.equip(elixirLocation);
+            } */
         }
         console.log("Admin loop has stopped ... ")
         return Promise.resolve("Finished")
@@ -561,7 +585,7 @@ class Character {
             // Load from local data
             this.log(`Checking Boss Mobs: ${JSON.stringify(this.character.S)}`)
             Object.entries(this.character.S).forEach(([event, data]) => {
-                if(!data.live || !bosses[event] || !data.target) return;
+                if(!data.live || !bosses[event] || (!data.target && !this.specialMonsters.includes(event))) return;
                 if(this.#tasks.find((task) => task.script == event && task.args.serverIdentifier == this.character.serverData.name && task.args.serverRegion == this.character.serverData.region)){
                     return
                 }
@@ -661,6 +685,19 @@ class Character {
             return
         }).filter(Boolean)
     }
-    
+ 
+    checkBankFor(items){
+        const bankData = this.party?.dataPool?.bankData
+        if(!bankData) return {}
+        delete bankData.gold
+        const foundItems = Object.values(bankData).flat().reduce((itemArray, item) => {
+            if(item && items.includes(item.name)) {
+                itemArray[item.name] = (itemArray[item.name] || 0) + (item.q || 1)
+            }
+            return itemArray
+        }, {})
+        return foundItems
+    }
+
 }
 export default Character;
