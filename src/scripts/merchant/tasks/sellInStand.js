@@ -17,7 +17,7 @@ const merchantStandItems = {
     }, 
     "ink": {
         qty: "all",
-        price: 15000000
+        price: 10000000
     }, 
     "snakefang": {
         qty: "all",
