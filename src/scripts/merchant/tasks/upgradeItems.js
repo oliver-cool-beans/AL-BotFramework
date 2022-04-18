@@ -1,4 +1,5 @@
 import utils from "../../../scripts/utils/index.js";
+const excludeList = ['lostearring'];
 
 async function upgradeItems(bot){
     if (!["bank", "bank_b", "bank_u"].includes(bot.character.map))  await bot.character.smartMove({ map: "bank", x: 0, y: -200 }, { avoidTownWarps: true });
@@ -29,6 +30,7 @@ async function upgradeItems(bot){
             if(slotItem.level >= 8) return acc; // If the item is gte level 8
             if(slotItem.p) return acc; // Item is special
             if(slotItem.l) return acc // Item is locked
+            if(excludeList.includes(slotItem.name)) return acc // If we've excluded this item
             if(!acc[slotItem.name]) acc[slotItem.name] = {};
             acc[slotItem.name][slotItem.level]?.length ? acc[slotItem.name][slotItem.level].push(index) 
             : acc[slotItem.name][slotItem.level] = [index]

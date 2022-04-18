@@ -5,6 +5,9 @@ import avoidStack from "./avoidStack.js";
 import findClosestVendor from "./findClosestVendor.js";
 import usePotionIfLow from "./usePotionIfLow.js";
 import withdrawItemsFromBank from "./withdrawItemsFromBank.js";
+import depositItemsInBank from "./depositItemsInBank.js";
+
+
 const utils = {
     findClosestTarget,
     checkIfPotionsLow,
@@ -12,7 +15,8 @@ const utils = {
     avoidStack,
     findClosestVendor, 
     usePotionIfLow, 
-    withdrawItemsFromBank
+    withdrawItemsFromBank, 
+    depositItemsInBank
 }
 
 export default utils;

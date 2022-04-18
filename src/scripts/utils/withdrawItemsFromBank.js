@@ -13,7 +13,6 @@ async function withdrawItemsFromBank(bot, items) {
     }
 
     const bank = bot.character.bank;
-    console.log("BANK", bank)
     var itemToWithdraw, qtyToWithdraw, withdrawItems
     var qty = 0;
 
@@ -39,6 +38,7 @@ async function withdrawItemsFromBank(bot, items) {
                 }catch(error){
                     console.log("there was an error withdrawing", error)
                 }
+                await new Promise(resolve => setTimeout(resolve, 1000))
             }
         }
     }

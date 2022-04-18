@@ -9,7 +9,8 @@ const itemsToExchange = [
     "armorbox", 
     "weaponbox", 
     "goldenegg", 
-    "gemfragment"
+    "gemfragment",
+    "lostearring"
 ]
 
 async function findAndExchange(bot){
@@ -32,8 +33,8 @@ async function findAndExchange(bot){
             const gItem = bot.character.G.items[itemData.name]
             if(gItem.e && itemData.q < gItem.e) continue
 
-            exchangeLimit = itemData.q - 10;
-            if(exchangeLimit < 0) exchangeLimit = itemData.q
+            exchangeLimit = gItem.e ?  itemData.q - (gItem.e * 10) : itemData.q - 10 
+            if(exchangeLimit < 0) exchangeLimit = gItem.e || itemData.q
 
             if(itemsToExchange.includes(itemData.name) ){
                 exchangeLocation = bot.character.locateExchangeNPC(itemData.name);
@@ -43,8 +44,8 @@ async function findAndExchange(bot){
                 if(!bot.character.canExchange(itemData.name)) {
                     console.log("We are not ready to exchange!!", itemData.name)
                 };
-                console.log("ITEM DATA IS", itemData)
-                while(itemData.q > exchangeLimit){ // Only exchange 10 at a time so we don't flood our inventory and bank
+                console.log("Exchange item data is", itemData, "Exchange limit is", exchangeLimit)
+                while(itemData.q >= exchangeLimit){ // Only exchange 10 at a time so we don't flood our inventory and bank
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     if(!bot.character.canExchange(itemData.name)) break;
 

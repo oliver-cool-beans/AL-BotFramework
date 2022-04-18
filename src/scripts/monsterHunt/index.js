@@ -10,7 +10,6 @@ import scripts from "../index.js";
 async function monsterHunt(bot, party, merchant, args = {}) {
     const targetID = bot.character.s?.monsterhunt?.id
     if(!scripts[targetID] || !bot?.character.s?.monsterhunt?.c) {
-        console.log(bot.name, "REMOVING MH THE TASK BECAUSE", scripts[targetID], bot?.character.s?.monsterhunt)
         bot.removeTask("monsterHunt")
         return;
     }

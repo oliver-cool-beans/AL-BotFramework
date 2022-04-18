@@ -4,7 +4,7 @@ const merchantStandItems = {
     "vitearring": {
         level: 4, 
         qty: "all", 
-        price: 100000000
+        price: 50000000
     }, 
     "wbook0" : {
         level: 4, 
@@ -17,7 +17,15 @@ const merchantStandItems = {
     }, 
     "ink": {
         qty: "all",
-        price: 15000000
+        price: 10000000
+    }, 
+    "snakefang": {
+        qty: "all",
+        price: 1000000
+    }, 
+    "snakeoil": {
+        qty: "all",
+        price: 500000
     }, 
     "egg0": {
         qty: "all", 

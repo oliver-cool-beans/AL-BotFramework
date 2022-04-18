@@ -48,19 +48,36 @@ class Character {
         this.isRunning = false;
         this.merchant = null;
         this.notificationBuffer = [];
-        this.serverRegion = "EU", 
-        this.serverIdentifier = "PVP"
-        this.itemsToSell = [{name: "hpbelt", level: 0},  {name: "crabclaw"}, {name: "hpamulet", level: 0}, {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, {name: "phelmet", level: 0}, {name: "gphelmet", level: 0},  {name: "coat", level: 0},  {name: "pants", level: 0},  {name: "helmet", level: 0},  {name: "shoes", level: 0},  {name: "gloves", level: 0}] // TODO put this in dynamic config accessable by discord
+        this.serverRegion = "ASIA", 
+        this.serverIdentifier = "I"
+        this.itemsToSell = [
+            {name: "hpbelt", level: 0},  {name: "crabclaw"}, {name: "hpamulet", level: 0}, 
+            {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, 
+            {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, 
+            {name: "phelmet", level: 0}, {name: "gphelmet", level: 0},  {name: "coat", level: 0},  
+            {name: "pants", level: 0},  {name: "helmet", level: 0},  {name: "shoes", level: 0},  
+            {name: "gloves", level: 0},  {name: "spores"},  {name: "leather"}, 
+            {name: "hhelmet", level: 0},  {name: "hgloves", level: 0},  {name: "hpants", level: 0}, 
+            {name: "spear", level: 0},  {name: "gloves", level: 0},  {name: "wbook0", level: 0}, 
+            {name: "gloves", level: 0},  {name: "rattail"},  {name: "smoke"},  {name: "bwing", level: 0}, 
+            {name: "dagger", level: 0},  {name: "sword", level: 0},  {name: "pmace", level: 0}, 
+            {name: "throwingstars", level: 0}, {name: "tshirt0", level: 0}, {name: "tshirt1", level: 0},
+            {name: "tshirt2", level: 0}, {name: "troll"}
+        ] 
+            // TODO put this in dynamic config accessable by discord
         this.specialMonsters = ["greenjr", "wabbit", "skeletor"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
+        this.isConnecting = false;
+        this.loops = [];
+        this.elixirs = [];
     }
 
     async start(AL) {
         if(!AL) return Promise.reject("Missing AL Client")
         this.log("Starting")
         this.AL = AL;
-        this.character = this.character || await common.startCharacter(this, "EU", "PVP").catch(() => {});
+        this.character = await common.startCharacter(this, "ASIA", "I").catch(() => {});
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             this.log(`Error Loading class functions, ${error}`)
         })
@@ -72,34 +89,48 @@ class Character {
         if(discord) this.discord = discord;
         if(party) this.party = party;
         this.isLeader = isLeader;
-        
+
         if(!this.character?.ready) await this.start(AL);
         if(this.isRunning) return "Already running";
         this.isRunning = true
         const leader = party.members?.[0];
         await common.prepareCharacter(this, leader, party.members);
+        this.isConnecting = false
 
         // Running independant loops means we can perform multiple actions at a time if needed, while keeping the logic independant
         // i.e moving and attacking and using a potion in the same action
         if(this.characterClass !== "merchant"){
-            this.buyPotionLoop(); // Buy potions if we can and we need some;
-            this.potionLoop(); // Use a potion if we need to
-            this.attackLoop(); // Attack our target if we can
-            this.moveLoop(); // Move to our target if we should   
-            this.lootLoop(); // Loots chests  
-            this.findSpecialMonsterLoop(); // Check for special monsters and attack them
-            //this.checkEventBossesLoop(); // Check for boss events
-            this.monsterHuntLoop(); // Check for monster hunts
-            this.defenceLoop(); // Defensive actions like scare
+            this.loops.concat([
+                this.buyPotionLoop(), // Buy potions if we can and we need some;
+                this.potionLoop(), // Use a potion if we need to
+                this.attackLoop(), // Attack our target if we can
+                this.moveLoop(), // Move to our target if we should   
+                this.lootLoop(), // Loots chests  
+                this.findSpecialMonsterLoop(), // Check for special monsters and attack them
+                this.checkEventBossesLoop(), // Check for boss events
+                this.monsterHuntLoop(), // Check for monster hunts
+                this.defenceLoop(), // Defensive actions like scare
+            ])
+        }
+        this.loops.concat([
+            this.adminLoop(), // Resurrect if we need to
+            this.sellLoop(), // Sell junk when we can
+            this.randomEmotionLoop(), // Just random emotions for fun
+            this.logLoop(),
+        ])
+
+        
+        if(characterFunctions[this.characterClass]?.loop) {
+            await characterFunctions[this.characterClass].loop.apply(this).catch((error) => this.log(`ERROR: ${error}`))
         }
 
-        this.adminLoop(); // Resurrect if we need to
-        this.sellLoop(); // Sell junk when we can
-        this.randomEmotionLoop(); // Just random emotions for fun
-        this.logLoop();
-        
-        if(characterFunctions[this.characterClass]?.loop) await characterFunctions[this.characterClass].loop.apply(this).catch((error) => this.log(`ERROR: ${error}`))
-        while(this.isRunning && this.character && this.character.ready){ 
+        this.loops.concat([this.mainLoop(discord, party)])
+      
+    }
+
+    async mainLoop(discord, party){
+
+        while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 50)); 
             if(this.#tasks.length){
                 if(!await {...scripts, ...tasks}[this.#tasks[0]?.script]){
@@ -120,7 +151,8 @@ class Character {
             }
          
         }
-        this.log("Existing Run... this bot is now stopped")
+
+        console.log("MAIN LOOP has stopped ...")
         return Promise.resolve("OK")
     }
 
@@ -146,6 +178,8 @@ class Character {
                 monsterHunt: this.character.s?.monsterhunt
             })}`)
         }
+        console.log("Log loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
     setScript(name, args = null){
         this.scriptName = name;
@@ -176,20 +210,25 @@ class Character {
     }
 
     async reconnect(){
-        this.disconnect();
-        this.log("Disconnected, waiting 5 seconds then reconnecting")
-        await this.start(this.AL)
-        await this.run(this.party, this.discord, this.AL, this.isLeader);
+        await this.disconnect();
+        this.log("Reconnecting -> Disconnected, waiting 5 seconds then reconnecting")
+        try{
+            await this.start(this.AL)
+            await this.run(this.party, this.discord, this.AL, this.isLeader);
+        }catch(error){
+            console.log(this.name, "Failed to reconnect", error)
+        }
     }
 
     async disconnect(){
-        if(!this.character?.ready) return "Character not connected";
+        console.log("Waiting for all loops to finish")
         this.isRunning = false;
-        this.character.disconnect();
+        await Promise.all(this.loops);
+        this.character && this.character.disconnect();
         this.character = false;
         await new Promise(resolve => setTimeout(resolve, 5000));
+        console.log("Finished Disconnecting")
         return
-
     }
 
     resetTarget(){
@@ -266,6 +305,8 @@ class Character {
             if(!this.character?.ready) continue
             if(!Object.keys(this.character.c).length) await utils.usePotionIfLow(this);
         }
+        console.log("Potion loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     // Sell junk when we can.
@@ -287,6 +328,8 @@ class Character {
                 }
             }
         }
+        console.log("Sell loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     async adminLoop(){
@@ -304,12 +347,6 @@ class Character {
             if(this.character.rip) {
                 this.character.target = null
                 await this.character.respawn().catch(() => {});
-            }
-
-            if(!this.character.ready || !this.character.socket || this.character.disconnected){
-                this.log(`Has no socket or is not ready or is disconnected, reconnecting...`);
-                await this.reconnect();
-                continue;
             }
 
             if(this.character.esize <= 0 && this.character.ctype !== "merchant") {
@@ -338,8 +375,25 @@ class Character {
                     }
                 })
             }
-        }
+            const elixirsInBank = this.checkBankFor(this.elixirs)
 
+            // If we've got no elixir, and the bank has elixirs we use
+            if(this.character && !this.character.slots.elixir && Object.keys(elixirsInBank).length){
+                const chosenElixir = Object.keys(elixirsInBank)[0]
+                this.addTask({
+                    script: "findAndUseElixir", 
+                    user: this.name, 
+                    priority: 8, 
+                    args: {
+                        itemsToWithdraw: {[chosenElixir]: {qty: 1}}
+                    }
+                })
+            }
+
+
+        }
+        console.log("Admin loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
     
     async defenceLoop(){
@@ -357,6 +411,8 @@ class Character {
                 await this.character.scare().catch(() => {})
             }
         }
+        console.log("Defence loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     async attackLoop(){
@@ -389,6 +445,8 @@ class Character {
                 await this.character.basicAttack(targetData?.id).catch(async (error) => {});
             }
         }
+        console.log("Attack loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     async moveLoop(){
@@ -417,6 +475,8 @@ class Character {
                 await this.character.smartMove(targetData, { getWithin: this.attackRange || this.character.range / 2, useBlink: true }).catch(() => {});
             }
         }
+        console.log("Move loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     async buyPotionLoop(){
@@ -455,6 +515,8 @@ class Character {
                 });
             }
         }
+        console.log("Buy Potion loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     async lootLoop(){
@@ -468,6 +530,8 @@ class Character {
                 }
             }
         }
+        console.log("Loot loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     async findSpecialMonsterLoop(){
@@ -493,6 +557,8 @@ class Character {
 
             })
         }
+        console.log("Special Monster loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     async randomEmotionLoop(){
@@ -504,6 +570,8 @@ class Character {
             const emotionIndex = Math.floor(Math.random() * validEmotions.length)
             this.character.socket.emit("emotion",{name: validEmotions[emotionIndex]})
         }
+        console.log("Emotion loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     async checkEventBossesLoop(){
@@ -514,7 +582,7 @@ class Character {
             // Load from local data
             this.log(`Checking Boss Mobs: ${JSON.stringify(this.character.S)}`)
             Object.entries(this.character.S).forEach(([event, data]) => {
-                if(!data.live || !bosses[event] || !data.target) return;
+                if(!data.live || !bosses[event] || (!data.target && !this.specialMonsters.includes(event))) return;
                 if(this.#tasks.find((task) => task.script == event && task.args.serverIdentifier == this.character.serverData.name && task.args.serverRegion == this.character.serverData.region)){
                     return
                 }
@@ -554,6 +622,8 @@ class Character {
                 })
             }
         }
+        console.log("Event Boss loop has stopped ... ")
+        return Promise.resolve("Finished")
     }
 
     async switchServer(region, identifier){
@@ -574,7 +644,6 @@ class Character {
             this.log(`Error switching servers ${error}`)
             this.isSwitchingServers = false;
         }
-
     }
 
     async monsterHuntLoop(){
@@ -604,6 +673,7 @@ class Character {
                 })
             }
         }
+        return Promise.resolve("Finished")
     }
 
     checkPartyPresence(party){
@@ -612,6 +682,19 @@ class Character {
             return
         }).filter(Boolean)
     }
-    
+ 
+    checkBankFor(items){
+        const bankData = this.party?.dataPool?.bankData
+        if(!bankData) return {}
+        delete bankData.gold
+        const foundItems = Object.values(bankData).flat().reduce((itemArray, item) => {
+            if(item && items.includes(item.name)) {
+                itemArray[item.name] = (itemArray[item.name] || 0) + (item.q || 1)
+            }
+            return itemArray
+        }, {})
+        return foundItems
+    }
+
 }
 export default Character;

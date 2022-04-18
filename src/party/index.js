@@ -10,6 +10,24 @@ class Party {
         this.allCharacters = characters;
         this.config = partyConfig
         this.dataPool = new DataPool(characters);
+        this.reconnectMemberLoop();
+    }
+
+    async reconnectMemberLoop(){
+        while(true){
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await Promise.all(this.members.map( async (member) => {
+                if(member.isSwitchingServers || member.isConnecting || !member.isRunning) return;
+                if(!member.character?.ready || !member?.character.socket || member.character?.disconnected){
+                    member.isConnecting = true
+                    console.log(`*** ${member.name} *** Has no socket or is not ready or is disconnected, reconnecting...`);
+                    await member.reconnect();
+                    member.isConnecting = false;
+                    return Promise.resolve("OK")
+                }
+            }))
+        }
+
     }
 
     energizeMember(bot){
