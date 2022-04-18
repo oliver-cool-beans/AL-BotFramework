@@ -211,9 +211,13 @@ class Character {
 
     async reconnect(){
         await this.disconnect();
-        this.log("Disconnected, waiting 5 seconds then reconnecting")
-        await this.start(this.AL)
-        await this.run(this.party, this.discord, this.AL, this.isLeader);
+        this.log("Reconnecting -> Disconnected, waiting 5 seconds then reconnecting")
+        try{
+            await this.start(this.AL)
+            await this.run(this.party, this.discord, this.AL, this.isLeader);
+        }catch(error){
+            console.log(this.name, "Failed to reconnect", error)
+        }
     }
 
     async disconnect(){
@@ -225,7 +229,6 @@ class Character {
         await new Promise(resolve => setTimeout(resolve, 5000));
         console.log("Finished Disconnecting")
         return
-
     }
 
     resetTarget(){
