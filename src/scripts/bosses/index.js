@@ -6,7 +6,7 @@ import wabbit from "./wabbit..js"
 
 const bosses = {
     franky: franky, 
-    //wabbit: wabbit,
+    wabbit: wabbit,
     //snowman: snowman, 
     //dragold: dragold
     //pinkgoo: pinkgoo
