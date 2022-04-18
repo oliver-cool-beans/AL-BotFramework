@@ -8,6 +8,7 @@ import fish from "./tasks/fish.js";
 import findAndExchange from "./tasks/findAndExchange.js";
 import findAndRecycle from "./tasks/findAndRecycle.js";
 import findAndSell from "./tasks/findAndSell.js";
+//import exchangeMHTokens from "./tasks/exchangeMHTokens.js";
 
 async function scheduler(bot, force = false){
     if(bot.characterClass !== "merchant") return Promise.resolve(`Not a merchant ${bot.name}, ${bot.characterClass}`);
@@ -26,9 +27,9 @@ async function scheduler(bot, force = false){
         await findAndExchange(bot).catch((error) => {
             console.log("FAILED EXCHANGE RUN", error)
         })
-
+        
         await findAndSell(bot).catch((error) => {
-            console.log("FAILED SEL RUN", error)
+            console.log("FAILED SELL RUN", error)
         }) 
 
         var shouldCompound = true;

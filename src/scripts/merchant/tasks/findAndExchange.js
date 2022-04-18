@@ -43,8 +43,8 @@ async function findAndExchange(bot){
                 if(!bot.character.canExchange(itemData.name)) {
                     console.log("We are not ready to exchange!!", itemData.name)
                 };
-                console.log("ITEM DATA IS", itemData)
-                while(itemData.q > exchangeLimit){ // Only exchange 10 at a time so we don't flood our inventory and bank
+                console.log("Exchange item data is", itemData, "Exchange limit is", exchangeLimit)
+                while(itemData.q >= exchangeLimit){ // Only exchange 10 at a time so we don't flood our inventory and bank
                     await new Promise(resolve => setTimeout(resolve, 1000));
                     if(!bot.character.canExchange(itemData.name)) break;
 

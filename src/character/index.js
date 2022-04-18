@@ -61,7 +61,8 @@ class Character {
             {name: "spear", level: 0},  {name: "gloves", level: 0},  {name: "wbook0", level: 0}, 
             {name: "gloves", level: 0},  {name: "rattail"},  {name: "smoke"},  {name: "bwing", level: 0}, 
             {name: "dagger", level: 0},  {name: "sword", level: 0},  {name: "pmace", level: 0}, 
-            {name: "throwingstars", level: 0}
+            {name: "throwingstars", level: 0}, {name: "tshirt0", level: 0}, {name: "tshirt1", level: 0},
+            {name: "tshirt2", level: 0}, {name: "troll"}
         ] 
             // TODO put this in dynamic config accessable by discord
         this.specialMonsters = ["greenjr", "wabbit", "skeletor"]
@@ -374,7 +375,7 @@ class Character {
             const elixirsInBank = this.checkBankFor(this.elixirs)
 
             // If we've got no elixir, and the bank has elixirs we use
-            if(!this.character.slots.elixir && Object.keys(elixirsInBank).length){
+            if(this.character && !this.character.slots.elixir && Object.keys(elixirsInBank).length){
                 const chosenElixir = Object.keys(elixirsInBank)[0]
                 this.addTask({
                     script: "findAndUseElixir", 
