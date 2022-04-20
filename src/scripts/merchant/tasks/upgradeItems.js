@@ -1,5 +1,5 @@
 import utils from "../../../scripts/utils/index.js";
-const excludeList = ['lostearring'];
+const excludeList = [];
 
 async function upgradeItems(bot){
     if (!["bank", "bank_b", "bank_u"].includes(bot.character.map))  await bot.character.smartMove({ map: "bank", x: 0, y: -200 }, { avoidTownWarps: true });
