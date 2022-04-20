@@ -62,7 +62,8 @@ class Character {
             {name: "gloves", level: 0},  {name: "rattail"},  {name: "smoke"},  {name: "bwing", level: 0}, 
             {name: "dagger", level: 0},  {name: "sword", level: 0},  {name: "pmace", level: 0}, 
             {name: "throwingstars", level: 0}, {name: "tshirt0", level: 0}, {name: "tshirt1", level: 0},
-            {name: "tshirt2", level: 0}, {name: "troll"}
+            {name: "tshirt2", level: 0}, {name: "troll"}, {name: "smoke"}, {name: "hammer", level: 0}, 
+            {name: "gslime"}, {name: "sshield", level: 0}
         ] 
             // TODO put this in dynamic config accessable by discord
         this.specialMonsters = ["greenjr", "wabbit", "skeletor"]

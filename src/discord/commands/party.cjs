@@ -37,7 +37,7 @@ function create(scriptChoices, partyNames){
       }
 }
 
-async function run (AL, interaction, characters, party, discord) {
+async function run(AL, interaction, characters, party, discord) {
     const partyName = interaction.options.get("name")?.value;
     if(!partyName) return await interaction.editReply({ephemeral: true, content: "Invalid Command"});
 
