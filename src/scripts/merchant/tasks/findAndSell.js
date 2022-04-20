@@ -12,7 +12,7 @@ async function findAndSell(bot){
     await utils.goToBank(bot, bot.itemsToKeep, 50000000);
     await utils.withdrawItemsFromBank(bot, itemsToSell);
     console.log("Moving to vendor to sell....")
-    await bot.character.smartMove("potions").catch(() => {})
+    await bot.character.smartMove("fancypots").catch(() => {})
     await new Promise(resolve => setTimeout(resolve, 10000));
 
     return Promise.resolve("OK");
