@@ -19,7 +19,7 @@ async function findAndRecycle(bot){
 
     for(var item in itemsToRecycle){
         await utils.goToBank(bot, bot.itemsToKeep, 50000000);
-        
+
         await utils.withdrawItemsFromBank(bot, {[itemsToRecycle[item]] : {qty: "all", level: 0}});
 
         var itemData
