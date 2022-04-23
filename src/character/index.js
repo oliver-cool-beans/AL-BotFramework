@@ -14,8 +14,8 @@ import priest from "./priest/index.js";
 import paladin from "./paladin/index.js";
 import rogue from "./rouge/index.js";
 import Bottleneck from "bottleneck";
-import utils from "../scripts/utils/index.js";
-import bosses from "../scripts/bosses/index.js";
+
+import loops from "./loops/index.js";
 
 const characterFunctions = {
     merchant: merchant, 
@@ -103,22 +103,22 @@ class Character {
         // i.e moving and attacking and using a potion in the same action
         if(this.characterClass !== "merchant"){
             this.loops.concat([
-                this.buyPotionLoop(), // Buy potions if we can and we need some;
-                this.potionLoop(), // Use a potion if we need to
-                this.attackLoop(), // Attack our target if we can
-                this.moveLoop(), // Move to our target if we should   
-                this.lootLoop(), // Loots chests  
-                this.findSpecialMonsterLoop(), // Check for special monsters and attack them
-                this.checkEventBossesLoop(), // Check for boss events
-                this.monsterHuntLoop(), // Check for monster hunts
-                this.defenceLoop(), // Defensive actions like scare
+                loops.buyPotionLoop(this), // Buy potions if we can and we need some;
+                loops.potionLoop(this), // Use a potion if we need to
+                loops.attackLoop(this), // Attack our target if we can
+                loops.moveLoop(this), // Move to our target if we should   
+                loops.lootLoop(this), // Loots chests  
+                loops.findSpecialMonsterLoop(this), // Check for special monsters and attack them
+                loops.checkEventBossesLoop(this), // Check for boss events
+                loops.monsterHuntLoop(this), // Check for monster hunts
+                loops.defenceLoop(this), // Defensive actions like scare
             ])
         }
         this.loops.concat([
-            this.adminLoop(), // Resurrect if we need to
-            this.sellLoop(), // Sell junk when we can
-            this.randomEmotionLoop(), // Just random emotions for fun
-            this.logLoop(),
+            loops.adminLoop(this), // Resurrect if we need to
+            loops.sellLoop(this), // Sell junk when we can
+            loops.randomEmotionLoop(this), // Just random emotions for fun
+            loops.logLoop(this),
         ])
 
         
@@ -165,24 +165,6 @@ class Character {
         })
     }
 
-    async logLoop(){
-        while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            if(!this.character?.ready) continue;
-            this.log(`DATA: ${JSON.stringify({
-                tasks: this.tasks, 
-                hp: this.character.hp, 
-                mp: this.character.mp, 
-                ready: this.character.ready,
-                disconnected: this.character.disconnected,
-                targetName: this.character.target && this.character.target.type,
-                targetId: this.character.target && this.character.target.id,
-                monsterHunt: this.character.s?.monsterhunt
-            })}`)
-        }
-        console.log("Log loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
     setScript(name, args = null){
         this.scriptName = name;
         this.scriptArgs = args;
@@ -301,333 +283,6 @@ class Character {
         }
     }
 
-    async potionLoop(){
-        while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 2000));
-            if(!this.character?.ready) continue
-            if(!Object.keys(this.character.c).length) await utils.usePotionIfLow(this);
-        }
-        console.log("Potion loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
-    // Sell junk when we can.
-    async sellLoop(){
-        while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 200));
-            if(!this.character?.ready) continue
-            if(this.character.canSell()){
-                const itemsToSell = this.character.items.map((item, index) => {
-                    if(!item) return
-                    if(this.itemsToSell.find((listItem) => listItem.name == item.name && listItem.level == item.level) ){
-                        return {...item, index: index}
-                    } 
-                }).filter(Boolean);
-                for(var item in itemsToSell){
-                    await this.character.sell(itemsToSell[item].index).catch((error) => {
-                        this.log(`${this.name} errored selling item ${itemsToSell[item].name} ${JSON.stringify(error)}`)
-                    });
-                }
-            }
-        }
-        console.log("Sell loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
-    async adminLoop(){
-        while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if(!this.character?.ready) continue
-            if(!this.character.party && !this.isLeader && this.leader && !this.sentPartyRequest) {
-                this.log(`Sending party request to, ${this.leader.name}`)
-                await this.character.sendPartyRequest(this.leader.name).catch(() => {})
-                this.sentPartyRequest = true;
-            }
-            if(this.character.map == "jail") {
-                await this.character.leaveMap().catch((error) => this.log(`JAIL PORT ERRORED ${JSON.stringify(error)}`));
-            }
-            if(this.character.rip) {
-                this.character.target = null
-                await this.character.respawn().catch(() => {});
-            }
-
-            if(this.character.esize <= 0 && this.character.ctype !== "merchant") {
-                const {hpot, mpot} = this.calculatePotionItems();
-                this.addTask({
-                    script: "bankItems", 
-                    user: this.name, 
-                    priority: 1,
-                    force: true,
-                    args: {
-                        itemsToHold: [hpot, mpot, "tracker"].concat(this.itemsToHold), 
-                        goldToHold: 100000,
-                        nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}
-                    }
-                })
-            }
-
-            if(this.character.gold < 100000 && this.character.ctype !== "merchant"){
-                this.addTask({
-                    script: "withdrawGold", 
-                    user: this.name, 
-                    priority: 1, 
-                    args: {
-                        goldToHold: 100000, 
-                        nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}
-                    }
-                })
-            }
-            const elixirsInBank = this.checkBankFor(this.elixirs)
-
-            // If we've got no elixir, and the bank has elixirs we use
-            if(this.character && !this.character.slots.elixir && Object.keys(elixirsInBank).length){
-                const chosenElixir = Object.keys(elixirsInBank)[0]
-                this.addTask({
-                    script: "findAndUseElixir", 
-                    user: this.name, 
-                    priority: 8, 
-                    args: {
-                        itemsToWithdraw: {[chosenElixir]: {qty: 1}}
-                    }
-                })
-            }
-
-
-        }
-        console.log("Admin loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-    
-    async defenceLoop(){
-        while(this.isRunning && this.character?.ready){
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if(!this.character?.ready) continue
-            // Get anyone attacking me who's we're not prepared to fight
-            const attackingMe = this.character.getEntities({targetingMe: true})?.find((target) => {
-                return target.id !== this.character.target 
-                && this.AL.Tools.distance(this.character, target) <= this.character.range
-                && !scripts[target.type]
-            });
-            const isLowHp = (this.character.hp / this.character.max_hp) * 100 <= 30 ? true : false; 
-            if(attackingMe || isLowHp){
-                await this.character.scare().catch(() => {})
-            }
-        }
-        console.log("Defence loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
-    async attackLoop(){
-        while(this.isRunning && this.character?.ready){ 
-            await new Promise(resolve => setTimeout(resolve, 50));
-            if(!this.character?.ready) continue
-            if(!this.character.target){
-                this.character.target = [...this.character.entities.values()].find((entity) => entity.hp < this.character.attack)
-                continue;
-            }
-            
-            const attackingMe = [...this.character.entities.values()]?.find((target) => {
-                return target.id !== this.character.target 
-                && this.AL.Tools.distance(this.character, target) <= this.character.range
-                && scripts[target.type]
-                && target.target == this.character.id
-            });
-
-            const targetData = attackingMe || this.character.getTargetEntity()
-            if(this.strategies?.attack?.[targetData?.type]){
-                try{
-                    await this.strategies.attack[targetData.type](this, this.party.members, targetData)
-                    continue
-                }catch(error){
-                    this.log(`Failed to run attack strategy ${JSON.stringify(error)}`)
-                }
-            }
-            if(this.character.canUse("attack")){
-                this.party.energizeMember(this);
-                await this.character.basicAttack(targetData?.id).catch(async (error) => {});
-            }
-        }
-        console.log("Attack loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
-    async moveLoop(){
-        while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 500));
-            if(!this.character?.ready) continue
-
-            if(!this.character.target){
-                continue;
-            }
-
-            const targetData = this.character.getTargetEntity()
-            || this.party.members.find((member) => member?.character?.target == this.character?.target && member?.character?.getTargetEntity())?.character.getTargetEntity();
-            // If we can't find the target, check if someone in our party has it
-        
-            if(Object.keys(this.character.c).length) continue
-            if(this.strategies?.move?.[targetData?.type]){
-                await this.strategies.move[targetData?.type](this, this.party.members).catch((error) => {
-                    this.log(`Failed to run move strategy ${JSON.stringify(error)}`)
-                })
-                continue
-            }
-
-            // If we're out of range, move to the target
-            if(this.AL.Tools.distance(this.character, targetData) > this.character.range && !this.#tasks[0]?.force && !this.character.moving){
-                await this.character.smartMove(targetData, { getWithin: this.attackRange || this.character.range / 2, useBlink: true }).catch(() => {});
-            }
-        }
-        console.log("Move loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
-    async buyPotionLoop(){
-        while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if(!this.character?.ready) continue
-
-            const {hpot, mpot} = this.calculatePotionItems();
-            const hpotCount = this.character?.countItem(hpot);
-            const mpotCount = this.character?.countItem(mpot);
-            if(hpotCount < 200) {
-                if(this.character && this.character.canBuy(hpot)){
-                    await this.character.buy(hpot, 200 - hpotCount).catch(() => {})
-                }
-            }
-            // Check again just in case
-            if(!this.character?.ready) continue
-
-            if(mpotCount < 200) {
-                if(this.character && this.character.canBuy(mpot)){
-                    await this.character.buy(mpot, 200 - mpotCount).catch(() => {})
-                }
-            
-            }
-            
-            if(this.character && !this.character.canBuy(hpot) || !this.character?.canBuy(mpot)){
-                await utils.checkIfPotionsLow(this, 20) && this.addTask({
-                    script: "buyPotions", 
-                    user: this.name, 
-                    priority: 5,
-                    force: true,
-                    args: {
-                        nextPosition: {x: this.character.x, y: this.character.y, map: this.character.map}, 
-                        amount: 200
-                    }
-                });
-            }
-        }
-        console.log("Buy Potion loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
-    async lootLoop(){
-        while(this.isRunning){
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if(!this.character?.ready) continue
-
-            if(this.character.chests.size){
-                for(let [key, value] of this.character.chests){
-                    this.character && await this.character.openChest(key).catch((error) => {console.log("Failed to loot", error)});
-                }
-            }
-        }
-        console.log("Loot loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
-    async findSpecialMonsterLoop(){
-        while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if(!this.character?.ready) continue
-            [...this.character.entities.values()].forEach((entity) => {
-                if(!this.specialMonsters.includes(entity.type)) return
-                if(entity.target && !this.party.members.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
-                this.party.members.forEach((member) => {
-                    if(!member.specialMonsters.includes(entity.type)) return
-                    if(member.getTasks().find((task) => ["specialMonster", entity.type].includes(task.script) && task.args?.entity?.id == entity.id)) return;
-                    const monsterScript = scripts[entity.type] || "specialMonster"
-                    member.addTask({
-                        script: monsterScript, 
-                        user: this.name, 
-                        priority: 5,
-                        args: {
-                            target: entity
-                        }, 
-                    })
-                })
-
-            })
-        }
-        console.log("Special Monster loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
-    async randomEmotionLoop(){
-        const validEmotions = Object.keys(this.character.emx);
-        if(!validEmotions.length) return;
-        while(this.isRunning && this.character?.ready){
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if(!this.character?.ready) continue;
-            const emotionIndex = Math.floor(Math.random() * validEmotions.length)
-            this.character.socket.emit("emotion",{name: validEmotions[emotionIndex]})
-        }
-        console.log("Emotion loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
-    async checkEventBossesLoop(){
-        while(this.isRunning && this.character?.ready){
-            await new Promise(resolve => setTimeout(resolve, 5000));
-            if(!this.character?.ready) continue
-
-            // Load from local data
-            this.log(`Checking Boss Mobs: ${JSON.stringify(this.character.S)}`)
-            Object.entries(this.character.S).forEach(([event, data]) => {
-                if(!data.live || !bosses[event] || (!data.target && !this.specialMonsters.includes(event))) return;
-                if(this.#tasks.find((task) => task.script == event && task.args.serverIdentifier == this.character.serverData.name && task.args.serverRegion == this.character.serverData.region)){
-                    return
-                }
-                this.log(`Adding event`);
-                this.addTask({
-                    script: event, 
-                    user: this.name, 
-                    priority: 3,
-                    args: {
-                        event: data, 
-                        serverRegion: this.character.serverData.region, 
-                        serverIdentifier: this.character.serverData.name
-                    }
-                })
-            });
-
-            // Now load from external data
-            if(this.party.dataPool.aldata){
-                this.party.dataPool.aldata.forEach((event) => {
-                    if(!bosses[event.type] || (!event.target && !this.specialMonsters.includes(event.type)) || !event.map) return;
-                    if(this.#tasks.find((task) => task.script == event.type && task.args.serverIdentifier == event.serverIdentifier && task.args.serverRegion == event.serverRegion)){
-                        return
-                    }
-                    this.log(`Adding inter-server event for ${event.type}`)
-                    this.addTask({
-                        script: event.type, 
-                        user: this.name,
-                        priority: 3, 
-                        args: {
-                            event: event, 
-                            serverRegion: event.serverRegion, 
-                            serverIdentifier: event.serverIdentifier
-                        }
-                        
-                    })
-                    
-                })
-            }
-        }
-        console.log("Event Boss loop has stopped ... ")
-        return Promise.resolve("Finished")
-    }
-
     async switchServer(region, identifier){
         try{
             if(region == this.serverRegion && identifier == this.identifier) return false;
@@ -646,36 +301,6 @@ class Character {
             this.log(`Error switching servers ${error}`)
             this.isSwitchingServers = false;
         }
-    }
-
-    async monsterHuntLoop(){
-        while(this.isRunning){ 
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            if(!this.character?.ready) continue
-            if(!this.character.s?.monsterhunt && !this.#tasks.find((task) => task.script == "getMonsterHunt")){
-                this.addTask({
-                    script: "getMonsterHunt", 
-                    user: this.name
-                })
-                continue
-            }
-            if(this.character.s?.monsterhunt?.c == 0 && !this.#tasks.find((task) => task.script == "finishMonsterHunt")){
-                this.addTask({
-                    script : "finishMonsterHunt", 
-                    user: this.name, 
-                    priority: 80
-                })
-                continue
-            }
-            if(scripts[this.character.s?.monsterhunt?.id]){ // If we've got a script for this monster
-                this.addTask({
-                    script: "monsterHunt", 
-                    user: this.name, 
-                    priority: 80
-                })
-            }
-        }
-        return Promise.resolve("Finished")
     }
 
     checkPartyPresence(party){
@@ -699,4 +324,5 @@ class Character {
     }
 
 }
+
 export default Character;
