@@ -1,3 +1,5 @@
+import scripts from "../../scripts/index.js";
+
 export default async function findSpecialMonsterLoop(bot){
     while(bot.isRunning){ 
         await new Promise(resolve => setTimeout(resolve, 1000));
