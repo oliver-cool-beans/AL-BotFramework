@@ -15,9 +15,11 @@ class DataPool {
         this.monsters = ['franky']
         this.refreshLoop();
         this.bankDataLoop();
+        this.achievementLoop();
         this.bankData = {}
         this.lastSent = {
-            bankData: null
+            bankData: null,
+            achievementData: null
         }
         this.allCharacters = allCharacters;
         this.ALDataKey = ALDATA_KEY; // Key required to authenticate with ALData
@@ -45,9 +47,31 @@ class DataPool {
             const memberWithBank = this.allCharacters.find((char) => char.character && char.character.bank && Object.keys(char.character.bank).length > 1)
             if(!memberWithBank) continue;
             this.bankData = memberWithBank.character.bank
-            await this.sendALBankData(memberWithBank.character.bank, memberWithBank.character.owner).catch((error) => {
+            await this.sendALData(memberWithBank.character.bank, 'bank', memberWithBank.character.owner, 25, 'bankData').catch((error) => {
                 console.log("Failed to send AL data", error)
             })
+        }
+    }
+
+    async achievementLoop(){
+        while(this.isRunning){
+            await new Promise(resolve => setTimeout(resolve, 10000));
+            if(!this.isRunning) continue;
+            if(!this.minutesPassed(this.lastSent['achievementData'], 15)) continue;
+
+            const memberWithSocket = this.allCharacters.find((char) => char?.character?.ready);
+            if(!memberWithSocket) continue
+
+            // Subscribe to tracker event
+            memberWithSocket.character.socket.once("tracker", (data) => {
+                const payload = { max: data.max, monsters: data.monsters }
+                this.sendALData(payload, 'achievements', memberWithSocket.character.id, 15, 'achievementData').catch((error) => {
+                    console.log("Error sending achievement data", error)
+                });
+            });
+
+            // Emit tracker event for the above subscribe to action
+            memberWithSocket.character.socket.emit("tracker")
         }
     }
 
@@ -64,29 +88,30 @@ class DataPool {
         }
     }
 
-    async sendALBankData(bankData, owner){
+    async sendALData(payload, endpoint, owner, minutes, dataKey){
         if(!this.ALDataKey) return Promise.reject("No ALData Key configured");
-        if(!this.minutesPassed(this.lastSent.bankData, 25)) {
+        console.log("last sent", endpoint, this.lastSent[dataKey], dataKey, minutes)
+        if(!this.minutesPassed(this.lastSent[dataKey], minutes)) {
             return false;
         }
 
-        const url = `https://aldata.earthiverse.ca/bank/${owner}/${this.ALDataKey}`
+        console.log("Sending AL data for", endpoint);
+
+        const url = `https://aldata.earthiverse.ca/${endpoint}/${owner}/${this.ALDataKey}`
 
         const settings = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(bankData)
+            body: JSON.stringify(payload)
         };
 
-        this.lastSent.bankData = moment();
+        this.lastSent[dataKey] = moment();
 
         return await fetch(url, settings).then((response) => {
-            if(response.status == 200) {
-            }else{
-                  this.aldata = null
-              }
+            console.log("RESPONSE FROM", endpoint, response)
+            return response
         }).catch((error) => {
-            console.log("Error uploading bank data", error)
+            console.log("Error uploading AL data", error)
             return Promise.reject();
         })
 
