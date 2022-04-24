@@ -1,3 +1,5 @@
+import scripts from "../../scripts/index.js";
+
 export default async function defenceLoop(bot){
     while(bot.isRunning && bot.character?.ready){
         await new Promise(resolve => setTimeout(resolve, 1000));
