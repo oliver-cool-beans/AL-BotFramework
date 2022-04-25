@@ -20,17 +20,19 @@ async function scheduler(bot, force = false){
         date.setMinutes(date.getMinutes() + 15);
         bot.scheduleLastRun = date;
 
-        await findAndRecycle(bot).catch((error) => {
-            console.log("FAILED RECYCLE RUN", error)
-        })
- 
-        await findAndExchange(bot).catch((error) => {
-            console.log("FAILED EXCHANGE RUN", error)
-        })
-        
-        await findAndSell(bot).catch((error) => {
-            console.log("FAILED SELL RUN", error)
-        }) 
+        if(bot.character.esize > 0){
+            await findAndRecycle(bot).catch((error) => {
+                console.log("FAILED RECYCLE RUN", error)
+            })
+     
+            await findAndExchange(bot).catch((error) => {
+                console.log("FAILED EXCHANGE RUN", error)
+            })
+            
+            await findAndSell(bot).catch((error) => {
+                console.log("FAILED SELL RUN", error)
+            })     
+        }
 
         var shouldCompound = true;
        
