@@ -4,6 +4,7 @@ import phoenix from "./phoenix/index.js"
 import scheduler from "./merchant/scheduler.js";
 import ent from "./ent/index.js";
 import minimush from "./minimush/index.js";
+import iceroamer from "./iceroamer/index.js";
 import squig from "./squig/index.js";
 import bat from "./bat/index.js";
 import specialMonster from "./specialMonster/index.js";
@@ -52,6 +53,7 @@ const scripts = {
     specialMonster, 
     monsterHunt,
     stoneworm,
+    iceroamer,
     //bigbird,
     ...bosses
 }
