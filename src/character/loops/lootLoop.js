@@ -1,6 +1,6 @@
 export default async function lootLoop(bot){
     while(bot.isRunning){
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise(resolve => setTimeout(resolve, 500));
         await loop(bot).catch((error) => console.log(bot.name, "Failed to run loot loop", error))
 
     }
