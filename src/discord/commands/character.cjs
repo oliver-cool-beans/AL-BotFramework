@@ -38,7 +38,7 @@ function create(scriptChoices, characterNames) {
             description: "Character Switch Server", 
             type: 3, 
             required: false, 
-            choices: [{name: "EU II", value: "EU II"}, {name: "EU I", value: "EU I"}, {name: "ASIA I", value: "ASIA I"}]
+            choices: [{name: "EU II", value: "EU II"}, {name: "EU I", value: "EU I"}, {name: "ASIA I", value: "ASIA I"}, {name: "US III", value: "US III"}]
           }
         ]
       };
