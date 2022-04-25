@@ -34,17 +34,18 @@ async function scheduler(bot, force = false){
             })     
         }
 
-        var shouldCompound = true;
-       
-        while(shouldCompound){
-            console.log("Running Compound...")
-            shouldCompound = await compoundItems(bot).catch(() => {});
-        }
         var shouldUpgrade = true;
         while(shouldUpgrade){
             console.log("Running Upgrade...")
             shouldUpgrade = await upgradeItems(bot).catch(() => {})
         }
+
+        var shouldCompound = true;
+        while(shouldCompound){
+            console.log("Running Compound...")
+            shouldCompound = await compoundItems(bot).catch(() => {});
+        }
+ 
         
         await bot.character.smartMove('main', {avoidTownWarps: true}).catch(() => {});
             
