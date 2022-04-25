@@ -6,7 +6,6 @@ const itemsToRecycle = [
     "maceofthedead",
     "swordofthedead", 
     "fireblade", 
-    "firestaff", 
     "daggerofthedead", 
     "spearofthedead", 
     "pmaceofthedead"

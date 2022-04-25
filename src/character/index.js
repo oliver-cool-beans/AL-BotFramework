@@ -48,24 +48,26 @@ class Character {
         this.isRunning = false;
         this.merchant = null;
         this.notificationBuffer = [];
-        this.serverRegion = "ASIA", 
-        this.serverIdentifier = "I"
+        this.serverRegion = "EU", 
+        this.serverIdentifier = "PVP"
         this.itemsToSell = [
             {name: "hpbelt", level: 0},  {name: "crabclaw"}, {name: "hpamulet", level: 0}, 
             {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, 
             {name: "ringsj", level: 0}, {name: "beewings"}, {name: "whiteegg"}, {name: "slimestaff", level: 0}, 
             {name: "phelmet", level: 0}, {name: "gphelmet", level: 0},  {name: "coat", level: 0},  
             {name: "pants", level: 0},  {name: "helmet", level: 0},  {name: "shoes", level: 0},  
-            {name: "gloves", level: 0},  {name: "spores"},  {name: "leather"}, 
-            {name: "hhelmet", level: 0},  {name: "hgloves", level: 0},  {name: "hpants", level: 0}, 
+            {name: "gloves", level: 0},  {name: "spores", qty: "all"},  {name: "leather"}, 
+            {name: "hhelmet", level: 0},  {name: "hgloves", level: 0},  {name: "hpants", level: 0},
+            {name: "harmor", level: 0}, {name: "hboots", level: 0}, 
             {name: "spear", level: 0},  {name: "gloves", level: 0},  {name: "wbook0", level: 0}, 
-            {name: "gloves", level: 0},  {name: "rattail"},  {name: "smoke"},  {name: "bwing", level: 0}, 
+            {name: "gloves", level: 0},  {name: "rattail", qty: "all"},  {name: "ascale", qty: "all"},
+            {name: "bfur", qty: "all"},{name: "eslippers", level: 0},
             {name: "dagger", level: 0},  {name: "sword", level: 0},  {name: "pmace", level: 0}, 
             {name: "throwingstars", level: 0}, {name: "tshirt0", level: 0}, {name: "tshirt1", level: 0},
-            {name: "tshirt2", level: 0}, {name: "troll"}, {name: "smoke"}, {name: "hammer", level: 0}, 
+            {name: "tshirt2", level: 0}, {name: "smoke", qty: "all"}, {name: "hammer", level: 0}, 
             {name: "gslime"}, {name: "sshield", level: 0}, {name: "epyjamas", level: 0},{name: "eears", level: 0},
-             {name: "cscale"}, {name: "carrotsword", level: 0},
-            {name: "spores"}, {name: "bwing"}, {name: "spores"}, {name: "bwing"}
+             {name: "cscale", qty: "all"}, {name: "carrotsword", level: 0},
+            {name: "spores", qty: "all"}, {name: "bwing", qty: "all"}, {name: "spores", qty: "all"}
         ] 
             // TODO put this in dynamic config accessable by discord
         this.specialMonsters = ["greenjr", "wabbit", "skeletor"]
@@ -80,7 +82,7 @@ class Character {
         if(!AL) return Promise.reject("Missing AL Client")
         this.log("Starting")
         this.AL = AL;
-        this.character = await common.startCharacter(this, "ASIA", "I").catch(() => {});
+        this.character = await common.startCharacter(this, "EU", "PVP").catch(() => {});
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             this.log(`Error Loading class functions, ${error}`)
         })
