@@ -6,9 +6,9 @@
 
 import utils from "../../scripts/utils/index.js";
 
-const targets = ["minimush"];
+const targets = ["iceroamer"];
 
-async function minimush(bot, party, merchant, args) {
+async function iceroamer(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
     var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, targets);
 
@@ -19,20 +19,20 @@ async function minimush(bot, party, merchant, args) {
 
     if(bot.character.target !== targetData?.id) bot.setTarget(targetData?.id);
 
-    const rallyPosition = "minimush";
+    const rallyPosition = "iceroamer";
 
-    if(!bot.runningScriptName == "minimush") {
-        bot.runningScriptName = "minimush"
+    if(!bot.runningScriptName == "iceroamer") {
+        bot.runningScriptName = "iceroamer"
         await bot.character.smartMove(rallyPosition).catch(() => {});;
     }
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("minimush").catch(() => {});
+        await bot.character.smartMove("iceroamer").catch(() => {});
     }
 
     return Promise.resolve("Finished");
 }
 
 
-export default minimush;
+export default iceroamer;

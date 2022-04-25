@@ -26,6 +26,7 @@ async function franky(bot, party, merchant, args = {}){
         console.log("Franky is no longer live, removing task");
         bot.removeTask("franky");
         if((bot.serverIdentifier !==  bot.character.serverData.name) || (bot.serverRegion !==  bot.character.serverData.region)){
+            await new Promise(resolve => setTimeout(resolve, 5000)); // Wait the timeout and try again
             bot.log(`Switching back to home server ${bot.serverRegion} ${bot.serverIdentifier}`)
             await bot.switchServer(bot.serverRegion, bot.serverIdentifier)
         }
