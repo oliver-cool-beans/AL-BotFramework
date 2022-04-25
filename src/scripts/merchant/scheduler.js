@@ -20,7 +20,7 @@ async function scheduler(bot, force = false){
         date.setMinutes(date.getMinutes() + 15);
         bot.scheduleLastRun = date;
 
-        if(bot.character.esize > 0){
+        if(bot.character.esize > 5){
             await findAndRecycle(bot).catch((error) => {
                 console.log("FAILED RECYCLE RUN", error)
             })

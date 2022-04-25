@@ -15,8 +15,11 @@ async function findAndRecycle(bot){
 
     console.log("Finding items and recycle");
     if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
+    if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
 
     for(var item in itemsToRecycle){
+        if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
+
         await utils.goToBank(bot, bot.itemsToKeep, 50000000);
 
         await utils.withdrawItemsFromBank(bot, {[itemsToRecycle[item]] : {qty: "all", level: 0}});

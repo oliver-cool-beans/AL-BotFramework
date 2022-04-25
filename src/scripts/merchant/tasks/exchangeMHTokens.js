@@ -3,6 +3,7 @@ import utils from "../../utils/index.js";
 async function exchangeMHTokens(bot){
 
     console.log("Exchanging MH Tokens");
+    if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
     if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
     await utils.withdrawItemsFromBank(bot, {"monstertoken" : {qty: "all"}});
 

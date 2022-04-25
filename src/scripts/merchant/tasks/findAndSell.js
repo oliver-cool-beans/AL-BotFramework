@@ -5,6 +5,8 @@ async function findAndSell(bot){
 
     console.log("Finding items and sell");
     if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
+    if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
+
     const itemsToSell = bot.itemsToSell.reduce((acc, item) => {
         if(!acc[item.name]) acc[item.name] = {qty: "all", level: 0}
         return acc

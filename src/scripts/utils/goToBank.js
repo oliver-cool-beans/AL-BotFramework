@@ -12,7 +12,9 @@ async function goToBank(bot, itemsToHold, goldToHold, nextPosition) {
         try {
             await bot.character.depositItem(i)
         } catch (e) {
-            console.log(e)
+            console.log("BANKING ERROR", e)
+            if(e && e.indexOf("nowhere to place") !== -1) return Promise.resolve("Bank full")
+
         }
         await new Promise(resolve => setTimeout(resolve, 1000));
     }

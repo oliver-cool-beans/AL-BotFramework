@@ -18,9 +18,13 @@ const itemsToExchange = [
 async function findAndExchange(bot){
 
     console.log("Finding items and exchange");
+    
     if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
+    if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
 
     for(var item in itemsToExchange){
+        if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
+
         var itemName = itemsToExchange[item]
         var itemData, exchangeLocation, itemLoc
         var exchangeLimit = 0;
