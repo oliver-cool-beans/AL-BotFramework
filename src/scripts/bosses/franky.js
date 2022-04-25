@@ -41,7 +41,7 @@ async function franky(bot, party, merchant, args = {}){
 
     if(targetData?.name !== "Franky"){
         bot.character.target = null;
-        await bot.character.smartMove({x: 434, y: 357, map: "level2w"}).catch(() => {});
+        await bot.character.smartMove({x: 370, y: 301, map: "level2w"}).catch(() => {});
     }
 
     bot.attackRange = 40;
