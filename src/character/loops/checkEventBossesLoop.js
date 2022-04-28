@@ -18,6 +18,7 @@ async function loop(bot){
     bot.log(`Checking Boss Mobs: ${JSON.stringify(bot.character.S)}`)
     Object.entries(bot.character.S).forEach(([event, data]) => {
         if(!data.live || !bosses[event] || (!data.target && !bot.specialMonsters.includes(event))) return;
+        if(event.type == "franky" && !event.target) return; // Quick franky fix temp
         if(tasks.find((task) => task.script == event && task.args.serverIdentifier == bot.character.serverData.name && task.args.serverRegion == bot.character.serverData.region)){
             return
         }
@@ -39,6 +40,7 @@ async function loop(bot){
     if(bot.party.dataPool.aldata){
         bot.party.dataPool.aldata.forEach((event) => {
             if(!bosses[event.type] || (!event.target && !bot.specialMonsters.includes(event.type)) || !event.map) return;
+            if(event.type == "franky" && !event.target) return; // Quick franky fix temp
             if(tasks.find((task) => task.script == event.type && task.args.serverIdentifier == event.serverIdentifier && task.args.serverRegion == event.serverRegion)){
                 return
             }
