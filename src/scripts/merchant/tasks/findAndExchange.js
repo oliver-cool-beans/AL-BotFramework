@@ -12,7 +12,9 @@ const itemsToExchange = [
     "gemfragment",
     "lostearring", 
     "troll", 
-    "basketofeggs"
+    "basketofeggs", 
+    "candycane", 
+    "mistletoe"
 ]
 
 async function findAndExchange(bot){

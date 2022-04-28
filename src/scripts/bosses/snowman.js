@@ -1,5 +1,5 @@
 import utils from "../../scripts/utils/index.js";
-
+const rallyPosition = {x: 1143.0969205025276, y: -1043.9478443762375, map: "winterland"}
 
 async function snowman(bot, party, merchant, args = {}){    
     bot.attackRange = 25;
@@ -17,18 +17,14 @@ async function snowman(bot, party, merchant, args = {}){
 
     var targetData = bot.character.getTargetEntity() || bot.character.getEntity({ returnNearest: true, type: "snowman" })
 
-    if(targetData?.id && targetData?.id !== bot.character?.target){
+     if(targetData?.id && targetData?.id !== bot.character?.target){
         bot.character.target = targetData?.id
     }
 
     
-    if(!bot.character?.S?.snowman?.live) {
+    if(!bot.character?.S?.snowman?.x) {
         console.log("Snowman is no longer live, removing task");
         bot.removeTask("snowman");
-        if((bot.serverIdentifier !==  bot.character.serverData.name) || (bot.serverRegion !==  bot.character.serverData.region)){
-            bot.log(`Switching back to home server ${bot.serverRegion} ${bot.serverIdentifier}`)
-            await bot.switchServer(bot.serverRegion, bot.serverIdentifier)
-        }
         return;
     }
 
@@ -40,10 +36,10 @@ async function snowman(bot, party, merchant, args = {}){
 
     if(targetData?.name !== "Snowman"){
         bot.character.target = null;
-        await bot.character.smartMove(args.event).catch(() => {});
+        await bot.character.smartMove(rallyPosition).catch(() => {});
     }
 
-    bot.attackRange = bot.character.range / 2;
+    bot.attackRange = 40;
     return Promise.resolve("Finished");
 }
 

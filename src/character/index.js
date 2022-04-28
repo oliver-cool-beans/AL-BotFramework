@@ -67,10 +67,13 @@ class Character {
             {name: "tshirt2", level: 0}, {name: "smoke", qty: "all"}, {name: "hammer", level: 0}, 
             {name: "gslime"}, {name: "sshield", level: 0}, {name: "epyjamas", level: 0},{name: "eears", level: 0},
              {name: "cscale", qty: "all"}, {name: "carrotsword", level: 0}, {name: "frankypants", level: 0},
-            {name: "spores", qty: "all"}, {name: "bwing", qty: "all"}, {name: "spores", qty: "all"}
+            {name: "spores", qty: "all"}, {name: "bwing", qty: "all"}, {name: "spores", qty: "all"},
+            {name: "iceskates", level: 0}, {name: "xmace", level: 0}, {name: "carrot", aty: "all"}, {name: "snowball", qty: "all"}, 
+            {name: "warmscarf", level: 0}, {name: "rednose", level: 0}, {name: "xmashat", level: 0}, {name: "xmasshoes", level: 0}, 
+            {name: "xmassweater", level: 0}, {name: "xmaspants", level: 0}, {name: "mittens", level: 0}, {name: "mcape", level: 0}
         ] 
             // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["greenjr", "wabbit", "skeletor"]
+        this.specialMonsters = ["greenjr", "wabbit", "skeletor", "snowman", "mvampire"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
         this.isConnecting = false;
