@@ -1,11 +1,6 @@
 import utils from "../../utils/index.js";
 
 const merchantStandItems = {
-    "vitearring": {
-        level: 4, 
-        qty: "all", 
-        price: 50000000
-    }, 
     "wbook0" : {
         level: 4, 
         qty: "all", 
@@ -13,7 +8,7 @@ const merchantStandItems = {
     },
     "essenceofgreed" : {
         qty: "all", 
-        price: 500000000
+        price: 900000000
     },
     "rabbitsfoot" : {
         qty: "all", 
@@ -41,39 +36,39 @@ const merchantStandItems = {
     }, 
     "egg0": {
         qty: "all", 
-        price: 99999999999
+        price: 50000
     }, 
     "egg1": {
         qty: "all", 
-        price: 99999999999
+        price: 50000
     }, 
     "egg2": {
         qty: "all", 
-        price: 99999999999
+        price: 100000
     }, 
     "egg3": {
         qty: "all", 
-        price: 99999999999
+        price: 100000
     }, 
     "egg4": {
         qty: "all", 
-        price: 99999999999
+        price: 100000
     }, 
     "egg5": {
         qty: "all", 
-        price: 99999999999
+        price: 100000
     }, 
     "egg6": {
         qty: "all", 
-        price: 99999999999
+        price: 100000
     }, 
     "egg7": {
         qty: "all", 
-        price: 99999999999
+        price: 100000
     }, 
     "egg8": {
         qty: "all", 
-        price: 99999999999
+        price: 100000
     }
 }
 

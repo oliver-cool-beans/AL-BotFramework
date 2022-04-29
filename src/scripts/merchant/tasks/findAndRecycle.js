@@ -1,28 +1,17 @@
 import utils from "../../utils/index.js";
 
-const itemsToRecycle = [
-    "staffofthedead", 
-    "bowofthedead",
-    "maceofthedead",
-    "swordofthedead", 
-    "fireblade", 
-    "daggerofthedead", 
-    "spearofthedead", 
-    "pmaceofthedead"
-]
-
 async function findAndRecycle(bot){
 
     console.log("Finding items and recycle");
     if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
     if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
 
-    for(var item in itemsToRecycle){
+    for(var item in bot.itemsToRecycle){
         if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
 
         await utils.goToBank(bot, bot.itemsToKeep, 50000000);
 
-        await utils.withdrawItemsFromBank(bot, {[itemsToRecycle[item]] : {qty: "all", level: 0}});
+        await utils.withdrawItemsFromBank(bot, {[bot.itemsToRecycle[item]] : {qty: "all", level: 0}});
 
         var itemData
         var itemLoc
@@ -30,7 +19,7 @@ async function findAndRecycle(bot){
             itemLoc = null
             itemData = bot.character.items[i];
             if(!itemData) continue;
-            if(itemsToRecycle.includes(itemData.name) ){
+            if(bot.itemsToRecycle.includes(itemData.name) ){
                 await bot.character.smartMove("craftsman").catch(() => {})
                 await new Promise(resolve => setTimeout(resolve, 4000));
 

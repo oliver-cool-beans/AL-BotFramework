@@ -70,9 +70,37 @@ class Character {
             {name: "spores", qty: "all"}, {name: "bwing", qty: "all"}, {name: "spores", qty: "all"},
             {name: "iceskates", level: 0}, {name: "xmace", level: 0}, {name: "carrot", aty: "all"}, {name: "snowball", qty: "all"}, 
             {name: "warmscarf", level: 0}, {name: "rednose", level: 0}, {name: "xmashat", level: 0}, {name: "xmasshoes", level: 0}, 
-            {name: "xmassweater", level: 0}, {name: "xmaspants", level: 0}, {name: "mittens", level: 0}, {name: "mcape", level: 0}
+            {name: "xmassweater", level: 0}, {name: "xmaspants", level: 0}, {name: "mittens", level: 0}, {name: "mcape", level: 0}, 
+            {name: "cclaw", level: 0}
         ] 
-            // TODO put this in dynamic config accessable by discord
+        this.itemsToExchange = [
+            "gem0", 
+            "gem1",
+            "candy1",
+            "candy0", 
+            "seashell", 
+            "armorbox", 
+            "weaponbox", 
+            "goldenegg", 
+            "gemfragment",
+            "lostearring", 
+            "troll", 
+            "basketofeggs", 
+            "candycane", 
+            "mistletoe"
+        ]
+        this.itemsToRecycle = [
+            "staffofthedead", 
+            "bowofthedead",
+            "maceofthedead",
+            "swordofthedead", 
+            "fireblade", 
+            "daggerofthedead", 
+            "spearofthedead", 
+            "pmaceofthedead"
+        ]
+        
+        // TODO put this in dynamic config accessable by discord
         this.specialMonsters = ["greenjr", "wabbit", "skeletor", "snowman", "mvampire"]
         this.partyMonsters = []
         this.isSwitchingServers = false;

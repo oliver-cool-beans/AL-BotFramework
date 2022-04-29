@@ -1,22 +1,5 @@
 import utils from "../../utils/index.js";
 
-const itemsToExchange = [
-    "gem0", 
-    "gem1",
-    "candy1",
-    "candy0", 
-    "seashell", 
-    "armorbox", 
-    "weaponbox", 
-    "goldenegg", 
-    "gemfragment",
-    "lostearring", 
-    "troll", 
-    "basketofeggs", 
-    "candycane", 
-    "mistletoe"
-]
-
 async function findAndExchange(bot){
 
     console.log("Finding items and exchange");
@@ -24,10 +7,10 @@ async function findAndExchange(bot){
     if(bot.character.stand) await bot.character.closeMerchantStand().catch(() => {})
     if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
 
-    for(var item in itemsToExchange){
+    for(var item in bot.itemsToExchange){
         if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
 
-        var itemName = itemsToExchange[item]
+        var itemName = bot.itemsToExchange[item]
         var itemData, exchangeLocation, itemLoc
         var exchangeLimit = 0;
         const gItem = bot.character.G.items[itemName]
@@ -54,7 +37,7 @@ async function findAndExchange(bot){
             exchangeLimit = gItem.e ?  itemData.q - (gItem.e * 10) : itemData.q - 10 
             if(exchangeLimit < 0) exchangeLimit = gItem.e || itemData.q
 
-            if(itemsToExchange.includes(itemData.name) ){
+            if(bot.itemsToExchange.includes(itemData.name) ){
                 exchangeLocation = bot.character.locateExchangeNPC(itemData.name);
                 console.log("*** exchange location for", itemData.name, "is", exchangeLocation)
                 if(!exchangeLocation) continue;

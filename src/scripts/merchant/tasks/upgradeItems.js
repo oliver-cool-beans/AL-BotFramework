@@ -31,6 +31,9 @@ async function upgradeItems(bot){
             //if(slotItem.p) return acc; // Item is special
             if(slotItem.l) return acc // Item is locked
             if(excludeList.includes(slotItem.name)) return acc // If we've excluded this item
+            if(bot.itemsToSell.map((item) => item.name).includes(slotItem.name)) return acc
+            if(bot.itemsToExchange.includes(slotItem.name)) return acc
+            if(bot.itemsToRecycle.includes(slotItem.name)) return acc
             if(!acc[slotItem.name]) acc[slotItem.name] = {};
             acc[slotItem.name][slotItem.level]?.length ? acc[slotItem.name][slotItem.level].push(index) 
             : acc[slotItem.name][slotItem.level] = [index]
