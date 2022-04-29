@@ -11,6 +11,18 @@ const merchantStandItems = {
         qty: "all", 
         price: 100000000
     },
+    "essenceofgreed" : {
+        qty: "all", 
+        price: 500000000
+    },
+    "rabbitsfoot" : {
+        qty: "all", 
+        price: 500000000
+    },
+    "cryptkey" : {
+        qty: "all", 
+        price: 5000000
+    },
     "tracker": {
         qty: "all", 
         price: 3000000

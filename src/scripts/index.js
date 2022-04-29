@@ -26,6 +26,11 @@ import boar from "./boar/index.js";
 import armadillo from "./armadillo/index.js";
 import stoneworm from "./stoneworm/index.js";
 import monsterHunt from "./monsterHunt/index.js";
+import crabx from "./crabx/index.js";
+import porcupine from "./porcupine/index.js";
+import poisio from "./poisio/index.js";
+import tortoise from "./tortoise/index.js";
+import nerfedmummy from "./nerfedmummy/index.js";
 
 const scripts = {
     merchant: scheduler,
@@ -49,12 +54,17 @@ const scripts = {
     cgoo,
     osnake,
     armadillo,
-   // boar,
-    specialMonster, 
-    monsterHunt,
+    crabx,
+    porcupine,
     stoneworm,
     iceroamer,
-    //bigbird,
+    poisio,
+    tortoise,
+    nerfedmummy,
+   // boar,
+   // bigbird,
+    specialMonster, 
+    monsterHunt,
     ...bosses
 }
 

@@ -14,7 +14,16 @@ async function loop(bot){
     [...bot.character.entities.values()].forEach((entity) => {
         if(!bot.specialMonsters.includes(entity.type)) return
         if(entity.target && !bot.party.members.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
-        bot.party.members.forEach((member) => {
+        const monsterScript = scripts[entity.type] || "specialMonster"
+        bot.addTask({
+            script: monsterScript, 
+            user: bot.name, 
+            priority: 5,
+            args: {
+                target: entity
+            }, 
+        })
+        /*bot.party.members.forEach((member) => {
             if(!member.specialMonsters.includes(entity.type)) return
             if(member.getTasks().find((task) => ["specialMonster", entity.type].includes(task.script) && task.args?.entity?.id == entity.id)) return;
             const monsterScript = scripts[entity.type] || "specialMonster"
@@ -26,7 +35,7 @@ async function loop(bot){
                     target: entity
                 }, 
             })
-        })
+        }) */
     })
 
     return Promise.resolve("OK");
