@@ -101,7 +101,7 @@ class Character {
         ]
         
         // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["greenjr", "wabbit", "skeletor", "snowman", "mvampire"]
+        this.specialMonsters = ["greenjr", "jr", "wabbit", "skeletor", "mvampire"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
         this.isConnecting = false;
@@ -317,7 +317,7 @@ class Character {
         }
     }
 
-    async switchServer(region, identifier){
+    async switchServer(region, identifier, retry = true){
         try{
             if(region == this.serverRegion && identifier == this.identifier) return false;
             if(this.party.allCharacters.find((char) => char.character && char.character.map == "bank")) return false;
@@ -333,7 +333,13 @@ class Character {
             this.isSwitchingServers = false;
         }catch(error){
             this.log(`Error switching servers ${error}`)
-            this.isSwitchingServers = false;
+            if(retry){
+                this.log("Timing out for 10 seconds and retrying")
+                await new Promise(resolve => setTimeout(resolve, 10000));
+                await this.switchServer(region, identifier, false)
+            }else{
+                this.isSwitchingServers = false;
+            }
         }
     }
 

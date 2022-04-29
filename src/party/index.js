@@ -18,7 +18,7 @@ class Party {
             await new Promise(resolve => setTimeout(resolve, 1000));
             await Promise.all(this.members.map( async (member) => {
                 if(member.isSwitchingServers || member.isConnecting || !member.isRunning) return;
-                if(!member.character?.ready || !member?.character.socket || member.character?.disconnected){
+                if(!member.character?.ready || !member?.character.socket || member.character?.disconnected || !member.AL){
                     member.isConnecting = true
                     console.log(`*** ${member.name} *** Has no socket or is not ready or is disconnected, reconnecting...`);
                     await member.reconnect();
