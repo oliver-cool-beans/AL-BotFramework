@@ -114,7 +114,7 @@ class Character {
         if(!AL) return Promise.reject("Missing AL Client")
         this.log("Starting")
         this.AL = AL;
-        this.character = await common.startCharacter(this, "EU", "PVP").catch(() => {});
+        this.character = await common.startCharacter(this, this.serverRegion, this.serverIdentifier).catch(() => {});
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             this.log(`Error Loading class functions, ${error}`)
         })
@@ -171,12 +171,12 @@ class Character {
             await new Promise(resolve => setTimeout(resolve, 50)); 
             if(this.#tasks.length){
                 if(!await {...scripts, ...tasks}[this.#tasks[0]?.script]){
-                    this.removeTask(this.#tasks[0]?.script);
+                    this.removeTask(this.#tasks[0]?.id);
                     continue
                 }
-                await {...scripts, ...tasks}[this.#tasks[0].script](this, party.members, this.merchant, this.#tasks[0].args).catch((error) => {
-                    this.log(`task ${this.#tasks[0]?.script} errored with, ${error}`)
-                    this.removeTask(this.#tasks[0]?.script)
+                await {...scripts, ...tasks}[this.#tasks[0].script](this, party.members, this.merchant, this.#tasks[0].args, this.#tasks[0].id).catch((error) => {
+                    this.log(`task ${this.#tasks[0]?.id} - ${this.#tasks[0].script} errored with, ${error}`)
+                    this.removeTask(this.#tasks[0]?.id)
                 });
                 continue;
             }
@@ -207,13 +207,12 @@ class Character {
     }
 
     addTask(task) {
-        if(!task?.script) return false;
-        if(!task.id && this.#tasks.find((queue) => queue.script == task.script)) return false;
+        if(!task?.script || !task?.id) return false;
         if(task.id && this.#tasks.find((queue) => queue.id == task.id)) return false;
 
         this.#tasks.push(task)
         this.#tasks = this.#tasks.sort((a, b) => (a.priority || 99) - (b.priority || 99))
-        this.log(`${this.name} Added Task ${task.script} First Task is now ${this.#tasks[0].script} at priority, ${this.#tasks[0].priority}`)
+        this.log(`${this.name} Added Task ${task.id} : ${task.script} First Task is now ${this.#tasks[0].script} at priority, ${this.#tasks[0].priority}`)
         return
     }
 
@@ -221,9 +220,15 @@ class Character {
         return this.#tasks;
     }
 
-    removeTask(name){
-        this.#tasks = this.#tasks.filter((queue) => queue.script !== name); // This'll remove them all. May want to just remove first later
-        this.log(`Removed Task: ${name}`)
+    createTaskId(name, region, identifier){
+        return Buffer.from(`${name}${region}${identifier}`, 'base64').toString('base64')
+    }
+
+    removeTask(taskId){
+        this.#tasks = this.#tasks.filter((queue) => queue?.id !== taskId);
+
+        this.log(`Removed Task: ${taskId}`)
+        console.log("There are now", this.#tasks.length, "Tasks in the queue for", this.name);
         this.#tasks = this.#tasks.sort((a, b) => a.priority || 99 - b.priority || 99)
         return;
     }

@@ -1,5 +1,5 @@
 
-async function buyPotions(bot, party, merchant, args) {
+async function buyPotions(bot, party, merchant, args = {}, taskId) {
     console.log("BUYING POTIONS!!", bot.getTasks())
     const {nextPosition, amount = 200} = args
     const {hpot, mpot} = bot.calculatePotionItems();
@@ -20,7 +20,7 @@ async function buyPotions(bot, party, merchant, args) {
         await bot.character.smartMove(nextPosition).catch(() => {})
     }
 
-    bot.removeTask("buyPotions");
+    bot.removeTask(taskId);
     return Promise.resolve(true)
 }
 export default buyPotions;

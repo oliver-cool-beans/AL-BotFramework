@@ -1,7 +1,7 @@
 import utils from "../../scripts/utils/index.js";
 const rallyPosition = {x: 1143.0969205025276, y: -1043.9478443762375, map: "winterland"}
 
-async function snowman(bot, party, merchant, args = {}){    
+async function snowman(bot, party, merchant, args = {}, taskId){    
     bot.attackRange = 25;
     bot.kitePositions.snowman = {x: 1164.1348111178727, y: -1074.3045132208767}
 

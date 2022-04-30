@@ -1,7 +1,7 @@
 import utils from "../../scripts/utils/index.js";
 
 
-async function wabbit(bot, party, merchant, args = {}){    
+async function wabbit(bot, party, merchant, args = {}, taskId){    
     bot.attackRange = 25;
     const { maps: gMaps } = bot.AL.Game.G;
     const currentMap = gMaps?.[args.event.map];
@@ -26,7 +26,7 @@ async function wabbit(bot, party, merchant, args = {}){
     
     if(!bot.character?.S?.wabbit?.live) {
         console.log("Wabbit is no longer live, removing task");
-        bot.removeTask("wabbit");
+        bot.removeTask(taskId);
         if((bot.serverIdentifier !==  bot.character.serverData.name) || (bot.serverRegion !==  bot.character.serverData.region)){
             bot.log(`Switching back to home server ${bot.serverRegion} ${bot.serverIdentifier} AM I SWITCHING THO? ${bot.isSwitchingServers}`)
             await bot.switchServer(bot.serverRegion, bot.serverIdentifier)

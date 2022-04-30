@@ -1,6 +1,6 @@
 const bankingPosition = { map: "bank", x: 0, y: -200 };
 
-async function bankItems(bot, party, merchant, args) {
+async function bankItems(bot, party, merchant, args, taskId) {
     console.log("BANKING ITEMS", bot.name)
     const {itemsToHold, goldToHold, nextPosition} = args;
     while(!["bank", "bank_b", "bank_u"].includes(bot.character.map) && !bot.character.moving){
@@ -36,7 +36,7 @@ async function bankItems(bot, party, merchant, args) {
         await new Promise(resolve => setTimeout(resolve, 2000));
     }
     
-    bot.removeTask('bankItems');
+    bot.removeTask(taskId);
     return Promise.resolve("Finished")
 }
 

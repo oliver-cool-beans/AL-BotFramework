@@ -1,10 +1,10 @@
 import utils from "../../scripts/utils/index.js";
 
 
-async function dragold(bot, party, merchant, args = {}){
+async function dragold(bot, party, merchant, args = {}, taskId){
     if(!bot.character?.S?.dragold?.live) {
         console.log("Dragold is no longer live, removing task");
-        bot.removeTask("dragold");
+        bot.removeTask(taskId);
         return;
     }
 

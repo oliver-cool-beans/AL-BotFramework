@@ -26,6 +26,7 @@ async function loop(bot){
     if(bot.character.esize <= 0 && bot.character.ctype !== "merchant") {
         const {hpot, mpot} = bot.calculatePotionItems();
         bot.addTask({
+            id: bot.createTaskId('bankItems'),
             script: "bankItems", 
             user: bot.name, 
             priority: 1,
@@ -40,6 +41,7 @@ async function loop(bot){
 
     if(bot.character.gold < 200000 && bot.character.ctype !== "merchant"){
         bot.addTask({
+            id: bot.createTaskId('withdrawGold'),
             script: "withdrawGold", 
             user: bot.name, 
             priority: 1, 
@@ -55,6 +57,7 @@ async function loop(bot){
     if(bot.character && !bot.character.slots.elixir && Object.keys(elixirsInBank).length){
         const chosenElixir = Object.keys(elixirsInBank)[0]
         bot.addTask({
+            id:  bot.createTaskId('findAndUseElixir'),
             script: "findAndUseElixir", 
             user: bot.name, 
             priority: 8, 

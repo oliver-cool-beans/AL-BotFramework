@@ -1,7 +1,7 @@
 import withdrawItemsFromBank from '../utils/withdrawItemsFromBank.js'
 import depositItemsInBank from '../utils/depositItemsInBank.js'
 
-async function findAndUseElixir(bot, party, merchant, args) {
+async function findAndUseElixir(bot, party, merchant, args = {}, taskId) {
     console.log("Withdrawing elixirs from bank", args.itemsToWithdraw)
     const {itemsToWithdraw} = args;
     await withdrawItemsFromBank(bot, itemsToWithdraw)
@@ -25,7 +25,7 @@ async function findAndUseElixir(bot, party, merchant, args) {
 
 
 
-    bot.removeTask('findAndUseElixir');
+    bot.removeTask(taskId);
     return Promise.resolve("Finished")
 }
 

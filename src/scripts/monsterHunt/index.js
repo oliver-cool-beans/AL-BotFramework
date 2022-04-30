@@ -7,10 +7,10 @@
 import utils from "../../scripts/utils/index.js";
 import scripts from "../index.js";
 
-async function monsterHunt(bot, party, merchant, args = {}) {
+async function monsterHunt(bot, party, merchant, args = {}, taskId) {
     const targetID = bot.character.s?.monsterhunt?.id
     if(!scripts[targetID] || !bot?.character.s?.monsterhunt?.c) {
-        bot.removeTask("monsterHunt")
+        bot.removeTask(taskId)
         return;
     }
     

@@ -1,7 +1,7 @@
 import utils from "../../scripts/utils/index.js";
 import moment from "moment";
 
-async function franky(bot, party, merchant, args = {}){    
+async function franky(bot, party, merchant, args = {}, taskId){    
     bot.attackRange = 25;
 
     if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
@@ -24,7 +24,7 @@ async function franky(bot, party, merchant, args = {}){
     
     if(!bot.character?.S?.franky?.live) {
         console.log("Franky is no longer live, removing task");
-        bot.removeTask("franky");
+        bot.removeTask(taskId);
         return;
     }
 
@@ -43,7 +43,7 @@ async function franky(bot, party, merchant, args = {}){
     while(targetData && !targetData.target){
         if(moment() >= timeoutTime){
             console.log(bot.name, "Removing franky because it's been 10 minutes with no target");
-            bot.removeTask("franky")
+            bot.removeTask(taskId)
             break;
         }
         await new Promise(resolve => setTimeout(resolve, 1000));

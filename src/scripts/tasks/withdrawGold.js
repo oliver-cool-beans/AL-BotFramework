@@ -1,6 +1,6 @@
 const bankingPosition = { map: "bank", x: 0, y: -200 };
 
-async function withdrawGold(bot, party, merchant, args) {
+async function withdrawGold(bot, party, merchant, args = {}, taskId) {
     const {goldToHold, nextPosition} = args;
     while(!["bank", "bank_b", "bank_u"].includes(bot.character.map) && !bot.character.moving){
         await bot.character.smartMove(bankingPosition, { avoidTownWarps: true }).catch(() => {})
@@ -22,7 +22,7 @@ async function withdrawGold(bot, party, merchant, args) {
         await new Promise(resolve => setTimeout(resolve, 2000));
     }
     
-    bot.removeTask('withdrawGold');
+    bot.removeTask(taskId);
     return Promise.resolve("Finished")
 }
 

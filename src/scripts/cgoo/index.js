@@ -38,6 +38,7 @@ async function cgoo(bot, party, merchant, args) {
         const {hpot, mpot} = bot.calculatePotionItems();
 
         bot.addTask({
+            id: bot.createTaskId("bankItems"),
             script: "bankItems", 
             user: bot.name, 
             priority: 1,

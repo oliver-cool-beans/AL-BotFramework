@@ -47,11 +47,14 @@ async function phoenix(bot, party, merchant, args = {}) {
                 const memberTasks = member.getTasks();
                 if(!memberTasks.find((task) => task?.args?.target?.id == targetData.id)){
                     member.addTask({
+                        id: bot.createTaskId('phoenix', bot.serverRegion, bot.serverIdentifier),
                         script: "specialMonster", 
                         user: bot.name, 
                         priority: 4, 
                         args: {
-                            target: targetData
+                            target: targetData, 
+                            serverRegion: bot.serverRegion, 
+                            serverIdentifier: bot.serverIdentifier
                         }
                     });
                 }

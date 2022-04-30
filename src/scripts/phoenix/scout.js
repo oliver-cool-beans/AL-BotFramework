@@ -47,8 +47,10 @@ async function scout(spawns, bot, party) {
                 await new Promise(resolve => setTimeout(resolve, 1000));
             }
         }
+        
         bot.character.target = nearbyPhoenix?.id;
         bot.addTask({
+            id: bot.createTaskId('phoenix', bot.serverRegion, bot.serverIdentifier),
             script: "specialMonster", 
             user: bot.name, 
             priority: 4, 
@@ -77,7 +79,9 @@ async function magiportParty(bot, party, target) {
         await bot.character.magiport(party[index].character.id).catch((error) => {
             console.log("Error magiporting", party[index].name, error)
         })
+        
         party[index].addTask({
+            id: bot.createTaskId('phoenix', bot.serverRegion, bot.serverIdentifier),
             script: "specialMonster", 
             user: bot.name, 
             priority: 4, 

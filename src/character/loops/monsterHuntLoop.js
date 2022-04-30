@@ -14,6 +14,7 @@ async function loop(bot){
 
     if(!bot.character.s?.monsterhunt && !tasks.find((task) => task.script == "getMonsterHunt")){
         bot.addTask({
+            id: bot.createTaskId("getMonsterHunt"),
             script: "getMonsterHunt", 
             user: bot.name
         })
@@ -21,6 +22,7 @@ async function loop(bot){
     }
     if(bot.character.s?.monsterhunt?.c == 0 && !tasks.find((task) => task.script == "finishMonsterHunt")){
         bot.addTask({
+            id: bot.createTaskId("finishMonsterHunt"),
             script : "finishMonsterHunt", 
             user: bot.name, 
             priority: 80
@@ -29,6 +31,7 @@ async function loop(bot){
     }
     if(scripts[bot.character.s?.monsterhunt?.id]){ // If we've got a script for bot monster
         bot.addTask({
+            id: bot.createTaskId("monsterHunt"),
             script: "monsterHunt", 
             user: bot.name, 
             priority: 80

@@ -1,8 +1,8 @@
 
 
-async function getMonsterHunt(bot){
+async function getMonsterHunt(bot, party, merchant, args = {}, taskId){
     if(bot.character.s?.monsterhunt) {
-        bot.removeTask("getMonsterHunt");
+        bot.removeTask(taskId);
         return
     }
     await bot.character.smartMove("monsterhunter", {getWithin: 350, avoidTownWarps: true}).catch(async () => {

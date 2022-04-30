@@ -1,11 +1,10 @@
 import utils from "../../scripts/utils/index.js";
 
 
-async function pinkgoo(bot, party, merchant, args = {}){
-    console.log("RUNNING PINKGOO", bot.character.target?.id)
+async function pinkgoo(bot, party, merchant, args = {}, taskId){
     if(!bot.character?.S?.pinkgoo?.live) {
         console.log("Pinkgoo is no longer live, removing task");
-        bot.removeTask("pinkgoo");
+        bot.removeTask(taskId);
         return;
     }
 

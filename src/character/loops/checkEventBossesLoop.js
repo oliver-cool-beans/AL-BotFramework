@@ -21,8 +21,10 @@ async function loop(bot){
         if(tasks.find((task) => task.script == event && task.args.serverIdentifier == bot.character.serverData.name && task.args.serverRegion == bot.character.serverData.region)){
             return
         }
+
         bot.log(`Adding event`);
         bot.addTask({
+            id: bot.createTaskId(event.type, bot.serverRegion, bot.serverIdentifier),
             script: event, 
             user: bot.name, 
             priority: 3,
@@ -44,14 +46,12 @@ async function loop(bot){
             if(tasks.find((task) => task.script == event.type && task.args.serverIdentifier == event.serverIdentifier && task.args.serverRegion == event.serverRegion)){
                 return
             }
-
-            const id = Buffer.from(`${event.type}${event.serverRegion}${event.serverIdentifier}`, 'base64').toString('base64')
-            if(tasks.find((task) => task.id == id )) return;
             
-            bot.log(`Adding inter-server event for ${event.type} server: ${event.serverRegion} ${event.serverIdentifier}`)
+            const id = bot.createTaskId(event.type, event.serverRegion, event.serverIdentifier)
+            if(tasks.find((task) => task.id == id )) return;
 
             bot.addTask({
-                id: id,
+                id: id ,
                 script: scripts[event.type] && event.type || "specialMonster", 
                 user: bot.name,
                 priority: 3, 

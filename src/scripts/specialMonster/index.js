@@ -6,7 +6,7 @@
 
 import utils from "../../scripts/utils/index.js";
 
-async function specialMonster(bot, party, merchant, args = {}) {
+async function specialMonster(bot, party, merchant, args = {}, taskId) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
     if(!args.target?.type) return;
 
@@ -40,7 +40,7 @@ async function specialMonster(bot, party, merchant, args = {}) {
     // If i'm on the same map, and less than 500m then it's probably dead, remove target, remove task
     if(targetData.map == bot.character.map && distance <= 500){
         bot.setTarget(null)
-        bot.removeTask("specialMonster");
+        bot.removeTask(taskId);
         console.log(bot.name, "Removed Special Monster task")
         return;
     }
