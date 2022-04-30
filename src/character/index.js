@@ -123,7 +123,6 @@ class Character {
             this.log(`Error Loading class functions, ${error}`)
         })
         console.log(this.name, "Finished starting")
-        console.log("CHARACTER", this.character)
         console.log(!!this.character.socket, "SOCKET?", this.name)
         return Promise.resolve("OK");
     };

@@ -69,6 +69,7 @@ async function script(scriptName, character){
 }
 
 async function login(character, discord, AL, party){
+  await character.start(AL);
   character.run(party, discord, AL)
   return Promise.resolve("OK")
 }
