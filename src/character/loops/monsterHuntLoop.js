@@ -14,27 +14,39 @@ async function loop(bot){
 
     if(!bot.character.s?.monsterhunt && !tasks.find((task) => task.script == "getMonsterHunt")){
         bot.addTask({
-            id: bot.createTaskId("getMonsterHunt"),
+            id: bot.createTaskId("getMonsterHunt", bot.character.serverData.region,  bot.character.serverData.name ),
             script: "getMonsterHunt", 
-            user: bot.name
+            user: bot.name, 
+            args: {
+                serverRegion: bot.character.serverData.region, 
+                serverIdentifier:  bot.character.serverData.name
+            }
         })
         return
     }
     if(bot.character.s?.monsterhunt?.c == 0 && !tasks.find((task) => task.script == "finishMonsterHunt")){
         bot.addTask({
-            id: bot.createTaskId("finishMonsterHunt"),
+            id: bot.createTaskId("finishMonsterHunt",  bot.character.serverData.region,  bot.character.serverData.name ),
             script : "finishMonsterHunt", 
             user: bot.name, 
-            priority: 80
+            priority: 80, 
+            args: {
+                serverRegion: bot.character.serverData.region, 
+                serverIdentifier:  bot.character.serverData.name
+            }
         })
         return
     }
     if(scripts[bot.character.s?.monsterhunt?.id]){ // If we've got a script for bot monster
         bot.addTask({
-            id: bot.createTaskId("monsterHunt"),
+            id: bot.createTaskId("monsterHunt",  bot.character.serverData.region,  bot.character.serverData.name ),
             script: "monsterHunt", 
             user: bot.name, 
-            priority: 80
+            priority: 80, 
+            args: {
+                serverRegion: bot.character.serverData.region, 
+                serverIdentifier:  bot.character.serverData.name
+            }
         })
     }
 

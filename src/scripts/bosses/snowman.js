@@ -24,8 +24,8 @@ async function snowman(bot, party, merchant, args = {}, taskId){
 
     
     if(!bot.character?.S?.snowman?.x) {
-        console.log("Snowman is no longer live, removing task");
-        bot.removeTask("snowman");
+        console.log("Snowman is no longer live, removing task", taskId);
+        bot.removeTask(taskId);
         return;
     }
 

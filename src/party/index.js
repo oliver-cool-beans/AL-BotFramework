@@ -72,7 +72,10 @@ class Party {
     }
     
     start(party, discord, AL){
-        this.members.forEach((member, index) => {
+        this.members.forEach(async (member, index) => {
+            console.log("Party starting", member.name)
+            await member.start(AL)
+            console.log("Finished party starting", member.name)
             member.run(party, discord, AL, !index);
         })
         return

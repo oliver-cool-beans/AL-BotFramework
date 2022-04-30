@@ -24,7 +24,7 @@ async function loop(bot){
 
         bot.log(`Adding event`);
         bot.addTask({
-            id: bot.createTaskId(event.type, bot.serverRegion, bot.serverIdentifier),
+            id: bot.createTaskId(event.type, bot.character.serverData.region, bot.character.serverData.name),
             script: event, 
             user: bot.name, 
             priority: 3,
@@ -51,7 +51,7 @@ async function loop(bot){
             if(tasks.find((task) => task.id == id )) return;
 
             bot.addTask({
-                id: id ,
+                id: id,
                 script: scripts[event.type] && event.type || "specialMonster", 
                 user: bot.name,
                 priority: 3, 

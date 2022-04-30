@@ -7,10 +7,6 @@ const common = {
 
         const partyNames = party.map((member) => member.name);;
 
-        if(!bot.character?.ready) await bot.start().catch((error) => {
-            return Promise.reject(`${bot.name} encounted an error running, ${error}`);
-        });
-
         bot.isLeader && bot.character.socket.on("request", async (data) => {
             try {
                 if (partyNames.includes(data.name)) {
@@ -62,7 +58,7 @@ const common = {
             if(!waitTime) return Promise.reject(error);
             console.log("Timeout detected, waiting", parseInt(waitTime), "seconds");
             
-            if(bot.party.allCharacters.find((char) => char.character && char.character.map == "bank")) return false;
+            if(bot.party.allCharacters.find((char) => char.character && char.character.map == "bank")) return Promise.reject(`Cannot login - character in bank`);
 
             await new Promise(resolve => setTimeout(resolve, parseInt(waitTime * 1000))); // Wait the timeout and try again
             return await bot.AL.Game[classFunctionName](bot.name, serverRegion, serverIdentifier).catch((error) => Promise.reject(error))

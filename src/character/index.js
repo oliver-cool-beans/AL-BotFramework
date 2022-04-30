@@ -16,6 +16,7 @@ import rogue from "./rouge/index.js";
 import Bottleneck from "bottleneck";
 
 import loops from "./loops/index.js";
+import moment from 'moment';
 
 const characterFunctions = {
     merchant: merchant, 
@@ -51,6 +52,7 @@ class Character {
         this.notificationBuffer = [];
         this.serverRegion = "EU", 
         this.serverIdentifier = "PVP"
+        this.taskTimeouts = {};
         this.itemsToSell = [
             {name: "hpbelt", level: 0},  {name: "crabclaw"}, {name: "hpamulet", level: 0}, 
             {name: "vitscroll"}, {name: "mushroomstaff", level: 0}, {name: "stinger", level: 0}, 
@@ -110,24 +112,28 @@ class Character {
         this.elixirs = [];
     }
 
-    async start(AL) {
+    async start(AL, region = this.serverRegion, identifier = this.serverIdentifier) {
+        console.log("Starting", !!AL, "START AL??", this.name)
         if(!AL) return Promise.reject("Missing AL Client")
-        this.log("Starting")
         this.AL = AL;
-        this.character = await common.startCharacter(this, this.serverRegion, this.serverIdentifier).catch(() => {});
+        this.character = await common.startCharacter(this, region, identifier).catch((error) => {
+            console.log("START CHARACTER HAD AN ERROR WITH", this.name, error)
+        });
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             this.log(`Error Loading class functions, ${error}`)
         })
+        console.log(this.name, "Finished starting")
+        console.log("CHARACTER", this.character)
+        console.log(!!this.character.socket, "SOCKET?", this.name)
         return Promise.resolve("OK");
     };
 
     async run(party, discord, AL, isLeader){
 
         if(discord) this.discord = discord;
-        if(party) this.party = party;
+        if(party && !this.party) this.party = party;
         this.isLeader = isLeader;
 
-        if(!this.character?.ready) await this.start(AL);
         if(this.isRunning) return "Already running";
         this.isRunning = true
         const leader = party.members?.[0];
@@ -170,6 +176,8 @@ class Character {
         while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 50)); 
             if(this.#tasks.length){
+                if(!this.character.ready || !this.character.serverData) continue;
+
                 if(!await {...scripts, ...tasks}[this.#tasks[0]?.script]){
                     this.removeTask(this.#tasks[0]?.id);
                     continue
@@ -208,6 +216,10 @@ class Character {
 
     addTask(task) {
         if(!task?.script || !task?.id) return false;
+        const now = moment().utc();
+        if(this.taskTimeouts[task.id] && this.taskTimeouts[task.id] > now) return false;
+        delete this.taskTimeouts[task.id];
+
         if(task.id && this.#tasks.find((queue) => queue.id == task.id)) return false;
 
         this.#tasks.push(task)
@@ -225,11 +237,16 @@ class Character {
     }
 
     removeTask(taskId){
+        const task = this.#tasks.find((queue) => queue?.id == taskId);
         this.#tasks = this.#tasks.filter((queue) => queue?.id !== taskId);
 
         this.log(`Removed Task: ${taskId}`)
         console.log("There are now", this.#tasks.length, "Tasks in the queue for", this.name);
         this.#tasks = this.#tasks.sort((a, b) => a.priority || 99 - b.priority || 99)
+
+        if(task && task.script == "specialMonster"){
+            this.taskTimeouts[task.id] = moment().utc().add(45, 'minutes');
+        }
         return;
     }
 
@@ -237,7 +254,6 @@ class Character {
         await this.disconnect();
         this.log("Reconnecting -> Disconnected, waiting 5 seconds then reconnecting")
         try{
-            await this.start(this.AL)
             await this.run(this.party, this.discord, this.AL, this.isLeader);
         }catch(error){
             console.log(this.name, "Failed to reconnect", error)
@@ -333,14 +349,14 @@ class Character {
             this.isSwitchingServers = true;
             this.log(`Switching servers to ${region} ${identifier}`);
             await this.disconnect();
-            console.log("Finished disconnecting")
-            this.character = await common.startCharacter(this, region, identifier)
+            await this.start(this.AL, region, identifier);
             await this.run(this.party, this.discord, this.AL, this.isLeader);
             this.isSwitchingServers = false;
         }catch(error){
             this.log(`Error switching servers ${error}`)
             if(retry){
                 this.log("Timing out for 10 seconds and retrying")
+                await this.disconnect();
                 await new Promise(resolve => setTimeout(resolve, 10000));
                 await this.switchServer(region, identifier, false)
             }else{

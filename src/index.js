@@ -8,6 +8,7 @@ import logger from "./logger/index.cjs";
 import scripts from "./scripts/index.js";
 import Character from "./character/index.js";
 import Party from "./party/index.js";
+import { character } from "./discord/commands/index.cjs";
 
 async function init() {
     const newLogger = logger();
@@ -27,7 +28,10 @@ async function init() {
         return new Character(char.name, char.type, DEFAULT_SCRIPT, !index, newLogger)
     })
     console.log(`Found ${characters.length} characters`);
-    const party = new Party(characters, PARTY_CONFIG)
+    const party = new Party(characters, PARTY_CONFIG);
+
+    characters.forEach((char) => char.party = party); // Assign the party class to each character
+
     resolveDefaultParty(PARTY_CONFIG, characters, party);
 
     console.log(`Set default party as ${party.members.map((member) => member.name)}`);
