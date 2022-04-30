@@ -126,16 +126,16 @@ class Character {
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             this.log(`Error Loading class functions, ${error}`)
         });
-        
+
         console.log(this.name, "Finished starting")
-        console.log(!!this.character?.socket, "SOCKET?", this.name)
-        if(!this.character?.socket){
-            console.log(this.name, "Attempting to connect no socket, waiting 10s ")
-            await new Promise(resolve => setTimeout(resolve, 10000));  
+        console.log(!!this.character?.ready, "Ready?", this.name)
+        
+        if(!this.character?.ready){
+            console.log(this.name, "Attempting to connect not ready, waiting 30s ")
+            await new Promise(resolve => setTimeout(resolve, 30000));  
             console.log("Finished waiting...")
-            if(!this.character?.socket){
+            if(!this.character?.ready){
                 console.log(this.name, "Attempting to connect still no socket, reconnecting ");
-                this.debugSocket = true;
                 await this.disconnect();
                 await this.start(this.AL);
             } 
