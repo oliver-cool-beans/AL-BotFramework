@@ -38,7 +38,7 @@ async function loop(bot){
         })
     }
 
-    if(bot.character.gold < 1000000 && bot.character.ctype !== "merchant"){
+    if(bot.character.gold < 200000 && bot.character.ctype !== "merchant"){
         bot.addTask({
             script: "withdrawGold", 
             user: bot.name, 
