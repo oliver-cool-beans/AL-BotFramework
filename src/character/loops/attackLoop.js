@@ -25,6 +25,10 @@ async function loop(bot){
     });
 
     const targetData = attackingMe || bot.character.getTargetEntity()
+
+    if(!targetData?.target && !bot.isReadyToEngage()) return;
+
+
     if(bot.strategies?.attack?.[targetData?.type]){
         try{
             await bot.strategies.attack[targetData.type](bot, bot.party.members, targetData)

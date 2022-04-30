@@ -7,12 +7,17 @@
 import utils from "../../scripts/utils/index.js";
 
 async function specialMonster(bot, party, merchant, args = {}) {
-    console.log("Running special monster")
     if(!bot.character.ready) return Promise.reject("Character not ready");
     if(!args.target?.type) return;
 
     if(!bot.runningScriptName == "specialMonster") {
         bot.runningScriptName = "specialMonster"
+    }
+
+    if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
+        console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)
+        args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
+        return;
     }
 
     // Get target if in range, or set to the arg target data

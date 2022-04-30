@@ -47,6 +47,7 @@ class Character {
         this.character = null;
         this.isRunning = false;
         this.merchant = null;
+        this.kitePositions = {};
         this.notificationBuffer = [];
         this.serverRegion = "EU", 
         this.serverIdentifier = "PVP"
@@ -101,7 +102,7 @@ class Character {
         ]
         
         // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["greenjr", "jr", "wabbit", "skeletor", "mvampire"]
+        this.specialMonsters = ["greenjr", "jr", "wabbit", "skeletor", "mvampire", "snowman"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
         this.isConnecting = false;
@@ -207,12 +208,12 @@ class Character {
 
     addTask(task) {
         if(!task?.script) return false;
-        if(this.#tasks.find((queue) => queue.script == task.script)) return false;
+        if(!task.id && this.#tasks.find((queue) => queue.script == task.script)) return false;
+        if(task.id && this.#tasks.find((queue) => queue.id == task.id)) return false;
+
         this.#tasks.push(task)
         this.#tasks = this.#tasks.sort((a, b) => (a.priority || 99) - (b.priority || 99))
         this.log(`${this.name} Added Task ${task.script} First Task is now ${this.#tasks[0].script} at priority, ${this.#tasks[0].priority}`)
-        this.log(`${this.name} Second Task is now ${this.#tasks[1]?.script} at priority, ${this.#tasks[1]?.priority}`)
-
         return
     }
 
@@ -363,6 +364,15 @@ class Character {
         return foundItems
     }
 
+    isLowHp(){
+        return(this.character.hp / this.character.max_hp) * 100 <= 30 ? true : false; 
+    }
+
+    isReadyToEngage(){
+        if( (this.character.hp / this.character.max_hp ) * 100 <= 80 ) return false
+        if( (this.character.mp / this.character.max_mp ) * 100 <= 30) return false;
+        return true
+    }
 }
 
 export default Character;

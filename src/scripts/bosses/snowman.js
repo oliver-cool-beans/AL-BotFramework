@@ -3,6 +3,7 @@ const rallyPosition = {x: 1143.0969205025276, y: -1043.9478443762375, map: "wint
 
 async function snowman(bot, party, merchant, args = {}){    
     bot.attackRange = 25;
+    bot.kitePositions.snowman = {x: 1164.1348111178727, y: -1074.3045132208767}
 
     if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
         console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)

@@ -18,7 +18,8 @@ async function loop(bot){
         && bot.AL.Tools.distance(bot.character, target) <= bot.character.range
         && !scripts[target.type]
     });
-    const isLowHp = (bot.character.hp / bot.character.max_hp) * 100 <= 30 ? true : false; 
+    const isLowHp = bot.isLowHp();
+    
     if(attackingMe || isLowHp){
         await bot.character.scare().catch(() => {})
     }

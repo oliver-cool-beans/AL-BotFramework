@@ -11,11 +11,11 @@ async function usePotionIfLow(bot) {
 
     if(!bot.character) return;
     
-    if(bot.character.hp / bot.character.max_hp < 0.7 && hpot !== undefined) {
+    if(bot.character.hp / bot.character.max_hp < 0.9 && hpot !== undefined) {
         bot.character && await bot.character.useHPPot(hpot).catch((error) => {})
     }
 
-    if(bot.character.mp / bot.character.max_mp < 0.7 && mpot !== undefined) {
+    if(bot.character.mp / bot.character.max_mp < 0.9 && mpot !== undefined) {
         bot.character && await bot.character.useMPPot(mpot).catch((error) => {})
     }
 

@@ -12,7 +12,7 @@ class DataPool {
         this.aldata = null
         this.isRunning = true;
         this.initialised = false;
-        this.monsters = ['franky', 'snowman', 'skeletor', 'jr', 'greenjr', 'mvampire']
+        this.monsters = ['franky', 'snowman', 'skeletor', 'jr', 'greenjr', 'mvampire', 'snowman']
         this.refreshLoop();
         this.bankDataLoop();
         this.achievementLoop();
@@ -108,7 +108,6 @@ class DataPool {
         this.lastSent[dataKey] = moment();
 
         return await fetch(url, settings).then((response) => {
-            console.log("RESPONSE FROM", endpoint, response)
             return response
         }).catch((error) => {
             console.log("Error uploading AL data", error)

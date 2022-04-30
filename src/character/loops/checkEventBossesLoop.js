@@ -1,4 +1,4 @@
-import bosses from "../../scripts/bosses/index.js";
+import scripts from "../../scripts/index.js";
 
 export default async function checkEventBossesLoop(bot){
     while(bot.isRunning && bot.character?.ready){
@@ -13,11 +13,11 @@ export default async function checkEventBossesLoop(bot){
 async function loop(bot){
     if(!bot.character?.ready) return
 
-    let tasks = bot.getTasks();
     // Load from local data
     bot.log(`Checking Boss Mobs: ${JSON.stringify(bot.character.S)}`)
     Object.entries(bot.character.S).forEach(([event, data]) => {
-        if(!data.live || !bosses[event] || (!data.target && !bot.specialMonsters.includes(event))) return;
+        const tasks = bot.getTasks();
+        if(!data.live || !scripts[event] || (!data.target && !bot.specialMonsters.includes(event))) return;
         if(tasks.find((task) => task.script == event && task.args.serverIdentifier == bot.character.serverData.name && task.args.serverRegion == bot.character.serverData.region)){
             return
         }
@@ -34,21 +34,35 @@ async function loop(bot){
         })
     });
 
-    tasks = bot.getTasks();
     // Now load from external data
     if(bot.party.dataPool.aldata){
         bot.party.dataPool.aldata.forEach((event) => {
-            if(!bosses[event.type] || (!event.target && !bot.specialMonsters.includes(event.type)) || !event.map) return;
-            console.log("Adding task, we have a target", event.target)
+            const tasks = bot.getTasks();
+            if(!scripts[event.type] && !bot.specialMonsters.includes(event.type)) return // If we have no script, and it's not a special monster return
+            if((!event.target && !bot.specialMonsters.includes(event.type))) return; // if we've got not target, and it's not a special monster return
+            if(bot.specialMonsters.includes(event.type) && !event.map) return // If it's a special monster with no map, return
             if(tasks.find((task) => task.script == event.type && task.args.serverIdentifier == event.serverIdentifier && task.args.serverRegion == event.serverRegion)){
                 return
             }
-            bot.log(`Adding inter-server event for ${event.type}`)
+
+            const id = Buffer.from(`${event.type}${event.serverRegion}${event.serverIdentifier}`, 'base64').toString('base64')
+            if(tasks.find((task) => task.id == id )) return;
+            
+            bot.log(`Adding inter-server event for ${event.type} server: ${event.serverRegion} ${event.serverIdentifier}`)
+
             bot.addTask({
-                script: event.type, 
+                id: id,
+                script: scripts[event.type] && event.type || "specialMonster", 
                 user: bot.name,
                 priority: 3, 
                 args: {
+                    target: {
+                        type: event.type, 
+                        id: event.id,
+                        x: event.x, 
+                        y: event.y, 
+                        map: event.map
+                    },
                     event: event, 
                     serverRegion: event.serverRegion, 
                     serverIdentifier: event.serverIdentifier

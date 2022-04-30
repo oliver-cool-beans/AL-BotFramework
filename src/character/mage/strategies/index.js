@@ -2,7 +2,7 @@ import kiteTarget from "./kiteTarget.js";
 import safeAttack from "./safeAttack.js";
 import noMove from "./noMove.js";
 import attackIfTarget from "./attackIfTarget.js";
-
+import kiteInCircle from "./kiteInCircle.js";
 
 export const moveStrategies = {
     "bigbird": kiteTarget,
@@ -17,7 +17,8 @@ export const moveStrategies = {
     "iceroamer": kiteTarget,
     "poisio": kiteTarget, 
     "scorpion": kiteTarget, 
-    "stoneworm": kiteTarget
+    "stoneworm": kiteTarget,
+    "snowman": kiteInCircle
 }
 
 export const attackStrategies = {
