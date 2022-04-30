@@ -32,19 +32,19 @@ async function loop(bot){
             force: true,
             args: {
                 itemsToHold: [hpot, mpot, "tracker"].concat(bot.itemsToHold), 
-                goldToHold: 100000,
+                goldToHold: 1000000,
                 nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}
             }
         })
     }
 
-    if(bot.character.gold < 100000 && bot.character.ctype !== "merchant"){
+    if(bot.character.gold < 1000000 && bot.character.ctype !== "merchant"){
         bot.addTask({
             script: "withdrawGold", 
             user: bot.name, 
             priority: 1, 
             args: {
-                goldToHold: 100000, 
+                goldToHold: 1000000, 
                 nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}
             }
         })

@@ -18,7 +18,7 @@ async function loop(bot){
     const mpotCount = bot.character?.countItem(mpot);
     if(hpotCount < 200) {
         if(bot.character && bot.character.canBuy(hpot)){
-            await bot.character.buy(hpot, 200 - hpotCount).catch(() => {})
+          //  await bot.character.buy(hpot, 200 - hpotCount).catch(() => {})
         }
     }
     // Check again just in case
@@ -26,7 +26,7 @@ async function loop(bot){
 
     if(mpotCount < 200) {
         if(bot.character && bot.character.canBuy(mpot)){
-            await bot.character.buy(mpot, 200 - mpotCount).catch(() => {})
+           // await bot.character.buy(mpot, 200 - mpotCount).catch(() => {})
         }
     
     }
@@ -35,7 +35,7 @@ async function loop(bot){
         await utils.checkIfPotionsLow(bot, 20) && bot.addTask({
             script: "buyPotions", 
             user: bot.name, 
-            priority: 5,
+            priority: 2,
             force: true,
             args: {
                 nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}, 
