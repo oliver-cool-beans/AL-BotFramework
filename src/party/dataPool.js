@@ -12,7 +12,7 @@ class DataPool {
         this.aldata = null
         this.isRunning = true;
         this.initialised = false;
-        this.monsters = ['franky', 'snowman', 'skeletor', 'jr', 'greenjr', 'mvampire', 'snowman']
+        this.monsters = ['franky', 'snowman', 'skeletor']
         this.refreshLoop();
         this.bankDataLoop();
         this.achievementLoop();
