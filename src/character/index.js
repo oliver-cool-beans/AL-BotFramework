@@ -116,14 +116,30 @@ class Character {
         console.log("Starting", !!AL, "START AL??", this.name)
         if(!AL) return Promise.reject("Missing AL Client")
         this.AL = AL;
-        this.character = await common.startCharacter(this, region, identifier).catch((error) => {
-            console.log("START CHARACTER HAD AN ERROR WITH", this.name, error)
-        });
+        try{
+            const startedCharacter = await common.startCharacter(this, region, identifier);
+            if(startedCharacter) this.character = startedCharacter;
+        }catch(error){
+            if(error.indexOf("ingame") == -1) return Promise.resolve("ingame");
+        }
+
         if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
             this.log(`Error Loading class functions, ${error}`)
-        })
+        });
+        
         console.log(this.name, "Finished starting")
-        console.log(!!this.character.socket, "SOCKET?", this.name)
+        console.log(!!this.character?.socket, "SOCKET?", this.name)
+        if(!this.character?.socket){
+            console.log(this.name, "Attempting to connect no socket, waiting 10s ")
+            await new Promise(resolve => setTimeout(resolve, 10000));  
+            console.log("Finished waiting...")
+            if(!this.character?.socket){
+                console.log(this.name, "Attempting to connect still no socket, reconnecting ");
+                this.debugSocket = true;
+                await this.disconnect();
+                await this.start(this.AL);
+            } 
+        }
         return Promise.resolve("OK");
     };
 
@@ -175,7 +191,7 @@ class Character {
         while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 50)); 
             if(this.#tasks.length){
-                if(!this.character.ready || !this.character.serverData) continue;
+                if(!this.character || !this.character.ready || !this.character.serverData) continue;
 
                 if(!await {...scripts, ...tasks}[this.#tasks[0]?.script]){
                     this.removeTask(this.#tasks[0]?.id);
@@ -253,6 +269,7 @@ class Character {
         await this.disconnect();
         this.log("Reconnecting -> Disconnected, waiting 5 seconds then reconnecting")
         try{
+            await this.start(this.AL);
             await this.run(this.party, this.discord, this.AL, this.isLeader);
         }catch(error){
             console.log(this.name, "Failed to reconnect", error)

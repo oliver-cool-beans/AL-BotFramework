@@ -63,6 +63,7 @@ class DataPool {
             if(!memberWithSocket) continue
 
             // Subscribe to tracker event
+            if(!memberWithSocket.character?.socket) continue;
             memberWithSocket.character.socket.once("tracker", (data) => {
                 const payload = { max: data.max, monsters: data.monsters }
                 this.sendALData(payload, 'achievements', memberWithSocket.character.id, 15, 'achievementData').catch((error) => {
