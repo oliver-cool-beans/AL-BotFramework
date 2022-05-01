@@ -14,12 +14,6 @@ async function specialMonster(bot, party, merchant, args = {}, taskId) {
         bot.runningScriptName = "specialMonster"
     }
 
-    if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
-        console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)
-        args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
-        return;
-    }
-
     // Get target if in range, or set to the arg target data
     // Do I have a character target? if not, do I have an arg target? if so set it
     var targetData = bot.character.getTargetEntity() || {}

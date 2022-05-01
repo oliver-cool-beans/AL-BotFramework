@@ -5,12 +5,6 @@ async function snowman(bot, party, merchant, args = {}, taskId){
     bot.attackRange = 25;
     bot.kitePositions.snowman = {x: 1164.1348111178727, y: -1074.3045132208767}
 
-    if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
-        console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)
-        args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
-        return;
-    }
-    
     if(!bot.character?.S) {
         console.log("Running snowman, but no S populated yet")
         return

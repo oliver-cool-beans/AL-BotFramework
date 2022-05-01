@@ -9,7 +9,6 @@ export default async function adminLoop(bot){
 
 async function loop(bot){
     if(!bot.character?.ready) return
-    const tasks = bot.getTasks();
     if(!bot.character.party && !bot.isLeader && bot.leader && !bot.sentPartyRequest) {
         bot.log(`Sending party request to, ${bot.leader.name}`)
         await bot.character.sendPartyRequest(bot.leader.name).catch(() => {})
@@ -67,13 +66,6 @@ async function loop(bot){
         })
     }
 
-    if(tasks.length) return; // If we have tasks, do not continue with the below loop logic
-
-    if((bot.serverIdentifier !==  bot.character.serverData.name) || (bot.serverRegion !==  bot.character.serverData.region)){
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        bot.log(`Switching back to home server ${bot.serverRegion} ${bot.serverIdentifier}`)
-        await bot.switchServer(bot.serverRegion, bot.serverIdentifier)
-    }
 
     return
     

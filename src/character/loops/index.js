@@ -11,6 +11,7 @@ import sellLoop from './sellLoop.js';
 import randomEmotionLoop from './randomEmotionLoop.js';
 import potionLoop from './potionLoop.js';
 import logLoop from './logLoop.js';
+import serverChangeLoop from './serverChangeLoop.js';
 
 export default {
     buyPotionLoop, 
@@ -25,5 +26,6 @@ export default {
     sellLoop, 
     randomEmotionLoop,
     potionLoop, 
-    logLoop
+    logLoop, 
+    serverChangeLoop
 }

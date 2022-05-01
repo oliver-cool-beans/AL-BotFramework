@@ -13,14 +13,7 @@ async function monsterHunt(bot, party, merchant, args = {}, taskId) {
         bot.removeTask(taskId)
         return;
     }
-    
-    if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
-        console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)
-        args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
-        return;
-    }
-
-    
+      
     console.log(`${bot.name} - Monster hunting ${targetID} - ${bot.character.s?.monsterhunt?.c} to go`);
 
     await scripts[targetID](bot, party, merchant, args).catch((error) => {

@@ -30,6 +30,8 @@ const characterFunctions = {
 
 class Character {
     #tasks = []
+    #serverChange = {}
+    #serverCooldown = moment().utc().add(120, 'seconds');
     constructor(characterName, characterClass, scriptName, isLeader, logger){
         
         const limiter = new Bottleneck({
@@ -114,12 +116,18 @@ class Character {
 
     async start(AL, region = this.serverRegion, identifier = this.serverIdentifier) {
         console.log("Starting", !!AL, "START AL??", this.name)
+
         if(!AL) return Promise.reject("Missing AL Client")
+
         this.AL = AL;
+
+        this.#serverCooldown = moment().utc().add(120, 'seconds');
+
         try{
             const startedCharacter = await common.startCharacter(this, region, identifier);
             if(startedCharacter) this.character = startedCharacter;
         }catch(error){
+            console.log("***", this.name, "Has encountered an error while logging in", error, "***")
             if(error.indexOf("ingame") == -1) return Promise.resolve("ingame");
         }
 
@@ -128,11 +136,11 @@ class Character {
         });
 
         console.log(this.name, "Finished starting")
-        console.log(!!this.character?.ready, "Ready?", this.name)
+        console.log(this.character?.ready, "Ready?", this.name)
         
         if(!this.character?.ready){
-            console.log(this.name, "Attempting to connect not ready, waiting 30s ")
-            await new Promise(resolve => setTimeout(resolve, 30000));  
+            console.log(this.name, "Attempting to connect not ready, waiting 10s ")
+            await new Promise(resolve => setTimeout(resolve, 10000));  
             console.log("Finished waiting...")
             if(!this.character?.ready){
                 console.log(this.name, "Attempting to connect still no socket, reconnecting ");
@@ -140,6 +148,8 @@ class Character {
                 await this.start(this.AL);
             } 
         }
+        
+        console.log("***", this.name, "Has started succesfully! ***")
         return Promise.resolve("OK");
     };
 
@@ -175,6 +185,7 @@ class Character {
             loops.sellLoop(this), // Sell junk when we can
             loops.randomEmotionLoop(this), // Just random emotions for fun
             loops.logLoop(this),
+            loops.serverChangeLoop(this), // Controls all server switching
         ])
 
         
@@ -187,16 +198,26 @@ class Character {
     }
 
     async mainLoop(discord, party){
-
+        let currentTask = null;
         while(this.isRunning){ 
             await new Promise(resolve => setTimeout(resolve, 50)); 
-            if(this.#tasks.length){
+            
+            //if we have some tasks, and the first task isn't in server change mode
+            if(this.#tasks.length && this.#serverChange.taskId !== this.#tasks[0].id){
+                currentTask = this.#tasks[0]
                 if(!this.character || !this.character.ready || !this.character.serverData) continue;
 
                 if(!await {...scripts, ...tasks}[this.#tasks[0]?.script]){
                     this.removeTask(this.#tasks[0]?.id);
                     continue
                 }
+
+                // Check if the task is on a different server
+                if((currentTask.args.serverIdentifier !==  this.character.serverData.name) || (currentTask.args.serverRegion !==  this.character.serverData.region)){
+                    this.queueServerChange(currentTask.args.serverRegion, currentTask.args.serverIdentifier, currentTask.id);
+                    continue;
+                }
+
                 await {...scripts, ...tasks}[this.#tasks[0].script](this, party.members, this.merchant, this.#tasks[0].args, this.#tasks[0].id).catch((error) => {
                     this.log(`task ${this.#tasks[0]?.id} - ${this.#tasks[0].script} errored with, ${error}`)
                     this.removeTask(this.#tasks[0]?.id)
@@ -355,30 +376,55 @@ class Character {
         }
     }
 
+    queueServerChange(region, identifier, taskId){
+        if(!region || !identifier) return false;
+        if(!this.character.serverData.name == identifier && !this.character.serverData.region == region){
+            return "Already on this server"
+        }
+
+        this.#serverChange = {region: region, identifier: identifier, taskId: taskId}
+        return true
+    }
+
+    resetServerChange (){
+        this.#serverChange = {}
+    }
+
+    getQueuedServer(){
+        return this.#serverChange
+    }
+
+    // A function to prevent the rapid changing of servers
+    canSwitchServers(){
+        if(this.isSwitchingServers) return false;
+        if(this.#serverCooldown && this.#serverCooldown > moment().utc()) return false
+        if(!this.#serverChange.region || !this.#serverChange.identifier) return false
+        return true;
+    }
+    
     async switchServer(region, identifier, retry = true){
         try{
-            if(region == this.serverRegion && identifier == this.identifier) return false;
-            if(this.party.allCharacters.find((char) => char.character && char.character.map == "bank")) return false;
-            console.log("running switch server", this.isSwitchingServers)
-            if(this.isSwitchingServers && !this.character.ready) return false;
-            console.log("AM I SWITCHING?", this.isSwitchingServers)
+            if(region == this.serverRegion && identifier == this.identifier) {
+                this.resetServerChange();
+                this.isSwitchingServers = false;
+                return false;
+            }
             this.isSwitchingServers = true;
             this.log(`Switching servers to ${region} ${identifier}`);
             await this.disconnect();
             await this.start(this.AL, region, identifier);
             await this.run(this.party, this.discord, this.AL, this.isLeader);
-            this.isSwitchingServers = false;
         }catch(error){
             this.log(`Error switching servers ${error}`)
             if(retry){
                 this.log("Timing out for 10 seconds and retrying")
                 await this.disconnect();
                 await new Promise(resolve => setTimeout(resolve, 10000));
-                await this.switchServer(region, identifier, false)
-            }else{
-                this.isSwitchingServers = false;
+                await this.switchServer(region, identifier)
             }
         }
+        this.isSwitchingServers = false;
+        this.resetServerChange();
     }
 
     checkPartyPresence(party){

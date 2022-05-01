@@ -6,12 +6,6 @@ async function getMonsterHunt(bot, party, merchant, args = {}, taskId){
         return
     }
 
-    if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
-        console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)
-        args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
-        return;
-    }
-
     await bot.character.smartMove("monsterhunter", {getWithin: 350, avoidTownWarps: true}).catch(async () => {
         await new Promise(resolve => setTimeout(resolve, 5000));
         await bot.character.smartMove("monsterhunter", {getWithin: 350}).catch(() => {})

@@ -3,12 +3,6 @@ import moment from "moment";
 
 async function franky(bot, party, merchant, args = {}, taskId){    
     bot.attackRange = 25;
-
-    if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
-        console.log("SWITCHING", args.serverIdentifier, bot.character.serverData.name, args.serverRegion, bot.character.serverData.region)
-        args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
-        return;
-    }
     
     if(!bot.character?.S) {
         console.log("Running franky, but no S populated yet")

@@ -6,12 +6,6 @@ async function wabbit(bot, party, merchant, args = {}, taskId){
     const { maps: gMaps } = bot.AL.Game.G;
     const currentMap = gMaps?.[args.event.map];
 
-    if((args.serverIdentifier !==  bot.character.serverData.name) || (args.serverRegion !==  bot.character.serverData.region)){
-        console.log("SWITCHING TO", args.serverIdentifier, args.serverRegion)
-        args.serverIdentifier && args.serverRegion && await bot.switchServer(args.serverRegion, args.serverIdentifier)
-        return;
-    }
-
     if(!bot.character?.S) {
         console.log("Running wabbit, but no S populated yet")
         return
@@ -27,10 +21,6 @@ async function wabbit(bot, party, merchant, args = {}, taskId){
     if(!bot.character?.S?.wabbit?.live) {
         console.log("Wabbit is no longer live, removing task");
         bot.removeTask(taskId);
-        if((bot.serverIdentifier !==  bot.character.serverData.name) || (bot.serverRegion !==  bot.character.serverData.region)){
-            bot.log(`Switching back to home server ${bot.serverRegion} ${bot.serverIdentifier} AM I SWITCHING THO? ${bot.isSwitchingServers}`)
-            await bot.switchServer(bot.serverRegion, bot.serverIdentifier)
-        }
         return;
     }
 

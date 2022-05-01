@@ -12,7 +12,7 @@ class DataPool {
         this.aldata = null
         this.isRunning = true;
         this.initialised = false;
-        this.monsters = ['franky']
+        this.monsters = ['franky', 'snowman', 'skeletor', 'jr', 'greenjr']
         this.refreshLoop();
         this.bankDataLoop();
         this.achievementLoop();
@@ -91,7 +91,6 @@ class DataPool {
 
     async sendALData(payload, endpoint, owner, minutes, dataKey){
         if(!this.ALDataKey) return Promise.reject("No ALData Key configured");
-        console.log("last sent", endpoint, this.lastSent[dataKey], dataKey, minutes)
         if(!this.minutesPassed(this.lastSent[dataKey], minutes)) {
             return false;
         }
