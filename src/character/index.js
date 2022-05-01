@@ -106,7 +106,7 @@ class Character {
         ]
         
         // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["greenjr", "jr", "wabbit", "skeletor", "mvampire", "snowman"]
+        this.specialMonsters = ["greenjr", "jr", "wabbit", "skeletor", "mvampire", "snowman", "cutebee", "goldenbat"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
         this.isConnecting = false;
@@ -121,7 +121,7 @@ class Character {
 
         this.AL = AL;
 
-        this.#serverCooldown = moment().utc().add(120, 'seconds');
+        this.#serverCooldown = moment().utc().add(60, 'seconds');
 
         try{
             const startedCharacter = await common.startCharacter(this, region, identifier);

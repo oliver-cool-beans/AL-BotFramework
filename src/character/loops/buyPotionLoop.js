@@ -39,7 +39,9 @@ async function loop(bot){
             force: true,
             args: {
                 nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}, 
-                amount: 200
+                amount: 200, 
+                serverRegion: bot.character.serverData.region, 
+                serverIdentifier: bot.character.serverData.name
             }
         });
     }

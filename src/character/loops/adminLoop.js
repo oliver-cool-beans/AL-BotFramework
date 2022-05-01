@@ -33,7 +33,9 @@ async function loop(bot){
             args: {
                 itemsToHold: [hpot, mpot, "tracker"].concat(bot.itemsToHold), 
                 goldToHold: 1000000,
-                nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}
+                nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}, 
+                serverRegion: bot.character.serverData.region, 
+                serverIdentifier: bot.character.serverData.name
             }
         })
     }
@@ -46,7 +48,9 @@ async function loop(bot){
             priority: 1, 
             args: {
                 goldToHold: 1000000, 
-                nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}
+                nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}, 
+                serverRegion: bot.character.serverData.region, 
+                serverIdentifier: bot.character.serverData.name
             }
         })
     }
@@ -61,7 +65,9 @@ async function loop(bot){
             user: bot.name, 
             priority: 8, 
             args: {
-                itemsToWithdraw: {[chosenElixir]: {qty: 1}}
+                itemsToWithdraw: {[chosenElixir]: {qty: 1}}, 
+                serverRegion: bot.character.serverData.region, 
+                serverIdentifier: bot.character.serverData.name
             }
         })
     }

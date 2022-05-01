@@ -86,7 +86,9 @@ async function magiportParty(bot, party, target) {
             user: bot.name, 
             priority: 4, 
             args: {
-                target: target
+                target: target, 
+                serverRegion: bot.character.serverData.region, 
+                serverIdentifier: bot.character.serverData.name
             }
         });
         await new Promise(resolve => setTimeout(resolve, 500)); // Wait the timeout and try again

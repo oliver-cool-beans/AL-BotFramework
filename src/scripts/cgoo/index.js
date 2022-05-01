@@ -28,7 +28,7 @@ async function cgoo(bot, party, merchant, args) {
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("cgoo").catch(() => {});
+        await bot.character.smartMove("arena").catch(() => {});
     }
 
     const tasks = bot.getTasks();
@@ -38,7 +38,7 @@ async function cgoo(bot, party, merchant, args) {
         const {hpot, mpot} = bot.calculatePotionItems();
 
         bot.addTask({
-            id: bot.createTaskId("bankItems"),
+            id: bot.createTaskId("bankItems", bot.character.serverData.region, bot.character.serverData.name),
             script: "bankItems", 
             user: bot.name, 
             priority: 1,
@@ -46,7 +46,9 @@ async function cgoo(bot, party, merchant, args) {
             args: {
                 itemsToHold: [hpot, mpot, "tracker"].concat(bot.itemsToHold), 
                 goldToHold: 100000,
-                nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}
+                nextPosition: {x: bot.character.x, y: bot.character.y, map: bot.character.map}, 
+                serverRegion: bot.character.serverData.region, 
+                serverIdentifier: bot.character.serverData.name
             }
         })
     }
