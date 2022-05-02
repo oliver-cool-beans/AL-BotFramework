@@ -40,7 +40,7 @@ async function specialMonster(bot, party, merchant, args = {}, taskId) {
     }
 
     // If i'm not on the same map or distance, move to the target, repeat above
-    await bot.character.smartMove(targetData).catch((error) => {
+    await bot.character.smartMove(targetData, {useBlink: bot.character.ctype == 'mage'}).catch((error) => {
         console.log(bot.name, "FAILED TO MOVE TO SPECIAL MONSTER", error);
     })
 
