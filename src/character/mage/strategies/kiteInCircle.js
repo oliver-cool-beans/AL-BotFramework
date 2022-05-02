@@ -10,7 +10,7 @@ async function kiteInCircle(bot) {
     
         // Stop smart moving when we can walk to the monster directly
         if (distance > bot.character.range){
-            bot.character.smartMove(target).catch(() => { /* Suppress errors */ })
+            bot.character.smartMove(target, {useBlink: bot.character.ctype == 'mage'}).catch(() => { /* Suppress errors */ })
             return
         }
 

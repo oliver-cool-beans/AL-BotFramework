@@ -15,7 +15,7 @@ async function pinkgoo(bot, party, merchant, args = {}, taskId){
     
     if(!bot.character.target || bot.character.target?.type !== "pinkgoo"){
         console.log("MOVING TO")
-        await bot.character.smartMove(args.event, { getWithin: bot.AL.Game.G.skills.mluck.range / 2}).catch(() => {});
+        await bot.character.smartMove(args.event, { useBlink: bot.character.ctype == 'mage', getWithin: bot.AL.Game.G.skills.mluck.range / 2}).catch(() => {});
     }
 
      // If we've got no target, get a valid target;

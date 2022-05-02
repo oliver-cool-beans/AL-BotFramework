@@ -31,7 +31,7 @@ async function kiteTarget(bot, party){
         if (bot.AL.Pathfinder.canWalkPath(bot, potentialSpot)) {
             bot.character.move(potentialSpot.x, potentialSpot.y).catch(() => { /* Suppress errors */ })
         } else if (bot.AL.Pathfinder.canStand(potentialSpot) && !bot.character.smartMoving) {
-            bot.character.smartMove(potentialSpot, { avoidTownWarps: true }).catch(() => { /* Suppress errors */ })
+            bot.character.smartMove(potentialSpot, { avoidTownWarps: true, useBlink: bot.character.ctype == 'mage' }).catch(() => { /* Suppress errors */ })
         }
     }catch(error){
         bot.log(`Error kiting target ${target?.name} ERROR`)

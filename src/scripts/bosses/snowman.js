@@ -31,7 +31,7 @@ async function snowman(bot, party, merchant, args = {}, taskId){
 
     if(targetData?.name !== "Snowman"){
         bot.character.target = null;
-        await bot.character.smartMove(rallyPosition).catch(() => {});
+        await bot.character.smartMove(rallyPosition, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
     }
 
     bot.attackRange = 40;

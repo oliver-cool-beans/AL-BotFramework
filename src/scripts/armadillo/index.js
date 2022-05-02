@@ -23,12 +23,12 @@ async function armadillo(bot, party, merchant, args) {
 
     if(!bot.runningScriptName == "armadillo") {
         bot.runningScriptName = "armadillo"
-        await bot.character.smartMove(rallyPosition).catch(() => {});;
+        await bot.character.smartMove(rallyPosition, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});;
     }
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("armadillo").catch(() => {});
+        await bot.character.smartMove("armadillo", {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
     }
 
     return Promise.resolve("Finished");

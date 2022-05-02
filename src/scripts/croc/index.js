@@ -23,7 +23,8 @@ async function croc(bot, party, merchant, args) {
 
     if(!bot.runningScriptName == "croc") {
         bot.runningScriptName = "croc"
-        await bot.character.smartMove(rallyPosition).catch(() => {});;
+                await bot.character.smartMove(rallyPosition, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
+;
     }
     
     // If we've got no target, get a valid target;

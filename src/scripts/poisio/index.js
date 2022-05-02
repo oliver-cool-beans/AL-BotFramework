@@ -23,7 +23,8 @@ async function poisio(bot, party, merchant, args) {
 
     if(!bot.runningScriptName == "poisio") {
         bot.runningScriptName = "poisio"
-        await bot.character.smartMove(rallyPosition).catch(() => {});;
+                await bot.character.smartMove(rallyPosition, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
+;
     }
     
     // If we've got no target, get a valid target;

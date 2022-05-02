@@ -23,12 +23,12 @@ async function cgoo(bot, party, merchant, args) {
 
     if(!bot.runningScriptName == "cgoo") {
         bot.runningScriptName = "cgoo"
-        await bot.character.smartMove(rallyPosition).catch(() => {});;
+        await bot.character.smartMove(rallyPosition, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});;
     }
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("arena").catch(() => {});
+        await bot.character.smartMove("arena", {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
     }
 
     const tasks = bot.getTasks();

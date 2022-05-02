@@ -23,12 +23,12 @@ async function bat(bot, party, merchant, args) {
 
     if(!bot.runningScriptName == "bat") {
         bot.runningScriptName = "bat"
-        await bot.character.smartMove(rallyPosition).catch(() => {});;
+        await bot.character.smartMove(rallyPosition, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});;
     }
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("bat").catch(() => {});
+    await bot.character.smartMove("bat", {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
     }
 
     return Promise.resolve("Finished");

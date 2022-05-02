@@ -47,7 +47,7 @@ async function wabbit(bot, party, merchant, args = {}, taskId){
                     return;
                 }
                 if(!bot.character?.S?.wabbit?.live || targetData?.name == "Wabbit") break;
-                await bot.character.smartMove(currentMap.monsters[monster].type, {getWithin: 100, useBlink: true, stopIfTrue: () => { !!bot.character.getEntity({type: "wabbit"}) } } ).catch(() => {})
+                await bot.character.smartMove(currentMap.monsters[monster].type, {getWithin: 100, useBlink: bot.character.ctype == 'mage', stopIfTrue: () => { !!bot.character.getEntity({type: "wabbit"}) } } ).catch(() => {})
             }
         }
 

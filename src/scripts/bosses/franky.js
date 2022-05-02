@@ -30,7 +30,7 @@ async function franky(bot, party, merchant, args = {}, taskId){
 
     if(targetData?.name !== "Franky"){
         bot.character.target = null;
-        await bot.character.smartMove({x: 1.2496361013690418, y: -12.770557914832374, map: "level2w"}).catch(() => {});
+        await bot.character.smartMove({x: 1.2496361013690418, y: -12.770557914832374, map: "level2w"}, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
     }
 
     const timeoutTime = moment().add(10, 'minutes');

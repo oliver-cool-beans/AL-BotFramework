@@ -15,7 +15,7 @@ async function dragold(bot, party, merchant, args = {}, taskId){
     
     
     if(!bot.character.target || bot.character.target?.name !== "Dragold"){
-        await bot.character.smartMove(args.event).catch(() => {});
+        await bot.character.smartMove(args.event, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
     }
 
      // If we've got no target, get a valid target;

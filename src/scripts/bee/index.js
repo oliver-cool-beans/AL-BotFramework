@@ -23,12 +23,12 @@ async function bee(bot, party, merchant, args) {
 
     if(!bot.runningScriptName == "bee") {
         bot.runningScriptName = "bee"
-        await bot.character.smartMove(rallyPosition).catch(() => {});;
+        await bot.character.smartMove(rallyPosition, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});;
     }
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {
-        await bot.character.smartMove("bee").catch(() => {});
+        await bot.character.smartMove("bee", {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
     }
 
     return Promise.resolve("Finished");

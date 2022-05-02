@@ -30,7 +30,7 @@ async function loop(bot){
 
     // If we're out of range, move to the target
     if(bot.AL.Tools.distance(bot.character, targetData) > bot.character.range && !tasks[0]?.force && !bot.character.moving){
-        await bot.character.smartMove(targetData, { getWithin: bot.attackRange || bot.character.range / 2, useBlink: true }).catch(() => {});
+        await bot.character.smartMove(targetData, { getWithin: bot.attackRange || bot.character.range / 2, useBlink: bot.character.ctype == 'mage' }).catch(() => {});
     }
     
     return Promise.resolve("OK");
