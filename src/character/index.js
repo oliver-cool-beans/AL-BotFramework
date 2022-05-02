@@ -76,7 +76,7 @@ class Character {
             {name: "iceskates", level: 0}, {name: "xmace", level: 0}, {name: "carrot", aty: "all"}, {name: "snowball", qty: "all"}, 
             {name: "warmscarf", level: 0}, {name: "rednose", level: 0}, {name: "xmashat", level: 0}, {name: "xmasshoes", level: 0}, 
             {name: "xmassweater", level: 0}, {name: "xmaspants", level: 0}, {name: "mittens", level: 0}, {name: "mcape", level: 0}, 
-            {name: "cclaw", level: 0}
+            {name: "cclaw", level: 0}, {name: "strearring", level: 0}, {name: "vitearring", level: 0}, {name: "dexearring", level: 0}, 
         ] 
         this.itemsToExchange = [
             "gem0", 
@@ -106,7 +106,7 @@ class Character {
         ]
         
         // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["greenjr", "jr", "wabbit", "skeletor", "mvampire", "snowman", "cutebee", "goldenbat"]
+        this.specialMonsters = ["greenjr", "jr", "wabbit", "skeletor", "mvampire", "snowman", "cutebee", "goldenbat", "stompy", "phoenix"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
         this.isConnecting = false;
@@ -114,14 +114,21 @@ class Character {
         this.elixirs = [];
     }
 
-    async start(AL, region = this.serverRegion, identifier = this.serverIdentifier) {
-        console.log("Starting", !!AL, "START AL??", this.name)
-
+    async start(AL, region, identifier) {
+        
         if(!AL) return Promise.reject("Missing AL Client")
 
         this.AL = AL;
 
         this.#serverCooldown = moment().utc().add(60, 'seconds');
+
+        if(characterFunctions[this.characterClass]?.pre){
+            console.log(this.name, "Running pre functions")
+            await characterFunctions[this.characterClass].pre.apply(this).catch((error) => {})
+        }
+
+        if(!region) region = this.serverRegion;
+        if(!identifier) identifier = this.serverIdentifier
 
         try{
             const startedCharacter = await common.startCharacter(this, region, identifier);
@@ -131,9 +138,12 @@ class Character {
             if(error.indexOf("ingame") == -1) return Promise.resolve("ingame");
         }
 
-        if(characterFunctions[this.characterClass]?.load) await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
-            this.log(`Error Loading class functions, ${error}`)
-        });
+        if(characterFunctions[this.characterClass]?.load) {
+            console.log(this.name, "Running load functions")
+                await characterFunctions[this.characterClass].load.apply(this).catch((error) => {
+                this.log(`Error Loading class functions, ${error}`)
+            });
+        }
 
         console.log(this.name, "Finished starting")
         console.log(this.character?.ready, "Ready?", this.name)

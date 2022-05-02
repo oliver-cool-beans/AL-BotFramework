@@ -15,7 +15,7 @@ export const moveStrategies = {
     "snowman": noMove, 
     "crabx": kiteTarget, 
     "iceroamer": kiteTarget,
-    "poisio": kiteTarget, 
+    "poisio": kiteInCircle, 
     "scorpion": kiteTarget, 
     "stoneworm": kiteTarget,
     "snowman": kiteInCircle
@@ -30,5 +30,5 @@ export const attackStrategies = {
     "iceroamer": safeAttack,
     "scorpion": safeAttack,
     "poisio": safeAttack, 
-    "stonework": safeAttack
+    "stoneworm": safeAttack,
 }

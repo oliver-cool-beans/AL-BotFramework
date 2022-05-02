@@ -36,7 +36,7 @@ const scripts = {
     merchant: scheduler,
     goo,
     bee,
-    phoenix,
+    //phoenix,
     ent, 
     minimush, 
     squig,

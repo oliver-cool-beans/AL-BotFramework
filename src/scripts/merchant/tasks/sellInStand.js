@@ -11,6 +11,7 @@ const merchantStandItems = {
         price: 900000000
     },
     "rabbitsfoot" : {
+        level: 0,
         qty: "all", 
         price: 500000000
     },

@@ -14,8 +14,17 @@ async function kiteInCircle(bot) {
             return
         }
 
-        const center = bot.kitePositions && bot.kitePositions[target.type]
-        const radius = 100
+        let center = bot.kitePositions && bot.kitePositions[target.type] 
+
+        // Find kitePosition by id, and delete other id's with same type
+        if(!center) {
+            Object.entries(bot.kitePositions).forEach(([key, value]) => {
+                if(value?.type == target.type && value.id !== target.id) delete bot.kitePositions[key]
+            });
+            bot.kitePositions[target.id] = {type: target.type, x: target.x, y: target.y}
+            center = bot.kitePositions[target.id]
+        }
+        const radius = target.range >= 100 ? 200 : 100;
         const angle = Math.PI / 2.5
 
         if(!center) return Promise.resolve("No kite config");

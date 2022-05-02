@@ -6,7 +6,13 @@
 
 export default {
     load: loadFunctions,
+    pre: preFunctions,
     loop: loopFunctions
+}
+
+async function preFunctions(){
+    this.serverRegion = "US", 
+    this.serverIdentifier = "I"
 }
 
 async function loadFunctions () {
@@ -18,8 +24,6 @@ async function loadFunctions () {
     this.purchaseBuyOrder = purchaseBuyOrder
     this.deliverBuyOrder = deliverBuyOrder
     this.processStoreOrder = processStoreOrder
-    this.serverRegion = "US", 
-    this.serverIdentifier = "I"
     this.runTasks = runTasks
     this.itemsToKeep = ['cscroll0', 'cscroll1', 'cscroll2', 'scroll0', 'scroll1', 'scroll2', 'stand', 'rod', 'pickaxe']
     return
