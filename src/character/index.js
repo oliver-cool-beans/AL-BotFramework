@@ -106,7 +106,7 @@ class Character {
         ]
         
         // TODO put this in dynamic config accessable by discord
-        this.specialMonsters = ["greenjr", "jr", "wabbit", "skeletor", "mvampire", "snowman", "cutebee", "goldenbat", "stompy", "phoenix"]
+        this.specialMonsters = ["greenjr", "jr", "wabbit", "skeletor", "mvampire", "snowman", "cutebee", "goldenbat", "phoenix"]
         this.partyMonsters = []
         this.isSwitchingServers = false;
         this.isConnecting = false;
