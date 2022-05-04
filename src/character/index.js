@@ -421,6 +421,8 @@ class Character {
             }
             this.isSwitchingServers = true;
             this.log(`Switching servers to ${region} ${identifier}`);
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait one second to not interrupt looting
+
             await this.disconnect();
             await this.start(this.AL, region, identifier);
             await this.run(this.party, this.discord, this.AL, this.isLeader);

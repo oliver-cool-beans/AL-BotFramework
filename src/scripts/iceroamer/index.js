@@ -23,7 +23,7 @@ async function iceroamer(bot, party, merchant, args) {
 
     if(!bot.runningScriptName == "iceroamer") {
         bot.runningScriptName = "iceroamer"
-        await bot.character.smartMove(rallyPosition).catch(() => {});;
+        await bot.character.smartMove(rallyPosition, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
     }
     
     // If we've got no target, get a valid target;
