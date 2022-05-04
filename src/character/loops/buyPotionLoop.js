@@ -21,8 +21,6 @@ async function loop(bot){
             await bot.character.buy(hpot, 200 - hpotCount).catch(() => {})
         }
     }
-    // Check again just in case
-    if(!bot.character?.ready) return
 
     if(mpotCount < 200) {
         if(bot.character && bot.character.canBuy(mpot)){
@@ -32,7 +30,9 @@ async function loop(bot){
     }
     
     if(bot.character && !bot.character.canBuy(hpot) || !bot.character?.canBuy(mpot)){
-        await utils.checkIfPotionsLow(bot, 20) && bot.addTask({
+        await utils.checkIfPotionsLow(bot, 20) 
+        && bot.addTask({
+            id: bot.createTaskId('buyPotions'),
             script: "buyPotions", 
             user: bot.name, 
             priority: 2,

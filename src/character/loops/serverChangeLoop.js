@@ -26,6 +26,7 @@ async function loop(bot){
         return
     }
 
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Wait one second to not interrupt looting
     await bot.switchServer(region, identifier);
 
 
