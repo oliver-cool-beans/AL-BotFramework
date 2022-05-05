@@ -17,7 +17,7 @@ const merchantStandItems = {
     },
     "cryptkey" : {
         qty: "all", 
-        price: 5000000
+        price: 3500000
     },
     "tracker": {
         qty: "all", 
