@@ -77,6 +77,10 @@ class Character {
             {name: "warmscarf", level: 0}, {name: "rednose", level: 0}, {name: "xmashat", level: 0}, {name: "xmasshoes", level: 0}, 
             {name: "xmassweater", level: 0}, {name: "xmaspants", level: 0}, {name: "mittens", level: 0}, {name: "mcape", level: 0}, 
             {name: "cclaw", level: 0}, {name: "strearring", level: 0}, {name: "vitearring", level: 0}, {name: "dexearring", level: 0}, 
+            {name: "sstinger", qty: "all"},  {name: "pleather", qty: "all"},  {name: "smush", qty: "all"},
+            {name: "dstones", qty: "all"}, {name: "pstem", qty: "all"}, {name: "quiver", level: 0},  {name: "skullamulet", level: 0}, 
+            {name: "dexring", level: 0},  {name: "strring", level: 0},  {name: "vitring", level: 0}, 
+            {name: "dexbelt", level: 0},  {name: "strbelt", level: 0},  {name: "stramulet", level: 0},  {name: "dexamulet", level: 0}, 
         ] 
         this.itemsToExchange = [
             "gem0", 
