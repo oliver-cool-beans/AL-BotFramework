@@ -52,7 +52,7 @@ class Character {
         this.merchant = null;
         this.kitePositions = {};
         this.notificationBuffer = [];
-        this.serverRegion = "EU", 
+        this.serverRegion = "US", 
         this.serverIdentifier = "PVP"
         this.taskTimeouts = {};
         this.itemsToSell = [
@@ -190,7 +190,7 @@ class Character {
                 loops.lootLoop(this), // Loots chests  
                 loops.findSpecialMonsterLoop(this), // Check for special monsters and attack them
                 loops.checkEventBossesLoop(this), // Check for boss events
-                loops.monsterHuntLoop(this), // Check for monster hunts
+                //loops.monsterHuntLoop(this), // Check for monster hunts
                 loops.defenceLoop(this), // Defensive actions like scare
             ])
         }

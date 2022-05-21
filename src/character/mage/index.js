@@ -21,26 +21,29 @@ async function loadFunctions () {
 
 
 async function loopFunctions() {
+    console.log("RUNNING LOOPS")
     if(!this?.character) return;
-    //energize(this)
+    energize(this)
     return
 }
 
 async function energize(bot){
     while(bot.isRunning && bot.character){
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Wait the timeout and try again
+        await new Promise(resolve => setTimeout(resolve, 100)); // Wait the timeout and try again
         if(!bot.character) continue
-        const lowEnergyPartyMembers = bot.party.members.filter((member) => {
-            if(!member.character) return
-            return member.character.mp <= (member.character.max_mp * 0.8) 
-            && bot.AL.Tools.distance(bot.character, member.character) <= 320
-            && bot.name != member.name
+        if(bot.scriptName !== 'bee') continue;
+        if(bot.character.mp <= (bot.character.max_mp * 0.3)) continue;
+
+        const lowEnergyPlayers = Array.from(bot.character.players.values()).filter((member) => {
+            return member.mp <= (member.max_mp * 0.8) 
+            && bot.AL.Tools.distance(bot.character, member) <= 320
+            && bot.name != member.id
+            && member.ctype == 'ranger' // For bee farm
         });
 
-        if(bot.character.canUse("energize") && lowEnergyPartyMembers.length){
-            const energyToGive = lowEnergyPartyMembers[0].character.max_mp - lowEnergyPartyMembers[0].character.mp
-            console.log("Energizing", lowEnergyPartyMembers[0]?.character.id, energyToGive)
-            bot.character.energize(lowEnergyPartyMembers[0].character?.id, energyToGive).catch(() => {})
+        if(bot.character.canUse("energize") && lowEnergyPlayers.length){
+            const energyToGive = lowEnergyPlayers[0].max_mp - lowEnergyPlayers[0].mp
+            bot.character.energize(lowEnergyPlayers[0]?.id, energyToGive).catch(() => {})
         }
     }
 }

@@ -12,6 +12,13 @@ function create(scriptChoices, partyNames){
             required: true
           },
           {
+            name: "gold", 
+            description: "Log party gold received", 
+            type: 3, 
+            choices: [{name: "log", value: "gold"}],
+            required: false
+          },
+          {
             name: "run", 
             description: "Run a script by name", 
             type: 3, 
@@ -48,8 +55,9 @@ async function run(AL, interaction, characters, party, discord) {
     if(options.disconnect) await disconnect(party);
     if(options.login) await login(partyName, party, discord, AL);
     if(options.run) await script(options.run, party);
+    if(options.gold) await partyGold(party, interaction);
 
-    return interaction.editReply({ephemeral: true, content: `Finished running tasks ${interaction.options['_hoistedOptions'].map((opt) => opt.name)}`})
+    return options.gold || interaction.editReply({ephemeral: true, content: `Finished running tasks ${interaction.options['_hoistedOptions'].map((opt) => opt.name)}`})
 }
 
 async function script(scriptName, party) {
@@ -75,6 +83,11 @@ async function disconnect(party){
     member.disconnect();
   })
   return Promise.resolve("OK");
+}
+
+async function partyGold(party, interaction){
+  const numberFormat = new Intl.NumberFormat('en-US')
+  return await interaction.editReply({ephemeral: true, content: `Party gold is ${numberFormat.format(party.partyGold)}`});
 }
 
 module.exports = {create, run}

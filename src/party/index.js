@@ -7,6 +7,7 @@ import DataPool from "./dataPool.js";
 class Party {
     constructor(characters, partyConfig = {}){
         this.members = [];
+        this.partyGold = 0;
         this.allCharacters = characters;
         this.config = partyConfig
         this.dataPool = new DataPool(characters);
@@ -28,6 +29,11 @@ class Party {
             }))
         }
 
+    }
+
+    calcPartyGold(gold){
+        this.partyGold += gold;
+        console.log("Party gold is now", this.partyGold)
     }
 
     energizeMember(bot){

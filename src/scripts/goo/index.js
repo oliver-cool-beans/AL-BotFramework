@@ -8,6 +8,8 @@ import utils from "../../scripts/utils/index.js";
 
 const targets = ["goo"];
 
+const rallyPosition = {x: -22.542455229658678, y: 762.1368823176715, map: 'main'};
+
 async function goo(bot, party, merchant, args) {
     if(!bot.character.ready) return Promise.reject("Character not ready");
     var targetData = bot.character.getTargetEntity() || utils.findClosestTarget(bot.AL, bot.character, party, targets);
@@ -18,14 +20,6 @@ async function goo(bot, party, merchant, args) {
     }
 
     if(bot.character.target !== targetData?.id) bot.setTarget(targetData?.id);
-
-    const rallyPosition = "goo";
-
-    if(!bot.runningScriptName == "goo") {
-        bot.runningScriptName = "goo"
-                await bot.character.smartMove(rallyPosition, {useBlink: bot.character.ctype == 'mage'}).catch(() => {});
-;
-    }
     
     // If we've got no target, get a valid target;
     if(!bot.character.target) {

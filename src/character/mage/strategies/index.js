@@ -3,6 +3,7 @@ import safeAttack from "./safeAttack.js";
 import noMove from "./noMove.js";
 import attackIfTarget from "./attackIfTarget.js";
 import kiteInCircle from "./kiteInCircle.js";
+import cburst from "./cburst.js";
 
 export const moveStrategies = {
     "bigbird": kiteTarget,
@@ -18,7 +19,8 @@ export const moveStrategies = {
     "poisio": kiteInCircle, 
     "scorpion": kiteTarget, 
     "stoneworm": kiteTarget,
-    "snowman": kiteInCircle
+    "snowman": kiteInCircle, 
+    "bee": noMove
 }
 
 export const attackStrategies = {
@@ -31,4 +33,6 @@ export const attackStrategies = {
     "scorpion": safeAttack,
     "poisio": safeAttack, 
     "stoneworm": safeAttack,
+    "goo": cburst,
+    "bee": cburst
 }

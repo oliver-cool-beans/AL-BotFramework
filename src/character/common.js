@@ -44,6 +44,12 @@ const common = {
             })
         });
 
+        // On gold received from other players
+        bot.character.socket.on("ui", async (data) =>{
+            if(data.type !== 'gold_sent' || data?.receiver !== bot.character.id) return;
+            bot.party.calcPartyGold(data.gold);
+        })
+
         // On hit
         bot.character.socket.on("hit", async (data) => utils.avoidStack(bot, data));
 
