@@ -52,7 +52,7 @@ class Character {
         this.merchant = null;
         this.kitePositions = {};
         this.notificationBuffer = [];
-        this.serverRegion = "US", 
+        this.serverRegion = "EU", 
         this.serverIdentifier = "PVP"
         this.taskTimeouts = {};
         this.itemsToSell = [
