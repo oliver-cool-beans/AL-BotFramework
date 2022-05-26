@@ -33,6 +33,7 @@ async function upgradeItems(bot){
             if(excludeList.includes(slotItem.name)) return acc // If we've excluded this item
             if(bot.itemsToSell.map((item) => item.name).includes(slotItem.name)) return acc
             if(bot.itemsToExchange.includes(slotItem.name)) return acc
+            if(bot.itemsToExchange.find((item) => item.name == slotItem.name && item.level == slotItem.level)) return acc
             if(bot.itemsToRecycle.includes(slotItem.name)) return acc
             if(!acc[slotItem.name]) acc[slotItem.name] = {};
             acc[slotItem.name][slotItem.level]?.length ? acc[slotItem.name][slotItem.level].push(index) 

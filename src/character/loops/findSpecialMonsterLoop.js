@@ -13,7 +13,6 @@ async function loop(bot){
     if(!bot.character?.ready) return
     [...bot.character.entities.values()].forEach((entity) => {
         if(!bot.specialMonsters.includes(entity.type)) return
-        if(entity.target && !bot.party.members.find((member) => entity.target == member.name)) return // If it has a target, and it's our party
         const monsterScript = scripts[entity.type] || "specialMonster"
         bot.addTask({
             id: bot.createTaskId(entity.type, bot.serverRegion, bot.serverIdentifier),

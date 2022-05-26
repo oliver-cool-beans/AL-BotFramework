@@ -9,14 +9,15 @@ async function findAndExchange(bot){
 
     for(var item in bot.itemsToExchange){
         if(bot.character.esize <= 0) return Promise.resolve("Inventory full");
-
-        var itemName = bot.itemsToExchange[item]
+        
+        var itemName = bot.itemsToExchange[item].name || bot.itemsToExchange[item]
         var itemData, exchangeLocation, itemLoc
         var exchangeLimit = 0;
         const gItem = bot.character.G.items[itemName]
 
         await utils.goToBank(bot, bot.itemsToKeep, 50000000);
         const withdrawPayload = {[itemName] : {qty: "all"}}
+        if(bot.itemsToExchange[item].level) withdrawPayload[itemName].level = bot.itemsToExchange[item].level
 
         if(gItem.compound || gItem.upgrade) withdrawPayload[itemName].level = 0
         console.log("Withdraw payload", withdrawPayload)
@@ -37,7 +38,7 @@ async function findAndExchange(bot){
             exchangeLimit = gItem.e ?  itemData.q - (gItem.e * 10) : itemData.q - 10 
             if(exchangeLimit < 0) exchangeLimit = gItem.e || itemData.q
 
-            if(bot.itemsToExchange.includes(itemData.name) ){
+            if(bot.itemsToExchange.includes(itemData.name) || bot.itemsToExchange.find((item) => item.name == itemData.name && item.level == itemData.level) ){
                 exchangeLocation = bot.character.locateExchangeNPC(itemData.name);
                 console.log("*** exchange location for", itemData.name, "is", exchangeLocation)
                 if(!exchangeLocation) continue;
