@@ -1,5 +1,5 @@
 import utils from "../../../scripts/utils/index.js";
-const excludeList = ['lostearring'];
+const excludeList = [];
 
 async function compoundItems(bot){
     if (!["bank", "bank_b", "bank_u"].includes(bot.character.map))  await bot.character.smartMove({ map: "bank", x: 0, y: -200 }, { avoidTownWarps: true }).catch(() => {});;
@@ -33,6 +33,7 @@ async function compoundItems(bot){
             if(excludeList.includes(slotItem.name)) return acc // If we've excluded this item
             if(bot.itemsToSell.map((item) => item.name).includes(slotItem.name)) return acc
             if(bot.itemsToExchange.includes(slotItem.name)) return acc
+            if(bot.itemsToExchange.find((item) => item.name == slotItem.name && item.level == slotItem.level)) return acc
             if(bot.itemsToRecycle.includes(slotItem.name)) return acc
             if(!acc[slotItem.name]) acc[slotItem.name] = {};
             acc[slotItem.name][slotItem.level]?.length ? acc[slotItem.name][slotItem.level].push(index) 
@@ -55,7 +56,7 @@ async function compoundItems(bot){
                     return bankSlotItems?.[itemName]?.[level]
                 }).filter(Boolean).flat();
 
-                 console.log(`There are ${allTabsCount.length} of ${itemName} in all tabs at level ${level} - ${items.length} in this tab - ${slotName} = ${items}`)
+                //console.log(`There are ${allTabsCount.length} of ${itemName} in all tabs at level ${level} - ${items.length} in this tab - ${slotName} = ${items}`)
 
                 const levelAboveCount = Object.values(allCompoundableItems).map(({[itemName]: itemData}) => {
                     // Get all items above this items level for this item

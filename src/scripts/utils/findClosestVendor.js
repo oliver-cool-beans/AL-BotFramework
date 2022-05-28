@@ -1,5 +1,5 @@
 
-function findClosestVendor(AL, item, character, ignoreMaps = [],) {
+function findClosestVendor(AL, item, character, ignoreMaps = []) {
     const { maps: gMaps, npcs: gNpcs } = AL.Game.G;
     return Object.values(gMaps).reduce((npc, map) => {
         const closestNpcList = Object.values(map.npcs).sort((a, b) => {

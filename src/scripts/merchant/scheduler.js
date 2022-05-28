@@ -8,6 +8,8 @@ import fish from "./tasks/fish.js";
 import findAndExchange from "./tasks/findAndExchange.js";
 import findAndRecycle from "./tasks/findAndRecycle.js";
 import findAndSell from "./tasks/findAndSell.js";
+import findAndCraft from "./tasks/findAndCraft.js";
+
 //import exchangeMHTokens from "./tasks/exchangeMHTokens.js";
 
 async function scheduler(bot, force = false){
@@ -21,6 +23,11 @@ async function scheduler(bot, force = false){
         bot.scheduleLastRun = date;
 
         if(bot.character.esize > 5){
+
+            await findAndCraft(bot).catch((error) => {
+                console.log("FAILED CRAFT RUN", error)
+            })          
+            
             await findAndRecycle(bot).catch((error) => {
                 console.log("FAILED RECYCLE RUN", error)
             })
@@ -31,7 +38,7 @@ async function scheduler(bot, force = false){
             
             await findAndSell(bot).catch((error) => {
                 console.log("FAILED SELL RUN", error)
-            })     
+            })
         }
 
         var shouldUpgrade = true;
@@ -45,7 +52,7 @@ async function scheduler(bot, force = false){
             console.log("Running Compound...")
             shouldCompound = await compoundItems(bot).catch(() => {});
         }
- 
+
         
         await bot.character.smartMove('main', {avoidTownWarps: true}).catch(() => {});
             

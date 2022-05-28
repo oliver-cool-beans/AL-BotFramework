@@ -17,9 +17,10 @@ async function findAndExchange(bot){
 
         await utils.goToBank(bot, bot.itemsToKeep, 50000000);
         const withdrawPayload = {[itemName] : {qty: "all"}}
-        if(bot.itemsToExchange[item].level) withdrawPayload[itemName].level = bot.itemsToExchange[item].level
 
         if(gItem.compound || gItem.upgrade) withdrawPayload[itemName].level = 0
+        if(bot.itemsToExchange[item].level) withdrawPayload[itemName].level = bot.itemsToExchange[item].level
+
         console.log("Withdraw payload", withdrawPayload)
 
         await utils.withdrawItemsFromBank(bot, withdrawPayload );

@@ -52,7 +52,6 @@ async function mluckLoop(bot) {
         }).filter(Boolean) || [];
 
         for(var player in mluckPlayers){
-            console.log("MLUCKING", mluckPlayers[player]?.id);
             mluckPlayers[player].id && bot.character.mluck(mluckPlayers[player].id).catch((error) => {
                 console.log("CANNOT MLUCK", error)
             })

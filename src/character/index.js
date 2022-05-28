@@ -81,6 +81,11 @@ class Character {
             {name: "dexring", level: 0},  {name: "strring", level: 0},  {name: "vitring", level: 0}, 
             {name: "dexbelt", level: 0},  {name: "strbelt", level: 0},  {name: "stramulet", level: 0},  {name: "dexamulet", level: 0}, 
         ] 
+
+        this.itemsToCraft = [
+            "firestaff"
+        ]
+
         this.itemsToExchange = [
             "gem0", 
             "gem1",
@@ -95,7 +100,8 @@ class Character {
             "troll", 
             "basketofeggs", 
             "candycane", 
-            "mistletoe"
+            "mistletoe",
+            "mysterybox"
         ]
         this.itemsToRecycle = [
             "staffofthedead", 
@@ -449,6 +455,7 @@ class Character {
         }).filter(Boolean)
     }
  
+    //TODO Add support for item levels
     checkBankFor(items){
         const bankData = this.party?.dataPool?.bankData
         if(!bankData) return {}
