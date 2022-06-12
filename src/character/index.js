@@ -81,7 +81,7 @@ class Character {
             {name: "dexring", level: 0},  {name: "strring", level: 0},  {name: "vitring", level: 0}, 
             {name: "dexbelt", level: 0},  {name: "strbelt", level: 0},  {name: "stramulet", level: 0},  {name: "dexamulet", level: 0}, 
             {name: "staffofthedead", level: 0},  {name: "bowofthedead", level: 0},  {name: "maceofthedead", level: 0},  {name: "spearofthedead", level: 0},
-            {name: "pmaceofthedead", level: 0},  {name: "daggerofthedead", level: 0}
+            {name: "pmaceofthedead", level: 0},  {name: "daggerofthedead", level: 0}, {name: "swifty", level: 0}
         ] 
 
         this.itemsToCraft = [
