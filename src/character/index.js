@@ -80,6 +80,8 @@ class Character {
             {name: "dstones", qty: "all"}, {name: "pstem", qty: "all"}, {name: "quiver", level: 0},  {name: "skullamulet", level: 0}, 
             {name: "dexring", level: 0},  {name: "strring", level: 0},  {name: "vitring", level: 0}, 
             {name: "dexbelt", level: 0},  {name: "strbelt", level: 0},  {name: "stramulet", level: 0},  {name: "dexamulet", level: 0}, 
+            {name: "staffofthedead", level: 0},  {name: "bowofthedead", level: 0},  {name: "maceofthedead", level: 0},  {name: "spearofthedead", level: 0},
+            {name: "pmaceofthedead", level: 0},  {name: "daggerofthedead", level: 0}
         ] 
 
         this.itemsToCraft = [
@@ -104,14 +106,7 @@ class Character {
             "mysterybox"
         ]
         this.itemsToRecycle = [
-            "staffofthedead", 
-            "bowofthedead",
-            "maceofthedead",
-            "swordofthedead", 
-            "fireblade", 
-            "daggerofthedead", 
-            "spearofthedead", 
-            "pmaceofthedead"
+            "fireblade"
         ]
         
         // TODO put this in dynamic config accessable by discord

@@ -19,7 +19,6 @@ async function buyAndSell(bot){
     }).flat().filter(Boolean)
 
     const merchantTrades = merchantToMerchant(bot, allBuyOrders, allSellOrders)
-    console.log("MERCHANT TRADES TRADES", merchantTrades)
     var vendorToBuy;
     var vendorToSell
     var trade
